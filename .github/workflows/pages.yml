@@ -33,19 +33,19 @@ jobs:
           touch _site/.nojekyll
           cp -r css js touch-zoom-guard _site/
           rm -rf _site/touch-zoom-guard/test
-      # Deploy only from the default branch (template docs/14 #60: feature-branch deploys turn PRs red).
+      # Deploy only from main / the default branch (template docs/14 #60: feature-branch deploys turn PRs red).
       - uses: actions/configure-pages@v5
-        if: github.ref == format('refs/heads/{0}', github.event.repository.default_branch)
+        if: (github.ref == 'refs/heads/main' || github.ref == format('refs/heads/{0}', github.event.repository.default_branch))
         continue-on-error: true
         with:
           enablement: true
       - uses: actions/upload-pages-artifact@v3
-        if: github.ref == format('refs/heads/{0}', github.event.repository.default_branch)
+        if: (github.ref == 'refs/heads/main' || github.ref == format('refs/heads/{0}', github.event.repository.default_branch))
         with:
           path: _site
 
   deploy:
-    if: github.ref == format('refs/heads/{0}', github.event.repository.default_branch)
+    if: (github.ref == 'refs/heads/main' || github.ref == format('refs/heads/{0}', github.event.repository.default_branch))
     needs: build
     runs-on: ubuntu-latest
     environment:

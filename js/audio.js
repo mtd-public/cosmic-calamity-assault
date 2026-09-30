@@ -38,6 +38,35 @@ export class Audio extends Sfx {
   t(freq, dur, type, vol, slide = 0, delay = 0) { this.tone(freq, dur, type, vol, slide, delay); }
   n(dur, freq, o) { this.burst(dur, freq, o); }
 
+  // Vehicle engines: one continuous voice per ride, pitched by speed.
+  //   engine(kind, k, boost)   kind 'mule' | 'sliver' | null (off); k = speed / max
+  engine(kind, k = 0, boost = false) {
+    if (!this.ctx || this.muted) return;
+    const c = this.ctx, now = c.currentTime;
+    if (!this.eng) {
+      const g = c.createGain(); g.gain.value = 0; g.connect(this.master);
+      const lp = c.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.value = 600; lp.connect(g);
+      const o1 = c.createOscillator(); o1.type = 'sawtooth'; o1.frequency.value = 60; o1.connect(lp); o1.start();
+      const o2 = c.createOscillator(); o2.type = 'square'; o2.frequency.value = 120; const g2 = c.createGain(); g2.gain.value = 0.35; o2.connect(g2).connect(lp); o2.start();
+      const n = c.createBufferSource(); n.buffer = this.noise; n.loop = true; const nf = c.createBiquadFilter(); nf.type = 'bandpass'; nf.frequency.value = 900; nf.Q.value = 0.8; const ng = c.createGain(); ng.gain.value = 0; n.connect(nf).connect(ng).connect(g); n.start();
+      this.eng = { g, lp, o1, o2, ng, nf };
+    }
+    const e = this.eng, tc = 0.08;
+    if (!kind) { e.g.gain.setTargetAtTime(0, now, 0.15); e.ng.gain.setTargetAtTime(0, now, 0.15); return; }
+    const kk = Math.min(1.3, Math.max(0, k));
+    if (kind === 'mule') {
+      e.o1.type = 'sawtooth'; e.o2.type = 'square';
+      e.o1.frequency.setTargetAtTime(48 + kk * 110, now, tc); e.o2.frequency.setTargetAtTime(96 + kk * 220, now, tc);
+      e.lp.frequency.setTargetAtTime(400 + kk * 1400, now, tc);
+      e.g.gain.setTargetAtTime((0.05 + kk * 0.08) * this.volume, now, tc); e.ng.gain.setTargetAtTime(kk * 0.06 * this.volume, now, tc); e.nf.frequency.setTargetAtTime(600 + kk * 800, now, tc);
+    } else {
+      e.o1.type = 'triangle'; e.o2.type = 'sine';
+      e.o1.frequency.setTargetAtTime(160 + kk * 260 + (boost ? 120 : 0), now, tc); e.o2.frequency.setTargetAtTime(322 + kk * 520 + (boost ? 240 : 0), now, tc);
+      e.lp.frequency.setTargetAtTime(1200 + kk * 2400, now, tc);
+      e.g.gain.setTargetAtTime((0.04 + kk * 0.07 + (boost ? 0.04 : 0)) * this.volume, now, tc); e.ng.gain.setTargetAtTime((0.02 + kk * 0.05) * this.volume, now, tc); e.nf.frequency.setTargetAtTime(2200 + kk * 1500, now, tc);
+    }
+  }
+
   // Halo's signature bits
   lowShieldTick(dt) { this.alarmT -= dt; if (this.alarmT <= 0) { this.alarmT = 0.32; this.fx('alarm'); } }
   step(surface, vol = 0.5) { this.fx(surface === 'metal' ? 'stepMetal' : surface === 'water' ? 'stepWater' : 'step', vol); }
@@ -154,6 +183,15 @@ const FX = {
   needler: (s, v) => { s.t(2500, 0.07, 'triangle', 0.08 * v, -600); s.t(3400, 0.05, 'sine', 0.04 * v, 0, 0.02); },
   lance: (s, v) => { s.t(220, 0.45, 'sawtooth', 0.12 * v, -170); s.n(0.4, 900, { type: 'lowpass', vol: 0.25 * v, f1: 200 }); },
   drone: (s, v) => { s.t(1500, 0.06, 'square', 0.05 * v, -800); },
+  chaingun: (s, v) => { s.n(0.06, 2200, { q: 0.8, vol: 0.26 * v, f1: 600 }); s.t(160, 0.05, 'square', 0.08 * v, -60); },
+  vehicleEnter: (s, v) => { s.n(0.08, 700, { type: 'lowpass', vol: 0.3 * v }); s.t(220, 0.12, 'square', 0.05 * v, -120, 0.05); },
+  vehicleExit: (s, v) => { s.n(0.06, 900, { type: 'lowpass', vol: 0.22 * v }); },
+  seat: (s, v) => { s.n(0.05, 1200, { q: 2, vol: 0.18 * v }); s.t(500, 0.05, 'square', 0.04 * v, 0, 0.06); },
+  splatter: (s, v) => { s.n(0.16, 500, { type: 'lowpass', vol: 0.5 * v }); s.t(70, 0.2, 'sine', 0.3 * v, -30); s.n(0.1, 3000, { type: 'highpass', vol: 0.12 * v, delay: 0.03 }); },
+  vehicleBump: (s, v) => { s.n(0.18, 400, { type: 'lowpass', vol: 0.45 * v }); s.t(90, 0.15, 'square', 0.12 * v, -40); s.n(0.08, 2600, { q: 2, vol: 0.14 * v, delay: 0.02 }); },
+  vehicleLand: (s, v) => { s.n(0.14, 300, { type: 'lowpass', vol: 0.4 * v }); s.t(60, 0.12, 'sine', 0.2 * v); },
+  vehicleHit: (s, v) => { s.t(1800, 0.06, 'triangle', 0.07 * v, -600); s.n(0.05, 3000, { q: 2, vol: 0.08 * v }); },
+  boost: (s, v) => { s.t(300, 0.5, 'sawtooth', 0.08 * v, 900); s.n(0.4, 3000, { type: 'highpass', vol: 0.08 * v }); },
   chargedShot: (s, v) => { s.t(420, 0.5, 'sawtooth', 0.14 * v, 900); s.n(0.3, 2000, { q: 2, vol: 0.12 * v }); },
   charged: (s, v) => { s.t(1400, 0.08, 'sine', 0.06 * v); s.t(1900, 0.1, 'sine', 0.05 * v, 0, 0.06); },
   dry: (s, v) => s.t(1800, 0.02, 'square', 0.06 * v),

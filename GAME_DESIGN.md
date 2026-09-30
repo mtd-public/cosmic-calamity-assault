@@ -88,6 +88,9 @@ Built from: `mstr-gme-dsgn-tmpt` house rules (sim / render / UI split, fixed ste
 - **The first-person rifle** has a live ammo counter on the gun, as in Halo.
 
 ## 7. Art direction: early Xbox
+- **Characters** are jointed skeletons built from "bones": one mesh per limb segment with a sphere at each joint and a tapered shaft between, so a chain of them reads as one continuous limb at any bend (Halo 1's Elites were capsules on a skeleton). Legs plant their feet through two-bone IK, arms hold guns through IK onto the gun's grip and foregrip nodes, tails are bone chains that sway, jaws hinge. Silhouettes borrow from Titanfall pilots and Black Ops operators (chest rigs, pouches, knee pads, jump-kit packs, visor helmets) at original-Xbox polygon counts.
+- **The Vyrr** are partially humanoid where it helps readability: the Trooper stands upright with human proportions, forward knees and boots, in plate armour, and only its reptile head, tail and four-fingered claws say alien; the Skitter stays bestial (hunched, digitigrade, a breathing tank on its back); the Bulwark is a hulking humanoid with a slab shield on one forearm and a fuel-lance cannon on the other.
+- **The player's arms** run from shoulders at the bottom corners of the view to articulated hands; IK keeps them on the gun through every clip, so a reload is the left hand actually pulling the magazine, dropping it, seating a fresh one and racking the charging handle.
 - **Shapes:**
   - Chamfered boxes, so the bevels catch specular.
   - Lathes (pods, the spire, the reactor), extrusions (barriers, consoles, the bridge arch, car wrecks) and noise-displaced icosahedra for rocks.
@@ -128,14 +131,38 @@ Layouts are axis-aligned colliders on a heightfield. The renderer dresses every 
 - **AI:** one shared flow field toward the player, rebuilt every 0.35 s (Dial's algorithm on a 1 m grid). LOS checks run every ~0.17 s per enemy.
 
 ## 10. Open questions (defaults chosen)
-- **Vehicles (Warthog / Ghost)?** Default: none in this prototype. The gorge is sized so one could be added.
+- **Vehicles (Warthog / Ghost)?** Added: the M12 MULE and the Vyrr SLIVER (section 11).
 - **Health model?** Halo 1: non-regenerating health plus packs. Halo 2's full regen would be a one-line change in `stepPlayer`.
 - **Dual wielding (Halo 2)?** Not yet: two weapons plus grenades already fill the touch layout.
 - **Co-op?** Out of scope.
 
+## 11. Vehicles
+| | M12 MULE | Vyrr SLIVER |
+|---|---|---|
+| Role | Warthog: two seats, driver + rotary chaingun turret | Ghost: one seat, twin plasma cannons, boost |
+| Speed | 17 m/s (7 reverse), accel 9, brake 14 | 20 m/s, 31 boosting (2.8 s of boost, 5 s to refill), accel 13 |
+| Steering | toward the look direction (Halo), + stick; turns only while rolling | same, wider drift (grip 3.2 vs 6), banks into turns |
+| Ground | four sampled wheel points give pitch and roll; jumps and lands; climbs slopes up to 1.25× the walk limit | hovers 0.75 m on a spring; no terrain pitch |
+| HP | 900 | 420 |
+| Ram | 70 × speed/10 (kills a Skitter at 5 m/s, a Trooper at 12) | 50 × speed/10 |
+| Guns | chaingun: hitscan, 9 dmg at 15 rounds/s from the seat's eye | bolts: 12 dmg ×1.7 vs shields, 58 m/s, alternate wings, up to 25° off the nose |
+| Camera | third person: 8.5 m back, 3.2 m up, orbits with the look, pulled in by walls | 8 m / 3.4 m |
+| AI | none | riders strafe past, orbit at ~1.25 rad off, break away under 9 m, fire when the nose is within 0.35 rad |
+
+Riders are ordinary Troopers whose position is bound to the seat; shooting the rider frees the bike. Vehicle damage comes from bolts (×1.6 from the Vyrr), bullets, explosions and hard collisions (2.5 × speed). A destroyed vehicle explodes (110 splash), ejects the player with 40 raw damage, kills its rider and stays as a wreck.
+
 ---
 
 ## Delta log
+### graphics / art rework (branch `claude/loving-hypatia-y0lqd9`)
+- Rig toolkit (`js/rig.js`): connected bones, analytic two-bone IK, hands with curling fingers.
+- Player: full IK arms in first person; procedural clips for magazine reloads, shell loading, slide/bolt/pump cycling, melee, grenade throw (with the grenade in hand), weapon switch, plasma vent; brass ejection; a full-body cyborg seen when looking down and in vehicles.
+- Enemies rebuilt on the toolkit with walk cycles that plant feet, aim twist, head tracking, roars, flee/berserk/melee/dodge/flinch/death poses; the Trooper made partially humanoid.
+- All 8 weapons remodelled as assemblies with named parts; the turret chaingun added.
+- Vehicles: MULE + SLIVER, seats, turret, Halo steering, splatters, vehicle HP and wrecks, Vyrr riders with AI, third-person camera, engine audio, HUD panel, placements in Fallen Hymn, the Gorge, Proving Grounds and the Plaza.
+- Environments: prop catalog + dressing pass on every map, sun disc, grass, flags, birds, sun shafts, puddles, mist, dust.
+- Scope: the surround is a translucent blue-grey with a lens edge and corner brackets instead of 92 % black.
+- Verification: `check-levels` OK (vehicles and riders reachable); `sim-check` 49/49 (17 new vehicle checks); smoke: all 5 profiles PASS with 0 errors and 0 scroll; tap-spam PASS.
 ### initial prototype (branch `claude/cool-carson-fgvmn2`)
 - 3 missions and 2 tablet test maps.
 - 8 weapons and 4 enemy types (plus holo-targets).

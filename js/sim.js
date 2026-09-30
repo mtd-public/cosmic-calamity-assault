@@ -11,6 +11,7 @@ import { WEAPONS, ENEMY_SHOTS, newWeaponState } from './weapons.js';
 import { ENEMIES } from './enemies.js';
 import { CollisionWorld, NavGrid, DEEP } from './world.js';
 import { mulberry32 } from './utils.js';
+import { VEHICLES, MOUNTED, ENEMY_VEHICLE_SHOTS } from './vehicles.js';
 
 export const DT = 1 / 60;
 
@@ -22,7 +23,7 @@ export function createWorld(level, opts = {}) {
   const w = {
     level, geo, nav, diff, rng: mulberry32(opts.seed ?? 1234),
     t: 0, mode: 'play', deadT: 0, nextId: 1,
-    player: null, enemies: [], shots: [], grenades: [], pickups: [], targets: [], respawns: [],
+    player: null, enemies: [], shots: [], grenades: [], pickups: [], targets: [], respawns: [], vehicles: [],
     seq: { i: -1, used: false }, objective: '', waypoint: null, doorsOpen: [],
     stats: { kills: 0, shots: 0, hits: 0, heads: 0, deaths: 0, time: 0, score: 0 },
     ff: level.firefight ? { wave: 0, t: 5, pending: true } : null,
@@ -37,11 +38,12 @@ export function createWorld(level, opts = {}) {
     fireT: 0, burstLeft: 0, burstT: 0, reloadT: 0, switchT: 0.4, zoom: false, meleeT: 0, grenT: 0,
     gType: 'frag', grens: { frag: ps.frags ?? 2, plasma: ps.plasmas ?? 0 }, bloom: 0, charge: 0, chargeHeld: false,
     actT: 0, actLatched: false, aimId: 0, firedT: 9, hurtT: 9, needles: [], stuck: 0, deepT: 0, fallV: 0,
-    prompt: null, moving: false, wadeT: 0, lastFire: false,
+    prompt: null, moving: false, wadeT: 0, lastFire: false, vehicle: null, seat: null, rideT: 0,
   };
   p.pos.y = geo.groundAt(p.pos.x, p.pos.z, 200, T.radius, 400);
   p.prev = { ...p.pos };
   for (const pk of level.pickups || []) addPickup(w, pk);
+  for (const v of level.vehicles || []) addVehicle(w, v);
   for (const tg of level.targets || []) {
     w.targets.push({ id: tg.id, pos: [...tg.pos], r: tg.r, h: tg.h, hp: tg.hp, maxHp: tg.hp, locked: !!tg.lockedBy, lockedBy: tg.lockedBy || null, dead: false, kind: tg.kind, splash: tg.splash || 6 });
   }
@@ -103,6 +105,11 @@ function spawnEnemy(w, spec, group) {
     orbit: w.rng() < 0.5 ? 1 : -1, vx0: 0,
   };
   w.enemies.push(e);
+  if (spec.ride && VEHICLES[spec.ride]) { // a Vyrr rider: spawn its bike under it
+    const v = addVehicle(w, { type: spec.ride, pos: [x, z], yaw: e.yaw });
+    v.occupant = e.id; v.seat = 'driver'; v.ai = { t: 0, orbit: w.rng() < 0.5 ? 1 : -1, mode: 'close' };
+    e.riding = v.id; e.alert = true;
+  }
   return e;
 }
 
@@ -124,6 +131,7 @@ function killEnemy(w, e, info) {
   if (info.head) { w.stats.heads++; pts = Math.round(pts * 1.5); }
   w.stats.score += pts;
   ev(w, 'enemyDie', { id: e.id, etype: e.type, x: e.x, y: e.y, z: e.z, head: !!info.head, kind: info.kind, pts });
+  if (e.riding) { const v = w.vehicles.find((q) => q.id === e.riding); if (v && v.occupant === e.id) { v.occupant = null; v.seat = null; v.ai = null; } e.riding = null; e.dvy = 3; }
   if (d.dummy) { w.respawns.push({ spec: e.spec, group: e.group, t: d.respawn }); return; }
   if (e.weapon && WEAPONS[e.weapon]) {
     const ws = newWeaponState(e.weapon);
@@ -233,6 +241,12 @@ function explode(w, x, y, z, radius, dmg, owner, kind = 'frag') {
     if (killed && owner === 'player') w.stats.hits++;
     if (!ENEMIES[e.type].fly && !killed) { e.vx += dir.x * 5 * k; e.vz += dir.z * 5 * k; }
   }
+  for (const v of w.vehicles) {
+    if (v.dead) continue;
+    const vd = VEHICLES[v.type];
+    d = Math.hypot(v.x - x, v.y + vd.height * 0.5 - y, v.z - z) - vd.radius * 0.7;
+    if (d < radius) damageVehicle(w, v, dmg * (1 - Math.max(0, d) / radius) * (owner === 'player' ? 1 : 0.7), { kind: 'explosion', x, z });
+  }
   for (const tg of w.targets) {
     if (tg.dead) continue;
     d = Math.hypot(tg.pos[0] - x, tg.pos[1] + tg.h * 0.5 - y, tg.pos[2] - z) - tg.r;
@@ -329,12 +343,13 @@ export function step(w, dt, input) {
   p.prev.x = p.pos.x; p.prev.y = p.pos.y; p.prev.z = p.pos.z;
   if (w.mode === 'play') {
     w.t += dt; w.stats.time += dt;
-    stepPlayer(w, dt, input);
-    stepWeapons(w, dt, input);
+    if (p.vehicle) stepRiding(w, dt, input);
+    else { stepPlayer(w, dt, input); stepWeapons(w, dt, input); }
     stepInteract(w, dt, input);
   } else if (w.mode === 'dead') {
     w.deadT += dt;
   }
+  stepVehicles(w, dt, input);
   w.flowT -= dt;
   if (w.flowT <= 0) { w.flowT = T.flowEvery; w.nav.flowFrom(w.nav.nearestWalk(p.pos.x, p.pos.z, 6)); }
   for (const e of w.enemies) stepEnemy(w, e, dt);
@@ -605,14 +620,29 @@ function fireBallistic(w, ws, d) {
   if (anyHit) w.stats.hits++;
 }
 
+const dmg0 = (d, endT) => (d.falloff && endT > d.falloff ? d.damage * Math.max(0.15, 1 - (endT - d.falloff) / (d.range - d.falloff)) : d.damage);
+// First vehicle (other than `skip`) hit along a segment: {v, s} or null.
+function vehicleAlong(w, px, py, pz, qx, qy, qz, skip) {
+  let best = null;
+  for (const v of w.vehicles) {
+    if (v.dead || v.id === skip) continue;
+    const vd = VEHICLES[v.type];
+    const b = segSphere(px, py, pz, qx, qy, qz, v.x, v.y + vd.height * 0.5, v.z);
+    if (b.d2 < (vd.radius * 0.95) ** 2 && (!best || b.s < best.s)) best = { v, s: b.s };
+  }
+  return best;
+}
 function hitscan(w, eye, dir, d, tracer) {
   const wh = w.geo.raycast(eye.x, eye.y, eye.z, dir.x, dir.y, dir.z, d.range);
   const maxT = wh ? wh.t : d.range;
   const qx = eye.x + dir.x * maxT, qy = eye.y + dir.y * maxT, qz = eye.z + dir.z * maxT;
-  const h = hitAlong(w, eye.x, eye.y, eye.z, qx, qy, qz);
+  let h = hitAlong(w, eye.x, eye.y, eye.z, qx, qy, qz);
+  const vh = vehicleAlong(w, eye.x, eye.y, eye.z, qx, qy, qz, w.player.vehicle);
+  if (vh && (!h || vh.s < h.s)) h = vh;
   const endT = h ? h.s * maxT : maxT;
   const hx = eye.x + dir.x * endT, hy = eye.y + dir.y * endT, hz = eye.z + dir.z * endT;
   if (tracer) ev(w, 'tracer', { x0: eye.x, y0: eye.y, z0: eye.z, x: hx, y: hy, z: hz, weapon: d.sound });
+  if (h && h.v) { damageVehicle(w, h.v, dmg0(d, endT), { kind: 'bullet' }); ev(w, 'impact', { x: hx, y: hy, z: hz, surface: 'armor', n: [0, 1, 0] }); return true; }
   if (h) {
     let dmg = d.damage;
     if (d.falloff && endT > d.falloff) dmg *= Math.max(0.15, 1 - (endT - d.falloff) / (d.range - d.falloff));
@@ -778,6 +808,27 @@ function stepInteract(w, dt, inp) {
       useTarget = { label: pad.label, fn: () => { for (const s of pad.spawn) spawnEnemy(w, s, 'pad').alert = true; ev(w, 'use', { label: pad.label }); } };
     }
   }
+  // vehicles: the nearest free seat, or the exit when riding
+  if (p.vehicle) {
+    useTarget = { label: 'EXIT', fn: () => exitVehicle(w) };
+    swapTarget = null;
+  } else {
+    let bv = null, bd = 99;
+    for (const v of w.vehicles) {
+      if (v.dead || typeof v.occupant === 'number') continue;
+      const vd = VEHICLES[v.type];
+      const dd = Math.hypot(v.x - p.pos.x, v.z - p.pos.z) - vd.radius;
+      if (dd < 1.8 && dd < bd && Math.abs(v.y - p.pos.y) < 2.5) { bd = dd; bv = v; }
+    }
+    if (bv) {
+      const vd = VEHICLES[bv.type];
+      const seat = bv.occupant === 'player' ? null : (vd.seats.driver && !(bv.occupant === 'player' && bv.seat === 'driver') ? 'driver' : 'gunner');
+      // prefer the turret when you approach the back of a MULE
+      const bx = -Math.sin(bv.yaw), bz = -Math.cos(bv.yaw), behind = (p.pos.x - bv.x) * bx + (p.pos.z - bv.z) * bz < -0.8;
+      const pick = vd.seats.gunner && behind ? 'gunner' : seat;
+      if (pick) { useTarget = { label: vd.seats[pick].label, fn: () => enterVehicle(w, bv, pick) }; swapTarget = null; }
+    }
+  }
   const held = !!inp.action;
   if (useTarget) p.prompt = { verb: 'hold', label: useTarget.label };
   else if (swapTarget) p.prompt = { verb: 'hold', label: `PICK UP ${WEAPONS[swapTarget.ws.id].short}` };
@@ -818,6 +869,16 @@ function stepEnemy(w, e, dt) {
     return;
   }
   e.hitT += dt; e.shieldHitT += dt; e.trackT += dt;
+  if (e.riding) { // a rider: the bike carries it (stepVehicleAI drives, the seat sync is in stepVehicles)
+    e.needles = e.needles.filter((t) => w.t - t < 2);
+    if (d.shield) { e.shieldT += dt; if (e.shieldT > d.shieldDelay && e.shield < e.maxShield) e.shield = Math.min(e.maxShield, e.shield + d.shieldRate * dt); }
+    const v = w.vehicles.find((q) => q.id === e.riding);
+    if (!v || v.dead) { e.riding = null; return; }
+    e.alert = true; e.sees = Math.hypot(p.pos.x - e.x, p.pos.z - e.z) < 60 && w.mode === 'play';
+    if (e.sees) e.lastSeen = { x: p.pos.x, z: p.pos.z };
+    e.trackT = 0;
+    return;
+  }
   // shield recharge
   if (d.shield) { e.shieldT += dt; if (e.shieldT > d.shieldDelay && e.shield < e.maxShield) { if (e.shield === 0) ev(w, 'enemyShieldUp', { id: e.id }); e.shield = Math.min(e.maxShield, e.shield + d.shieldRate * dt); } }
   e.needles = e.needles.filter((t) => w.t - t < 2);
@@ -967,6 +1028,12 @@ function settle(w, e, d, dt, tvx, tvz) {
     const ox = np.x - o.x, oz = np.z - o.z, L = Math.hypot(ox, oz), min = d.radius + ENEMIES[o.type].radius;
     if (L < min && L > 1e-4) { np.x += (ox / L) * (min - L) * 0.5; np.z += (oz / L) * (min - L) * 0.5; }
   }
+  // separation from vehicles (parked or moving)
+  for (const v of w.vehicles) {
+    if (e.riding === v.id) continue;
+    const ox = np.x - v.x, oz = np.z - v.z, L = Math.hypot(ox, oz), min = d.radius + VEHICLES[v.type].radius * 0.9;
+    if (L < min && L > 1e-4 && Math.abs(v.y - e.y) < 2) { np.x += (ox / L) * (min - L); np.z += (oz / L) * (min - L); }
+  }
   // separation from the player
   const px = np.x - w.player.pos.x, pz = np.z - w.player.pos.z, pL = Math.hypot(px, pz), pmin = d.radius + T.radius;
   if (pL < pmin && pL > 1e-4 && Math.abs(w.player.pos.y - e.y) < 1.5) { np.x += (px / pL) * (pmin - pL); np.z += (pz / pL) * (pmin - pL); }
@@ -1070,6 +1137,18 @@ function stepShots(w, dt) {
     const wh = geo.raycast(px, py, pz, (qx - px) / L, (qy - py) / L, (qz - pz) / L, L);
     const segT = wh ? wh.t / L : 1;
     const ex = px + (qx - px) * segT, ey = py + (qy - py) * segT, ez = pz + (qz - pz) * segT;
+    const vh = vehicleAlong(w, px, py, pz, ex, ey, ez, s.owner === 'enemy' ? (s.vehicle ?? -1) : p.vehicle);
+    if (vh && (s.owner === 'enemy' ? vh.v.occupant !== 'player' || true : true)) {
+      // enemy fire hits the player's ride; player fire hits enemy bikes and empty wrecks-to-be
+      const hitOwnSide = s.owner === 'enemy' ? (typeof vh.v.occupant === 'number') : vh.v.occupant === 'player';
+      if (!hitOwnSide) {
+        const hx = px + (ex - px) * vh.s, hy = py + (ey - py) * vh.s, hz = pz + (ez - pz) * vh.s;
+        if (s.splash) explode(w, hx, hy, hz, s.splash.radius, s.splash.damage, s.owner, 'lance');
+        else damageVehicle(w, vh.v, s.dmg * (s.owner === 'enemy' ? 1.6 : 1), { kind: 'plasma', x: px, z: pz });
+        ev(w, 'shotHit', { x: hx, y: hy, z: hz, color: s.color, surface: 'armor' });
+        s.dead = true; continue;
+      }
+    }
     if (s.owner === 'enemy') {
       const b = segVertical(px, py, pz, ex, ey, ez, p.pos.x, p.pos.y + 0.2, p.pos.y + pHeight(p) - 0.15, p.pos.z);
       if (w.mode === 'play' && b.d2 < (T.radius + (s.size || 0.15) * 0.6) ** 2) {
@@ -1168,6 +1247,267 @@ function stepGrenades(w, dt) {
     }
   }
   w.grenades = w.grenades.filter((g) => !g.done);
+}
+
+
+// ------------------------------------------------------------ vehicles
+const clampV = (v, a, b) => (v < a ? a : v > b ? b : v);
+// local (right, up, back) → world, for a vehicle heading `yaw`
+export function vehicleLocal(v, lx, ly, lz) {
+  const c = Math.cos(v.yaw), s = Math.sin(v.yaw);
+  return { x: v.x + c * lx + s * lz, y: v.y + ly, z: v.z - s * lx + c * lz };
+}
+function addVehicle(w, spec) {
+  const d = VEHICLES[spec.type];
+  const x = spec.pos[0], z = spec.pos[spec.pos.length - 1];
+  const y = w.geo.groundAt(x, z, w.geo.terrainH(x, z) + 1.5, d.radius * 0.5, 0);
+  const v = { id: w.nextId++, type: spec.type, x, y, z, yaw: spec.yaw ?? 0, pitch: 0, roll: 0, vx: 0, vy: 0, vz: 0, speed: 0, steer: 0, throttle: 0,
+    hp: d.hp, maxHp: d.hp, occupant: null, seat: null, turretYaw: 0, turretPitch: 0, fireT: 0, gunSide: 1, onGround: true, dead: false, deadT: 0,
+    boost: 1, boosting: false, wheel: 0, ai: null, hitT: 9, bumpT: 9, airT: 0 };
+  w.vehicles.push(v);
+  return v;
+}
+function enterVehicle(w, v, seat) {
+  const p = w.player;
+  if (v.occupant === 'player') { if (v.seat !== seat) { v.seat = seat; p.seat = seat; ev(w, 'seat', { seat, vtype: v.type }); } return; }
+  v.occupant = 'player'; v.seat = seat;
+  p.vehicle = v.id; p.seat = seat; p.rideT = 0; p.zoom = false; p.reloadT = 0; p.charge = 0; p.chargeHeld = false; p.burstLeft = 0;
+  p.vel.x = p.vel.y = p.vel.z = 0;
+  ev(w, 'vehicleEnter', { id: v.id, vtype: v.type, seat });
+}
+function exitVehicle(w, dead = false) {
+  const p = w.player;
+  const v = w.vehicles.find((q) => q.id === p.vehicle);
+  if (v && v.occupant === 'player') { v.occupant = null; v.seat = null; }
+  p.vehicle = null; p.seat = null;
+  if (v) {
+    // step out on the clearer side
+    const d = VEHICLES[v.type];
+    for (const side of [-1, 1, 0]) {
+      const o = vehicleLocal(v, side * (d.width / 2 + 0.8), 0, side === 0 ? d.length / 2 + 1 : 0);
+      const q = { x: o.x, z: o.z };
+      w.geo.resolve(q, T.radius, v.y + 0.3, v.y + 1.9);
+      if (Math.hypot(q.x - v.x, q.z - v.z) > d.radius * 0.6) { p.pos.x = q.x; p.pos.z = q.z; break; }
+    }
+    p.pos.y = w.geo.groundAt(p.pos.x, p.pos.z, v.y + 1.2, T.radius, 1.5);
+    p.vel.x = v.vx * 0.5; p.vel.z = v.vz * 0.5; p.vel.y = dead ? 5 : 1;
+    p.onGround = false;
+    p.switchT = 0.45;
+  }
+  ev(w, 'vehicleExit', { dead });
+}
+function damageVehicle(w, v, amount, o = {}) {
+  if (v.dead) return;
+  v.hp -= amount; v.hitT = 0;
+  ev(w, 'vehicleHit', { id: v.id, amount, vtype: v.type, player: v.occupant === 'player' });
+  if (v.occupant === 'player' && o.x !== undefined) ev(w, 'playerHit', { from: { x: o.x, z: o.z }, shield: true, amount: 0, vehicle: true });
+  if (v.hp <= 0) killVehicle(w, v);
+}
+function killVehicle(w, v) {
+  v.dead = true; v.deadT = 0; v.hp = 0; v.speed *= 0.3; v.ai = null;
+  const d = VEHICLES[v.type];
+  if (v.occupant === 'player') { exitVehicle(w, true); damagePlayer(w, 40, { raw: true, kind: 'explosion', from: { x: v.x, z: v.z } }); }
+  else if (typeof v.occupant === 'number') { const e = w.enemies.find((q) => q.id === v.occupant); if (e && !e.dead) { e.riding = null; damageEnemy(w, e, 9999, { kind: 'explosion', shieldMult: 1, dir: { x: 0, y: 0, z: 0 } }); } }
+  v.occupant = null; v.seat = null;
+  ev(w, 'vehicleDie', { id: v.id, vtype: v.type, x: v.x, y: v.y, z: v.z });
+  explode(w, v.x, v.y + d.height * 0.5, v.z, 7, 110, 'enemy', d.side === 'vyrr' ? 'plasma' : 'big');
+}
+
+// The player's turn in a seat: sync the body to the seat, drive or shoot.
+function stepRiding(w, dt, inp) {
+  const p = w.player;
+  const v = w.vehicles.find((q) => q.id === p.vehicle);
+  if (!v || v.dead || v.occupant !== 'player') { p.vehicle = null; p.seat = null; return; }
+  const d = VEHICLES[v.type];
+  p.rideT += dt;
+  // seat swap (MULE): Y / Tab / SWAP hops between the wheel and the turret
+  if (inp.swap && d.seats.gunner && p.rideT > 0.3) { const other = v.seat === 'driver' ? 'gunner' : 'driver'; v.seat = other; p.seat = other; p.rideT = 0; ev(w, 'seat', { seat: other, vtype: v.type }); }
+  // vitals keep ticking
+  p.shieldT += dt;
+  if (p.shieldT > T.shieldDelay * w.diff.shieldDelay && p.shield < T.shieldMax) { if (!p.recharging) { p.recharging = true; ev(w, 'shieldRecharge'); } p.shield = Math.min(T.shieldMax, p.shield + T.shieldRate * dt); }
+  else if (p.shield >= T.shieldMax) p.recharging = false;
+  p.kick *= Math.exp(-9 * dt); p.hurtT += dt; p.firedT += dt; p.fireT -= dt; p.switchT -= dt; p.meleeT -= dt; p.grenT -= dt;
+  p.needles = p.needles.filter((t) => w.t - t < 2);
+  p.crouch += (0 - p.crouch) * Math.min(1, dt * 7);
+  // the turret: hitscan chaingun along the aim
+  const seat = d.seats[v.seat];
+  if (seat.weapon === 'chaingun') {
+    const g = MOUNTED.chaingun;
+    if (inp.fire && p.fireT <= 0) {
+      p.fireT = g.rate; p.firedT = 0; w.stats.shots++;
+      const eye = eyePos(p), base = aimDir(p.yaw, p.pitch);
+      if (hitscan(w, eye, spreadDir(w, base, g.spread), g, true)) w.stats.hits++;
+      p.kick += g.recoil;
+      ev(w, 'fire', { id: 'chaingun' });
+      alertByNoise(w, eye.x, eye.z, T.hearRange);
+    }
+    v.turretYaw = wrap(p.yaw - v.yaw); v.turretPitch = p.pitch;
+  }
+  p.moving = Math.abs(v.speed) > 1;
+}
+
+function stepVehicles(w, dt, inp) {
+  const p = w.player, geo = w.geo;
+  for (const v of w.vehicles) {
+    const d = VEHICLES[v.type];
+    v.hitT += dt; v.bumpT += dt;
+    if (v.dead) { v.deadT += dt; v.speed *= Math.exp(-2 * dt); v.vx *= Math.exp(-2 * dt); v.vz *= Math.exp(-2 * dt); v.x += v.vx * dt; v.z += v.vz * dt; v.y = geo.groundAt(v.x, v.z, v.y + 0.5, d.radius * 0.5, 0.8); continue; }
+    let throttle = 0, steer = 0, fire = false, boost = false;
+    const driven = v.occupant === 'player' && v.seat === 'driver' && w.mode === 'play';
+    if (driven) {
+      throttle = clampV(inp.my || 0, -1, 1);
+      // Halo steering: the nose chases where you look; the stick's x adds direct steering
+      const look = wrap(p.yaw - v.yaw);
+      steer = clampV(look * 1.7, -1, 1) * (Math.abs(throttle) > 0.05 ? 1 : 0.7) + clampV(inp.mx || 0, -1, 1) * 0.6;
+      steer = clampV(steer, -1, 1);
+      boost = !!d.boost && !!inp.crouch;
+      fire = !!d.seats.driver.weapon && !!(inp.fire || inp.fireEdge);
+    } else if (typeof v.occupant === 'number' && v.ai) {
+      const a = stepVehicleAI(w, v, d, dt);
+      throttle = a.throttle; steer = a.steer; fire = a.fire; boost = a.boost;
+    }
+    v.throttle = throttle;
+    // ---- longitudinal
+    const maxS = boost && v.boost > 0.03 ? d.boostSpeed : d.maxSpeed;
+    if (throttle > 0.05) v.speed += d.accel * throttle * dt * (v.speed < 0 ? 1.8 : 1) * (boost ? 1.5 : 1);
+    else if (throttle < -0.05) v.speed += (v.speed > 0.5 ? -d.brake : d.accel * throttle * 0.6) * dt;
+    else v.speed -= Math.sign(v.speed) * Math.min(Math.abs(v.speed), d.drag * dt);
+    if (v.speed > maxS) v.speed -= Math.min(v.speed - maxS, d.brake * 0.6 * dt);
+    if (v.speed < -d.reverseMax) v.speed = -d.reverseMax;
+    if (boost && v.boost > 0) { v.boost = Math.max(0, v.boost - dt / 2.8); if (!v.boosting) ev(w, 'boost', { id: v.id }); v.boosting = true; }
+    else { v.boosting = false; v.boost = Math.min(1, v.boost + dt / 5); }
+    // ---- steering (only bites while rolling; hover bikes drift wide)
+    v.steer += (steer - v.steer) * Math.min(1, dt * 7);
+    const turn = v.steer * d.turnRate * clampV(v.speed / 7, -1, 1);
+    v.yaw = wrap(v.yaw + turn * dt);
+    const fx = -Math.sin(v.yaw), fz = -Math.cos(v.yaw);
+    const gripK = Math.min(1, d.grip * dt * (v.onGround ? 1 : 0.15));
+    v.vx += (fx * v.speed - v.vx) * gripK; v.vz += (fz * v.speed - v.vz) * gripK;
+    // ---- move, walls, cliffs
+    const ox = v.x, oz = v.z;
+    const np = { x: v.x + v.vx * dt, z: v.z + v.vz * dt };
+    const wantX = np.x, wantZ = np.z;
+    const hit = geo.resolve(np, d.radius, v.y, v.y + d.height, 0.65);
+    const sl = geo.terrainSlope(np.x, np.z), nH = geo.terrainH(np.x, np.z);
+    if (nH > v.y + 0.02 && (sl.m > T.maxSlope * 1.25 || nH > v.y + 1.0)) {
+      const hx = geo.terrainH(np.x, oz), hz = geo.terrainH(ox, np.z);
+      if (!(hx <= v.y + 0.02 || (geo.terrainSlope(np.x, oz).m <= T.maxSlope * 1.25 && hx <= v.y + 1.0))) np.x = ox;
+      if (!(hz <= v.y + 0.02 || (geo.terrainSlope(ox, np.z).m <= T.maxSlope * 1.25 && hz <= v.y + 1.0))) np.z = oz;
+    }
+    const pushed = Math.hypot(np.x - wantX, np.z - wantZ);
+    if ((hit || pushed > 0.001) && pushed > 0.01) {
+      const hard = Math.abs(v.speed) > 6;
+      if (hard) { damageVehicle(w, v, Math.abs(v.speed) * 2.5, { kind: 'bump' }); if (v.bumpT > 0.4) { ev(w, 'vehicleBump', { id: v.id, v: Math.abs(v.speed), x: v.x, y: v.y, z: v.z }); v.bumpT = 0; } }
+      v.speed *= hard ? -0.25 : 0.3; v.vx *= 0.2; v.vz *= 0.2;
+    }
+    v.x = np.x; v.z = np.z;
+    // ---- ground follow
+    const g = geo.groundAt(v.x, v.z, v.y + 0.4, d.radius * 0.55, 0.9);
+    if (d.kind === 'hover') {
+      const target = g + d.hover;
+      v.vy += ((target - v.y) * 16 - v.vy * 5) * dt;
+      v.y += v.vy * dt;
+      if (v.y < g) { v.y = g; v.vy = Math.max(0, v.vy); }
+      v.onGround = v.y - g < d.hover + 0.6;
+      // lean: bank into the turn, nose down under braking
+      v.roll += ((-v.steer * 0.42 * clampV(v.speed / 10, -1, 1)) - v.roll) * Math.min(1, dt * 5);
+      v.pitch += ((throttle > 0 ? -0.06 : throttle < 0 ? 0.08 : 0) - v.pitch) * Math.min(1, dt * 4);
+    } else {
+      v.vy -= T.gravity * dt;
+      let ny = v.y + v.vy * dt;
+      if (ny <= g) { if (v.vy < -5) ev(w, 'vehicleLand', { id: v.id, v: -v.vy, x: v.x, y: v.y, z: v.z }); ny = g; v.vy = 0; v.onGround = true; v.airT = 0; }
+      else if (v.onGround && v.y - g < 0.6) { ny = g; v.vy = 0; }
+      else { v.onGround = false; v.airT += dt; }
+      v.y = ny;
+      // pitch and roll from the ground under the wheels
+      const f = vehicleLocal(v, 0, 0, -d.wheelbase / 2), b = vehicleLocal(v, 0, 0, d.wheelbase / 2), l = vehicleLocal(v, -d.track / 2, 0, 0), r = vehicleLocal(v, d.track / 2, 0, 0);
+      const hf = geo.groundAt(f.x, f.z, v.y + 0.6, 0.4, 0.9), hb = geo.groundAt(b.x, b.z, v.y + 0.6, 0.4, 0.9), hl = geo.groundAt(l.x, l.z, v.y + 0.6, 0.4, 0.9), hr = geo.groundAt(r.x, r.z, v.y + 0.6, 0.4, 0.9);
+      const wantPitch = v.onGround ? Math.atan2(hf - hb, d.wheelbase) : clampV(-v.vy * 0.03, -0.35, 0.35);
+      const wantRoll = v.onGround ? Math.atan2(hr - hl, d.track) : 0;
+      v.pitch += (wantPitch - v.pitch) * Math.min(1, dt * 6);
+      v.roll += (wantRoll - v.steer * 0.06 * clampV(v.speed / 10, -1, 1) - v.roll) * Math.min(1, dt * 6);
+      v.wheel += v.speed * dt / d.wheelR;
+    }
+    // ---- splatter
+    if (Math.abs(v.speed) > 5 && !v.dead) {
+      const nose = vehicleLocal(v, 0, 0, -Math.sign(v.speed) * d.length * 0.35);
+      for (const e of w.enemies) {
+        if (e.dead || e.riding) continue;
+        const ed = ENEMIES[e.type];
+        if (ed.fly && e.y > v.y + d.height + 0.5) continue;
+        if (Math.hypot(e.x - nose.x, e.z - nose.z) < ed.radius + d.radius * 0.7 && Math.abs(e.y - v.y) < 2.2) {
+          const L = Math.hypot(e.x - v.x, e.z - v.z) || 1;
+          const dir = { x: (e.x - v.x) / L, y: 0, z: (e.z - v.z) / L };
+          const killed = damageEnemy(w, e, d.ram * Math.abs(v.speed) / 10, { kind: 'explosion', dir, shieldMult: 1.5 });
+          ev(w, 'splatter', { id: e.id, x: e.x, y: e.y + 1, z: e.z, killed, player: v.occupant === 'player' });
+          if (killed && v.occupant === 'player') w.stats.hits++;
+          if (!killed) { e.vx += dir.x * 8; e.vz += dir.z * 8; }
+          v.speed *= ed.armorFront ? 0.5 : 0.9;
+        }
+      }
+      if (v.occupant === 'player' && w.mode === 'play') alertByNoise(w, v.x, v.z, 18);
+    }
+    // ---- the Sliver's cannons (player or AI): twin bolts from the wing muzzles
+    v.fireT -= dt;
+    if (fire && v.fireT <= 0) {
+      const g = MOUNTED.sliverGun;
+      v.fireT = g.rate; v.gunSide *= -1;
+      const m = d.guns[v.gunSide > 0 ? 1 : 0];
+      const from = vehicleLocal(v, m[0], m[1], m[2]);
+      if (driven) {
+        // along the aim, but no more than 25° off the nose
+        let aim = aimDir(p.yaw, p.pitch);
+        const off = wrap(p.yaw - v.yaw);
+        if (Math.abs(off) > 0.45) aim = aimDir(v.yaw + Math.sign(off) * 0.45, p.pitch);
+        const dir = spreadDir(w, aim, g.spread);
+        w.shots.push(makeShot(w, 'player', 'sliverGun', from, dir, g.speed, g.damage, { color: g.color, shieldMult: g.shieldMult, size: 0.18, vehicle: v.id }));
+        p.firedT = 0; w.stats.shots++;
+        ev(w, 'fire', { id: 'sliverGun' });
+        alertByNoise(w, v.x, v.z, T.hearRange * 0.8);
+      } else {
+        const sh = ENEMY_VEHICLE_SHOTS.sliverGun;
+        const tt = Math.hypot(p.pos.x - from.x, p.pos.z - from.z) / sh.speed;
+        const tx = p.pos.x + p.vel.x * tt * 0.6, ty = p.pos.y + 1.1, tz = p.pos.z + p.vel.z * tt * 0.6;
+        const dx = tx - from.x, dy = ty - from.y, dz = tz - from.z, L = Math.hypot(dx, dy, dz) || 1;
+        const dir = spreadDir(w, { x: dx / L, y: dy / L, z: dz / L }, 0.06 * w.diff.aim);
+        w.shots.push(makeShot(w, 'enemy', 'sliverGun', from, dir, sh.speed, sh.damage, { color: sh.color, size: sh.size, vehicle: v.id }));
+        ev(w, 'enemyFire', { id: v.occupant, weapon: 'carbine', x: from.x, y: from.y, z: from.z });
+      }
+    }
+    // ---- riders follow their seats
+    if (v.occupant === 'player') {
+      const seat = d.seats[v.seat];
+      const o = vehicleLocal(v, seat.pos[0], seat.pos[1], seat.pos[2]);
+      p.pos.x = o.x; p.pos.z = o.z; p.pos.y = o.y - 0.78;
+      p.vel.x = v.vx; p.vel.z = v.vz; p.vel.y = 0; p.onGround = true;
+    } else if (typeof v.occupant === 'number') {
+      const e = w.enemies.find((q) => q.id === v.occupant);
+      if (e && !e.dead) { const seat = d.seats.driver; const o = vehicleLocal(v, seat.pos[0], seat.pos[1], seat.pos[2]); e.x = o.x; e.z = o.z; e.y = o.y - 0.95; e.yaw = v.yaw; e.vx = v.vx; e.vz = v.vz; }
+      else { v.occupant = null; v.seat = null; v.ai = null; }
+    }
+    if ((v.y < geo.killY || v.hp <= 0) && !v.dead) killVehicle(w, v);
+  }
+}
+
+// A Vyrr rider: strafing runs past you, wide orbits, breaks off when it gets close.
+function stepVehicleAI(w, v, d, dt) {
+  const p = w.player, ai = v.ai;
+  const dx = p.pos.x - v.x, dz = p.pos.z - v.z, dist = Math.hypot(dx, dz);
+  const toAng = Math.atan2(-dx, -dz);
+  ai.t -= dt;
+  if (ai.t <= 0) {
+    ai.t = rnd(w, 1.8, 3.5);
+    if (w.rng() < 0.35) ai.orbit *= -1;
+    ai.mode = dist > 30 ? 'close' : w.rng() < 0.5 ? 'orbit' : 'run';
+  }
+  let wantYaw = toAng;
+  if (ai.mode === 'orbit') wantYaw = toAng + ai.orbit * 1.25;
+  else if (ai.mode === 'run') wantYaw = toAng + ai.orbit * 0.5;
+  if (dist < 9) wantYaw = toAng + ai.orbit * 2.2; // veer off before a collision
+  const off = wrap(wantYaw - v.yaw);
+  const facing = Math.abs(wrap(toAng - v.yaw));
+  const fire = w.mode === 'play' && facing < 0.35 && dist < 48 && dist > 5 && w.geo.clear(v.x, v.y + 1, v.z, p.pos.x, p.pos.y + 1, p.pos.z);
+  return { throttle: 0.7 + (ai.mode === 'close' ? 0.3 : 0), steer: clampV(off * 1.6, -1, 1), fire, boost: ai.mode === 'close' && dist > 40 };
 }
 
 // ------------------------------------------------------------ script
@@ -1272,7 +1612,7 @@ function stepFirefight(w, dt) {
 }
 
 // ------------------------------------------------------------ checkpoints
-const SNAP = ['t', 'player', 'enemies', 'pickups', 'targets', 'respawns', 'seq', 'objective', 'waypoint', 'doorsOpen', 'stats', 'ff', 'nextId'];
+const SNAP = ['t', 'player', 'enemies', 'pickups', 'targets', 'respawns', 'seq', 'objective', 'waypoint', 'doorsOpen', 'stats', 'ff', 'nextId', 'vehicles'];
 function saveCheckpoint(w, silent = false) {
   const s = {};
   for (const k of SNAP) s[k] = structuredClone(w[k]);
@@ -1308,5 +1648,5 @@ export function aimInfo(w) {
 export function summary(w) {
   const p = w.player;
   return { mode: w.mode, step: w.seq.i, obj: w.objective, hp: +p.health.toFixed(1), sh: +p.shield.toFixed(1),
-    x: +p.pos.x.toFixed(2), y: +p.pos.y.toFixed(2), z: +p.pos.z.toFixed(2), enemies: w.enemies.filter((e) => !e.dead).length, kills: w.stats.kills };
+    x: +p.pos.x.toFixed(2), y: +p.pos.y.toFixed(2), z: +p.pos.z.toFixed(2), enemies: w.enemies.filter((e) => !e.dead).length, kills: w.stats.kills, vehicle: p.vehicle ? `${w.vehicles.find((v) => v.id === p.vehicle)?.type}:${p.seat}` : null };
 }

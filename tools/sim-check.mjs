@@ -164,6 +164,76 @@ const spawn = (w, t, x, z, extra = {}) => { const d = ENEMIES[t]; const e = { id
   ok('shard needler supercombines on 7 shards', sc && t.dead);
 }
 
+// ---------------------------------------------------------------- vehicles
+{
+  const w = createWorld(L('proving'), {}); clearEnemies(w);
+  const mule = w.vehicles.find((v) => v.type === 'mule'), sliver = w.vehicles.find((v) => v.type === 'sliver');
+  ok('proving grounds has a MULE and a SLIVER', !!mule && !!sliver);
+  place(w, mule.x - 2.6, mule.z, 0);
+  run(w, 0.5, { action: true });
+  ok('hold ACTION beside the MULE takes the wheel', w.player.vehicle === mule.id && w.player.seat === 'driver', `vehicle=${w.player.vehicle} seat=${w.player.seat}`);
+  const x0 = mule.x, z0 = mule.z;
+  mule.yaw = Math.PI / 2; w.player.yaw = mule.yaw; // west: 80 m of open range
+  run(w, 3, { my: 1 });
+  const moved = Math.hypot(mule.x - x0, mule.z - z0);
+  ok('the MULE drives forward (> 15 m in 3 s)', moved > 15, `${moved.toFixed(1)} m, speed ${mule.speed.toFixed(1)}`);
+  ok('the player rides in the seat', Math.hypot(w.player.pos.x - mule.x, w.player.pos.z - mule.z) < 2.5);
+  // Halo steering: look right, the nose follows
+  const yaw0 = mule.yaw; w.player.yaw = mule.yaw - 1.2;
+  run(w, 1.5, { my: 1 });
+  ok('the MULE steers toward where you look', Math.abs(Math.atan2(Math.sin(mule.yaw - yaw0), Math.cos(mule.yaw - yaw0))) > 0.4, `turned ${(mule.yaw - yaw0).toFixed(2)} rad`);
+  // splatter: line the MULE up on open ground, a skitter 12 m ahead
+  mule.speed = 0; mule.vx = mule.vz = 0; mule.x = 10; mule.z = 14; mule.yaw = Math.PI / 2; mule.y = w.geo.terrainH(10, 14);
+  w.player.yaw = mule.yaw;
+  const fx = -Math.sin(mule.yaw), fz = -Math.cos(mule.yaw);
+  const victim = spawn(w, 'skitter', mule.x + fx * 12, mule.z + fz * 12);
+  run(w, 2.5, { my: 1 });
+  ok('ramming a skitter at speed splatters it', victim.dead, `hp=${victim.hp.toFixed(0)} speed=${mule.speed.toFixed(1)} at (${mule.x.toFixed(1)}, ${mule.z.toFixed(1)}) victim (${victim.x.toFixed(1)}, ${victim.z.toFixed(1)})`);
+  // gunner seat
+  run(w, 1, { my: -1 }); mule.speed = 0; mule.vx = mule.vz = 0;
+  run(w, 0.1, (i) => ({ swap: i === 0 }));
+  ok('SWAP hops to the turret', w.player.seat === 'gunner');
+  const tgt = spawn(w, 'skitter', mule.x + fx * 10, mule.z + fz * 10);
+  aimAt(w, tgt.x, tgt.y + 0.7, tgt.z);
+  run(w, 1.0, { fire: true });
+  ok('the turret chaingun kills a skitter at 10 m', tgt.dead, `hp=${tgt.hp.toFixed(0)}`);
+  run(w, 0.3, {}); run(w, 0.5, { action: true });
+  ok('hold ACTION dismounts beside the vehicle', w.player.vehicle === null && Math.hypot(w.player.pos.x - mule.x, w.player.pos.z - mule.z) > 1.5 && Math.hypot(w.player.pos.x - mule.x, w.player.pos.z - mule.z) < 5, `d=${Math.hypot(w.player.pos.x - mule.x, w.player.pos.z - mule.z).toFixed(1)}`);
+  // sliver: boost and cannons
+  run(w, 0.3, {});
+  place(w, sliver.x - 2.2, sliver.z, 0);
+  run(w, 0.5, { action: true });
+  ok('the SLIVER can be ridden', w.player.vehicle === sliver.id, `vehicle=${w.player.vehicle} prompt=${JSON.stringify(w.player.prompt)}`);
+  sliver.yaw = Math.PI / 2; w.player.yaw = sliver.yaw;
+  run(w, 1.6, { my: 1 });
+  const v1 = sliver.speed;
+  run(w, 1.2, { my: 1, crouch: true });
+  ok('boost pushes the SLIVER past its normal top speed', sliver.speed > v1 + 3 && sliver.boost < 1, `${v1.toFixed(1)} → ${sliver.speed.toFixed(1)} m/s, meter ${sliver.boost.toFixed(2)}`);
+  const shots0 = w.shots.length;
+  run(w, 0.3, { fire: true });
+  ok('the SLIVER fires plasma bolts', w.shots.length > shots0 || w.stats.shots > 0);
+  ok('the SLIVER hovers above the ground', sliver.y > w.geo.terrainH(sliver.x, sliver.z) + 0.3, `h=${(sliver.y - w.geo.terrainH(sliver.x, sliver.z)).toFixed(2)}`);
+  // vehicle death ejects the player
+  sliver.hp = 1;
+  const g0 = w.grenades.length; void g0;
+  damageEnemy; // (keep the import used)
+  sliver.hp = 0; run(w, 0.05, {});
+  ok('a destroyed vehicle throws the rider clear', w.player.vehicle === null && sliver.dead);
+}
+{
+  // Vyrr riders: the gorge's a1 group spawns a Sliver under a trooper; killing the rider frees the bike
+  const w = createWorld(L('gorge'), { difficulty: 'easy' });
+  const rider = w.enemies.find((e) => e.riding);
+  const bike = rider && w.vehicles.find((v) => v.id === rider.riding);
+  ok('a Vyrr rider spawns on a Sliver', !!rider && !!bike && bike.occupant === rider.id);
+  place(w, rider.x + 6, rider.z + 6);
+  run(w, 3, {});
+  ok('the AI bike moves on its own', Math.hypot(bike.vx, bike.vz) > 1 || Math.abs(bike.speed) > 1, `speed ${bike.speed.toFixed(1)}`);
+  damageEnemy(w, rider, 9999, { kind: 'bullet', shieldMult: 1 });
+  run(w, 2, {});
+  ok('killing the rider leaves the bike free to take', rider.dead && bike.occupant === null && !bike.dead && Math.abs(bike.speed) < 1.5, `speed ${bike.speed.toFixed(1)}`);
+}
+
 // ---------------------------------------------------------------- every mission's script can finish
 for (const id of ['fallen-hymn', 'cold-storage', 'gorge']) {
   const lv = L(id);

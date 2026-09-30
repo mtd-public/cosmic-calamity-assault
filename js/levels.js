@@ -79,7 +79,16 @@ function fallenHymn() {
   b.at(15, -2, 2.0, 4.4, -0.2, 1.5, 'wreck', { look: 'car', rotY: 0.4 });
   b.at(-28, 9, 2.0, 4.4, -0.2, 1.5, 'wreck', { look: 'car' });
   b.deco1('streetlight', -30, 0, 6); b.deco1('streetlight', 30, 0, 6, { broken: true });
+  b.deco1('streetlight', -36, 0, 22); b.deco1('streetlight', 36, 0, 22, { broken: true }); b.deco1('streetlight', -32, 0, -12, { broken: true });
   b.deco1('fire', -12, 1.4, 7, { s: 1.2 }); b.deco1('smoke', -12, 2, 7);
+  // the overpass came down: rubble at the pillars, rebar, a burnt bus, sandbagged ECS drop point
+  for (const [x, z] of [[-24, 9], [-8, 8.5], [8, 8.5], [24, 9], [0, 13], [-30, 17], [31, 16]]) b.deco1('rubble', x, 0, z, { n: 10, r: 2.4 });
+  b.at(-20, 20, 2.2, 8, -0.2, 2.4, 'wreck', { look: 'car' }); b.at(22, 19, 2.0, 4.4, -0.2, 1.5, 'wreck', { look: 'car' }); b.at(-3, 20, 4.4, 2.0, -0.2, 1.5, 'wreck', { look: 'car' });
+  b.at(12, 24, 6, 0.8, -0.2, 0.9, 'sand', { look: 'sandbag' }); b.at(9.5, 22, 0.8, 4, -0.2, 0.9, 'sand', { look: 'sandbag' });
+  b.at(15, 22.5, 1.0, 0.7, -0.2, 0.5, 'gunOlive', { look: 'ammo' }); b.at(16.4, 22.5, 1.0, 0.7, -0.2, 0.5, 'gunOlive', { look: 'ammo' });
+  b.deco1('banner', 17.5, 0, 25.5, { h: 5 });
+  for (const [x, z, n] of [[-5, -12, 2], [28, 2, 3], [-30, -6, 2]]) b.at(x, z, 0.75, 0.75, terrain(x, z) - 0.1, 0.9 * n, 'metal', { look: 'barrel' });
+  b.deco1('dust', 0, 0, 0, { color: 0xffc8a0 });
 
   // --- debris field (hull chunks torn off in the crash)
   const chunk = (x, z, w, d, h, o = {}) => b.at(x, z, w, d, terrain(x, z) - 0.6, h + 0.6, 'hull', { look: 'chunk', ...o });
@@ -88,6 +97,9 @@ function fallenHymn() {
   chunk(-6, -50, 3, 5, 2); chunk(5, -58, 4, 4, 3.5); chunk(-4, -70, 6, 2, 1.2); chunk(7, -76, 2, 2, 2);
   b.deco1('fire', 16, terrain(16, -40), -40, { s: 1.6 }); b.deco1('smoke', 16, terrain(16, -40) + 2, -40, { big: true });
   b.deco1('fire', -20, terrain(-20, -60), -60); b.deco1('smoke', -2, 14, -118, { big: true });
+  b.deco1('debris', 0, 0, -16, { n: 18, r: 16 }); b.deco1('debris', 2, 0, -52, { n: 14, r: 10 }); b.deco1('debris', 30, 0, -128, { n: 10, r: 9 });
+  b.deco1('rubble', -18, 0, -8, { n: 6, r: 2 }); b.deco1('rubble', 16, 0, -40, { n: 8, r: 3 });
+  b.deco1('birds', 20, 30, -30, { r: 40, n: 6 });
 
   // --- the ship: "HYMN OF ASH", a Vyrr assault carrier, nose torn open
   // Colliders reach out to the curved outer shell (x ±16.5); the room inside is x ±12.5.
@@ -136,12 +148,22 @@ function fallenHymn() {
     b.stairs(sx > 0 ? 3.5 : -9.5, -148, sx > 0 ? 9.5 : -3.5, -146, sx > 0 ? '+x' : '-x', F, 4.1, 12, 'grate');
   }
   b.light(0, 6, -135, 0x66ff99, 2.2, 26); b.light(0, 7, -92, 0xb070ff, 1.3, 22); b.light(0, 5, -110, 0x66ff99, 1.0, 18);
+  // inside the wreck: torn cabling, coolant pipes, Vyrr growth taking the corners
+  b.deco1('cable', -11, 9.6, -104, { p2: [11, 9.3, -107], sag: 1.6 }); b.deco1('cable', -8, 9.7, -88, { p2: [9, 9.5, -92], sag: 2.2 }); b.deco1('cable', -6, 9.7, -140, { p2: [10, 9.4, -145], sag: 1.4 });
+  b.deco1('cable', 3, 9.8, -112, { p2: [3.2, 4.5, -112.4], sag: 0.2 });
+  b.deco1('pipe', -12.2, 6.4, -84, { p2: [-12.2, 6.4, -118], r: 0.18, mat: 'hullIn' }); b.deco1('pipe', 12.2, 6.4, -84, { p2: [12.2, 6.4, -118], r: 0.18, mat: 'hullIn' });
+  b.deco1('pipe', -12.2, 5.2, -120, { p2: [-12.2, 5.2, -150], r: 0.14, mat: 'hullIn' }); b.deco1('pipe', 12.2, 5.2, -120, { p2: [12.2, 5.2, -150], r: 0.14, mat: 'hullIn' });
+  b.deco1('bioPods', -9, F, -128, { n: 4, r: 1.5 }); b.deco1('bioPods', 9, F, -142, { n: 5, r: 1.6 }); b.deco1('bioPods', 10, F, -88, { n: 3, r: 1.2 });
+  b.deco1('roots', -12.3, F, -95, { axis: 'z', w: 8, h: 6, n: 6 }); b.deco1('roots', 12.3, F, -138, { axis: 'z', w: 8, h: 6, n: 6 });
+  b.deco1('chains', 0, 9.8, -110, { n: 3, w: 5, d: 1, h: 3 });
 
   // exterior east basin + LZ
   const rock = (x, z, w, d, h) => b.at(x, z, w, d, terrain(x, z) - 0.6, h + 0.6, 'rock', { look: 'rock' });
   chunk(24, -120, 3, 3, 2); rock(30, -138, 4, 2, 1.5); chunk(44, -116, 2, 2, 3); rock(46, -140, 3, 3, 2); rock(20, -142, 2.5, 2.5, 1.3);
   b.deco1('condor', 38, 7, -128, { hover: true });
   b.deco1('smoke', 40, 20, -60, { big: true }); b.deco1('smoke', -40, 18, -110, { big: true });
+  b.at(30, -122, 5, 0.8, terrain(30, -122) - 0.2, 0.9, 'sand', { look: 'sandbag' }); b.at(46, -132, 0.8, 5, terrain(46, -132) - 0.2, 0.9, 'sand', { look: 'sandbag' });
+  b.at(24, -128, 1.0, 0.7, terrain(24, -128) - 0.1, 0.5, 'gunOlive', { look: 'ammo' });
 
   const groups = {
     a1: [{ t: 'skitter', p: [-10, -20] }, { t: 'skitter', p: [-14, -23] }, { t: 'skitter', p: [4, -27] },
@@ -165,6 +187,7 @@ function fallenHymn() {
     sky: { top: 0x2b2f52, horizon: 0xe88a4a, bottom: 0x3a2a2a, sun: [0.55, 0.18, -0.8], sunColor: 0xffb070, fog: 0x8a5a48, fogDensity: 0.0105,
       hemiSky: 0xffc8a0, hemiGround: 0x3a3040, sunIntensity: 2.2, skyline: 'city', ships: true, stars: false },
     player: { pos: [0, 26], yaw: 0, loadout: ['rifle', 'sidearm'], frags: 2, plasmas: 0 },
+    vehicles: [{ type: 'mule', pos: [-6, 24], yaw: 0.15 }],
     pickups: [
       { type: 'health', pos: [-19, -16] }, { type: 'weapon', weapon: 'burst', pos: [7.5, -4.2] }, { type: 'grenade', g: 'frag', n: 2, pos: [4.5, -4.5] },
       { type: 'health', pos: [-10, -74] }, { type: 'health', pos: [10, -104] }, { type: 'grenade', g: 'plasma', n: 2, pos: [-10, -117] },
@@ -178,6 +201,7 @@ function fallenHymn() {
         ['hale', 'Its navigation core carries a Resonance Key: the map to every Vyrr ship over Earth. Get it before they scuttle her.'],
         ['iris', 'IRIS-2 online. I am a fork of the IRIS that rode with Snake. All of her memories, none of her patience.'],
         ['iris', 'Your shield recharges if you stop taking hits. Your health does not. Look for medical packs.'],
+        ['condor', 'Left you a MULE on the deck, Anvil. Hold ACTION to drive. It steers where you look.'],
       ] }, until: { type: 'reach', pos: [0, -36], r: 14 }, checkpoint: true },
       { obj: 'Push down the crash trench to the hull breach', wp: [0, 1.5, -84], start: { spawn: ['a2', 'b1'], say: [
         ['iris', 'Drones inbound from the wreck. They are fragile. Knock them out of the air.'],
@@ -219,6 +243,13 @@ function coldStorage() {
   cont(14, 2, 'x'); cont(26, -4, 'z', 2); cont(-22, -12, 'x'); cont(-6, -12, 'z'); cont(8, -15, 'x'); cont(20, -18, 'z'); cont(-32, -20, 'z', 2); cont(34, 18, 'x');
   b.deco1('crane', 40, 0, 0); b.deco1('quay', 44, 0, 0);
   for (const z of [26, 8, -10]) b.deco1('streetlight', -38, 0, z, { color: 0xffd7a0 });
+  b.deco1('cable', -37.4, 6.9, 26, { p2: [-37.4, 6.9, 8], sag: 1.0 }); b.deco1('cable', -37.4, 6.9, 8, { p2: [-37.4, 6.9, -10], sag: 1.0 });
+  // the yard at work: forklifts, pallets, drums, puddles
+  b.at(-14, 12, 2.2, 3.8, 0, 2.4, 'metal', { look: 'forklift' }); b.at(30, 6, 3.8, 2.2, 0, 2.4, 'metal', { look: 'forklift' });
+  for (const [x, z] of [[-30, 14], [-28.6, 14], [-30, 15.4], [4, 26], [18, -8], [-4, -22]]) { b.at(x, z, 1.2, 1.2, 0, 0.14, 'wood', { look: 'pallet' }); if (rng() < 0.7) b.at(x, z, 1.1, 1.1, 0.14, 1.0, 'crate', { look: 'crateStack' }); }
+  for (const [x, z, n] of [[-16, -8, 2], [-15.2, -8.7, 1], [24, 24, 1], [26, -12, 2], [-2, 14, 1], [36, 10, 1]]) b.at(x, z, 0.75, 0.75, 0, 0.9 * n, 'metal', { look: 'barrel' });
+  b.deco1('puddles', 0, 0, 0, { x0: -40, x1: 40, z0: -29, z1: 30, n: 14 });
+  b.deco1('rubble', -36, 0, -24, { n: 5, r: 1.6 });
   // fences that force the way through the warehouse
   b.box(-50, 0, -31, -32, 4, -30, 'fence', { look: 'fence' });
   b.box(32, 0, -31, 50, 4, -30, 'fence', { look: 'fence' });
@@ -256,6 +287,14 @@ function coldStorage() {
   b.at(24, -104, 2.2, 2.2, 0, 2.6, 'pod', { look: 'pod' });
   for (let z = -40; z >= -118; z -= 13) { b.light(-14, 10, z, 0xdde6ff, 0.8, 20); b.light(14, 10, z, 0xdde6ff, 0.8, 20); }
   b.light(0, 5, -88, 0xb070ff, 1.6, 24);
+  // inside: chains off the trusses, pipework on the long walls, and the Vyrr growth around the emitters
+  for (const z of [-46, -70, -100]) b.deco1('chains', 0, 10.4, z, { n: 5, w: 14, d: 1, h: 3.5 });
+  b.deco1('pipe', -30.6, 3.2, -32, { p2: [-30.6, 3.2, -123], r: 0.16 }); b.deco1('pipe', 30.6, 2.6, -32, { p2: [30.6, 2.6, -123], r: 0.16 }); b.deco1('pipe', -30.6, 4.0, -32, { p2: [-30.6, 4.0, -123], r: 0.1 });
+  b.deco1('bioPods', -7, 0, -90, { n: 5, r: 2 }); b.deco1('bioPods', 7, 0, -84, { n: 4, r: 1.8 }); b.deco1('bioPods', 0, 0, -98, { n: 3, r: 1.4 }); b.deco1('bioPods', -20, 0, -118, { n: 4, r: 1.6 });
+  b.deco1('roots', 30.8, 0, -88, { axis: 'z', w: 10, h: 7, n: 7 }); b.deco1('roots', -30.8, 0, -92, { axis: 'z', w: 10, h: 7, n: 7 }); b.deco1('roots', 0, 0, -124.5, { axis: 'x', w: 8, h: 6, n: 6 });
+  b.at(22, -100, 3.8, 2.2, 0, 2.4, 'metal', { look: 'forklift' });
+  for (const [x, z] of [[-24, -72], [-22.8, -72], [26, -78]]) b.at(x, z, 1.2, 1.2, 0, 0.14, 'wood', { look: 'pallet' });
+  for (const [x, z, n] of [[-26, -36, 2], [26, -40, 1], [-8, -118, 1]]) b.at(x, z, 0.75, 0.75, 0, 0.9 * n, 'metal', { look: 'barrel' });
   b.deco1('rain', 0, 0, 0);
 
   const targets = [
@@ -368,6 +407,8 @@ function songOfTheGorge() {
     if (Math.hypot(x - SX, z - SZ) < 18) continue;
     if (Math.abs(z + 196) < 10 && Math.abs(dd) < 14) continue;
     if (z > 5 && Math.abs(x - (riverX(28) + 12)) < 6) continue;
+    if (side > 0 && z > BZ - 6 && Math.abs(dd - 12) < 5.5) continue; // the jeep lane down the east bank to the bridge
+    if (side < 0 && z < BZ + 4 && z > -200 && Math.abs(dd + 13) < 5) continue; // and up the west bank past the outpost
     const g = terrain(x, z);
     const d = x - riverX(z);
     if (Math.abs(d) > 27 + 4 * Math.sin(z * 0.031)) continue;
@@ -376,6 +417,21 @@ function songOfTheGorge() {
     b.at(x, z, 0.5 * s, 0.5 * s, g - 0.5, 6 * s, 'wood', { look: 'none' });
   }
   b.deco1('pines', 0, 0, 0, { trees });
+  // the living gorge: grass on the banks, bushes, fallen trunks, light through the pines, birds, river mist, a ruined chapel above the outpost
+  const grassOk = (x, z) => { const dd = Math.abs(x - riverX(z)); return dd > 6.5 && dd < 26 + 4 * Math.sin(z * 0.031) && terrain(x, z) > 0.55 && Math.hypot(x - SX, z - SZ) > 12 && !(Math.abs(z - BZ) < 4 && dd < 13); };
+  b.deco1('grass', 0, 0, 0, { x0: -60, x1: 60, z0: -250, z1: 26, n: 2600, ok: grassOk });
+  for (let i = 0; i < 26; i++) { const z = 15 - rng() * 255, dd = (rng() < 0.5 ? -1 : 1) * (8 + rng() * 18), x = riverX(z) + dd; if (Math.hypot(x - SX, z - SZ) < 14 || Math.abs(z - BZ) < 8) continue; b.deco1('bush', x, terrain(x, z), z, { s: 0.8 + rng() * 1.2 }); }
+  for (const [dz, dd, a] of [[-20, 20, 0.4], [-84, 16, -0.9], [-132, -21, 0.3], [-160, 18, 1.2], [-206, -16, -0.4], [-232, 12, 0.7]]) { const x = riverX(dz) + dd; b.deco1('log', x, terrain(x, dz), dz, { l: 4 + rng() * 3, rotY: a }); b.at(x, dz, 3.2, 1.0, terrain(x, dz) - 0.2, 0.7, 'wood', { look: 'none' }); }
+  for (const [dz, dd] of [[-94, -22], [-140, -18], [-30, 14], [-180, 16]]) { const x = riverX(dz) + dd; b.deco1('shafts', x, terrain(x, dz), dz, { w: 14, h: 26, n: 6, dir: [0.4, -0.7, 0.35] }); }
+  b.deco1('birds', riverX(-120), 22, -120, { r: 45, n: 8 }); b.deco1('birds', riverX(-220), 30, -220, { r: 30, n: 5 });
+  for (let z = 10; z > -250; z -= 30) b.deco1('mist', 0, 0, 0, { x0: riverX(z - 15) - 7, x1: riverX(z - 15) + 7, z0: z - 30, z1: z, y: 0.6, n: 4 });
+  b.deco1('dust', 0, 0, 0, { color: 0xfff0c0 });
+  { // the chapel ruin on the west bank, above the outpost
+    const cx = riverX(-104) - 30, cz = -104, gy = terrain(cx, cz);
+    b.at(cx, cz - 4, 8, 0.8, gy - 0.6, 3.2, 'stone', { look: 'ruinWall' }); b.at(cx - 4, cz, 0.8, 8, gy - 0.6, 2.8, 'stone', { look: 'ruinWall' }); b.at(cx + 4, cz + 1, 0.8, 6, gy - 0.6, 2.2, 'stone', { look: 'ruinWall' });
+    b.at(cx + 1, cz + 3.5, 1.2, 1.2, gy - 0.6, 4.5, 'stone', { look: 'column' });
+    b.deco1('rubble', cx, gy, cz, { n: 8, r: 3 });
+  }
   // spire
   b.deco1('spire', SX, 5.5, SZ);
   b.at(SX, SZ, 3, 3, 5.4, 8, 'alien', { look: 'none' });
@@ -390,11 +446,13 @@ function songOfTheGorge() {
   for (const t of targets.slice(0, 2)) b.at(t.pos[0], t.pos[2], 1.4, 1.4, 5.4, 3.2, 'alien', { look: 'none' });
   const R = (dz, dd) => [riverX(dz) + dd, dz];
   const groups = {
-    a1: [{ t: 'skitter', p: R(-24, 10) }, { t: 'skitter', p: R(-30, 16) }, { t: 'skitter', p: R(-37, 8) }, { t: 'trooper', p: R(-42, 13), w: 'carbine' }, { t: 'drone', p: [riverX(-46) + 12, 8, -46] }],
+    a1: [{ t: 'skitter', p: R(-24, 10) }, { t: 'skitter', p: R(-30, 16) }, { t: 'skitter', p: R(-37, 8) }, { t: 'trooper', p: R(-42, 13), w: 'carbine' }, { t: 'drone', p: [riverX(-46) + 12, 8, -46] },
+      { t: 'trooper', p: R(-50, 14), ride: 'sliver' }],
     a2: [{ t: 'trooper', p: R(-68, -14), w: 'needler' }, { t: 'skitter', p: R(-72, -9) }, { t: 'skitter', p: R(-58, -15) }, { t: 'skitter', p: [BX - 6, 3.75, BZ] }],
     b1: [{ t: 'trooper', p: R(-92, -18), w: 'carbine' }, { t: 'trooper', p: R(-108, -22), w: 'caster', g: 2 }, { t: 'skitter', p: R(-88, -12) },
       { t: 'skitter', p: R(-100, -20) }, { t: 'skitter', p: R(-96, -26) }, { t: 'skitter', p: R(-112, -14) }, { t: 'heavy', p: R(-120, -19) }],
     c1: [{ t: 'skitter', p: p1, w: 'needler' }, { t: 'skitter', p: p2, w: 'needler' }, { t: 'skitter', p: p3 }, { t: 'trooper', p: R(-176, -14), w: 'carbine', g: 1 },
+      { t: 'trooper', p: R(-160, -14), ride: 'sliver' },
       { t: 'drone', p: [riverX(-168), 9, -168] }, { t: 'drone', p: [riverX(-172) - 5, 10, -172] }, { t: 'drone', p: [riverX(-170) + 5, 8, -170] }],
     d1: [{ t: 'trooper', p: [SX - 6, 5.6, SZ + 6], w: 'carbine' }, { t: 'trooper', p: [SX + 6, 5.6, SZ - 7], w: 'needler', g: 1 }, { t: 'skitter', p: [SX - 3, 5.6, SZ + 8] },
       { t: 'skitter', p: [SX + 4, 5.6, SZ + 6] }, { t: 'skitter', p: R(-212, 12) }, { t: 'heavy', p: R(-214, 6) }],
@@ -408,6 +466,7 @@ function songOfTheGorge() {
     sky: { top: 0x3f7fd0, horizon: 0xcfe4f4, bottom: 0x6a8a6a, sun: [0.4, 0.7, -0.35], sunColor: 0xfff2d8, fog: 0xb8cee0, fogDensity: 0.0062,
       hemiSky: 0xcfe6ff, hemiGround: 0x5b6a3a, sunIntensity: 2.6, skyline: null, ships: true, stars: false, clouds: true },
     player: { pos: [riverX(24) + 12, 24], yaw: 0.15, loadout: ['burst', 'rifle'], frags: 2, plasmas: 1 },
+    vehicles: [{ type: 'mule', pos: R(18, 13), yaw: 0.1 }, { type: 'sliver', pos: R(-116, -24), yaw: 1.2 }, { type: 'sliver', pos: R(-124, -22), yaw: 1.5 }],
     pickups: [
       { type: 'health', pos: R(-50, 20) }, { type: 'grenade', g: 'frag', n: 2, pos: R(-54, 16) }, { type: 'weapon', weapon: 'sidearm', pos: R(-8, 14) },
       { type: 'health', pos: R(-80, -20) }, { type: 'weapon', weapon: 'lance', pos: R(-105, -29) }, { type: 'health', pos: R(-130, -20) },
@@ -420,6 +479,7 @@ function songOfTheGorge() {
         ['condor', 'Anvil is on the ground. Condor-2 pulling out; that spire\'s guns are painting me.'],
         ['iris', 'The Hymn Spire is eight hundred metres up the gorge. It relays power to every seed emitter on the continent.'],
         ['iris', 'The river is deep in the middle. In that armour you will sink. Use the bridge.'],
+        ['condor', 'Dropped you a MULE on the bank. Vyrr riders in the gorge: kill one and take its bike.'],
       ] }, until: { type: 'reach', pos: [riverX(-45) + 12, -45], r: 12 }, checkpoint: true },
       { obj: 'Cross the stone bridge', wp: [BX, 4.5, BZ], start: { spawn: ['a2'] }, until: { type: 'reach', pos: [BX - 13, BZ - 2], r: 6 }, checkpoint: true },
       { obj: 'Break the Vyrr outpost', wp: [riverX(-100) - 18, 1.5, -100], start: { spawn: ['b1'], say: [['snake', 'Outpost on the west bank. There is a Bulwark in there. Do not trade shots with its shield.']] },
@@ -474,6 +534,18 @@ function provingGrounds() {
   ];
   for (const sp of spawnPads) b.deco1('pad', sp.pos[0], 0.02, sp.pos[1], { label: sp.label });
   b.deco1('hangar', 0, 0, 0);
+  for (const sp of [[34, 17], [41, 17]]) b.deco1('pad', sp[0], 0.02, sp[1], { label: sp[0] === 34 ? 'MULE' : 'SLIVER', bay: true });
+  // a working range: tower, tents, sandbags, ammo, banners, signs
+  b.deco1('tower', -34, 0, 14);
+  b.at(-24, 18, 5, 4, 0, 2.6, 'sand', { look: 'tent' }); b.at(-18, 18, 5, 4, 0, 2.6, 'sand', { look: 'tent' });
+  b.at(-8, 12, 8, 0.8, 0, 0.9, 'sand', { look: 'sandbag' }); b.at(8, 12, 8, 0.8, 0, 0.9, 'sand', { look: 'sandbag' });
+  b.at(-30, -44.5, 12, 0.8, 0, 0.9, 'sand', { look: 'sandbag' });
+  for (const x of [-16, -12, 12, 16]) b.at(x, 8, 1.0, 0.7, 0, 0.5, 'gunOlive', { look: 'ammo' });
+  for (const [x, z, n] of [[-26, 8, 2], [-25.2, 8.8, 1], [26, 6, 1]]) b.at(x, z, 0.75, 0.75, 0, 0.9 * n, 'metal', { look: 'barrel' });
+  b.deco1('banner', -4, 0, 21, { h: 6 }); b.deco1('banner', 4, 0, 21, { h: 6 });
+  b.deco1('sign', 27, 0, 20, { text: 'VEHICLE BAY', rotY: Math.PI, bg: '#2b3a2a', fg: '#ffbe5a' }); b.deco1('sign', -20, 0, -4, { text: 'LIVE FIRE', rotY: Math.PI, bg: '#3a1a1a', fg: '#ff6a5a' }); b.deco1('sign', 27, 0, -8, { text: 'COURSE', rotY: Math.PI / 2, bg: '#2b3a2a', fg: '#ffbe5a' });
+  b.deco1('dust', 0, 0, 0, { color: 0xffe8c0 });
+  b.deco1('birds', 0, 26, -40, { r: 50, n: 5 });
   const groups = {
     dummies: [{ t: 'dummy', p: [-6, -12] }, { t: 'dummy', p: [6, -12] }, { t: 'dummyShield', p: [-6, -30] }, { t: 'dummy', p: [6, -30] }, { t: 'dummy', p: [-6, -55] }, { t: 'dummyShield', p: [6, -55] }],
   };
@@ -484,9 +556,10 @@ function provingGrounds() {
     sky: { top: 0x3a6ab0, horizon: 0xe8d8c0, bottom: 0x8a7a60, sun: [0.3, 0.8, 0.4], sunColor: 0xfff4e0, fog: 0xd8cbb8, fogDensity: 0.006,
       hemiSky: 0xdde8ff, hemiGround: 0x7a6a50, sunIntensity: 2.4, skyline: 'mesa', ships: false, stars: false, clouds: true },
     player: { pos: [0, 16], yaw: 0, loadout: ['rifle', 'sidearm'], frags: 4, plasmas: 4 },
+    vehicles: [{ type: 'mule', pos: [34, 17], yaw: 0.3 }, { type: 'sliver', pos: [41, 17], yaw: 0.3 }],
     pickups, groups, spawnPads,
     sequence: [
-      { obj: 'Free practice: weapons on the pedestals, targets downrange, course to the east, spawn pads to the west', wp: null,
+      { obj: 'Free practice: weapons on the pedestals, targets downrange, course and vehicle bay to the east, spawn pads to the west', wp: null,
         start: { spawn: ['dummies'], say: [['iris', 'Proving Grounds. Ammunition is unlimited here. Hold ACTION on a pad to spawn live hostiles.']] }, until: { type: 'never' } },
     ],
   };
@@ -509,6 +582,15 @@ function firefightPlaza() {
   b.deco1('fire', 14, 1.4, 26); b.deco1('smoke', 14, 2, 26);
   for (const [x, z] of [[-30, 30], [30, 30], [-30, -30], [30, -30], [0, 32], [0, -33]]) b.deco1('streetlight', x, 0, z, { color: 0xffc080 });
   b.deco1('plazaBuildings', 0, 0, 0);
+  // a city square: broadleaf trees, benches, cafe tables, puddles from the last rain, rubble where the fighting started
+  for (const [x, z] of [[-20, -6], [20, 6], [-22, 14], [22, -16]]) b.at(x, z, 1.0, 1.0, -0.2, 7, 'wood', { look: 'tree' });
+  for (const [x, z] of [[-14, 6], [14, -6], [-6, 22], [6, -22]]) b.at(x, z, 2.2, 0.6, -0.2, 0.5, 'wood', { look: 'bench' });
+  for (const [x, z] of [[-25, 10], [-27, 12.5], [26, -4]]) b.at(x, z, 0.9, 0.9, -0.2, 0.75, 'metal', { look: 'table' });
+  b.deco1('rubble', 14, 0, 30, { n: 8, r: 2.5 }); b.deco1('rubble', -28, 0, -22, { n: 6, r: 2 });
+  b.deco1('puddles', 0, 0, 0, { x0: -32, x1: 32, z0: -32, z1: 32, n: 10 });
+  for (const [x, z, n] of [[-20, 28, 1], [24, 20, 2]]) b.at(x, z, 0.75, 0.75, -0.2, 0.9 * n, 'metal', { look: 'barrel' });
+  b.deco1('sign', -18, 0, 26.8, { text: 'CAFÉ ORION', rotY: 0, bg: '#1a1a2a', fg: '#7fd8ff' });
+  b.deco1('dust', 0, 0, 0, { color: 0xffd0a0 });
   return {
     id: 'plaza', name: 'FIREFIGHT: PLAZA', loc: 'PLAZA DE LA CIUDAD // ENDLESS WAVES', theme: 'night', test: true, firefight: { spawns: [[0, -32], [0, 31], [-31, 0], [31, 0]] },
     bounds: { x0: -38, z0: -38, x1: 38, z1: 38 }, terrain: { res: 2, fn: terrain, ground: 'plaza' },
@@ -516,6 +598,7 @@ function firefightPlaza() {
     sky: { top: 0x0a0a1a, horizon: 0x6a2a20, bottom: 0x100808, sun: [-0.4, 0.5, -0.6], sunColor: 0xff9a6a, fog: 0x2a1a1a, fogDensity: 0.018,
       hemiSky: 0x806070, hemiGround: 0x201818, sunIntensity: 1.1, skyline: 'city', ships: true, stars: true },
     player: { pos: [0, 20], yaw: 0, loadout: ['rifle', 'sidearm'], frags: 2, plasmas: 2 },
+    vehicles: [{ type: 'sliver', pos: [16, 14], yaw: 0.8 }],
     pickups: [
       { type: 'health', pos: [-10, 0], respawn: 30 }, { type: 'health', pos: [10, 0], respawn: 30 }, { type: 'grenade', g: 'frag', n: 2, pos: [0, -27], respawn: 25 },
       { type: 'weapon', weapon: 'shotgun', pos: [-22, 6], respawn: 30 }, { type: 'weapon', weapon: 'burst', pos: [22, -6], respawn: 30 },

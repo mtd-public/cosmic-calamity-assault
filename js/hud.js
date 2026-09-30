@@ -8,6 +8,7 @@ import { WEAPONS } from './weapons.js';
 import { TUNING as T } from './tuning.js';
 import { ENEMIES } from './enemies.js';
 import { SPEAKERS } from './levels.js';
+import { VEHICLES, MOUNTED } from './vehicles.js';
 
 const BLUE = 'rgba(110,195,255,', RED = 'rgba(255,70,60,', AMBER = 'rgba(255,190,90,';
 
@@ -74,6 +75,8 @@ export class HUD {
     if (e.type === 'enemyDie' && w.ff && e.pts) this.toast(`+${e.pts}${e.head ? '  HEADSHOT' : ''}`, 'pts');
     if (e.type === 'targetUnlocked') this.toast('CORE SHIELD DOWN', 'good');
     if (e.type === 'deepWater') this.toast('DEEP WATER: GET OUT', 'bad');
+    if (e.type === 'splatter' && e.player) this.toast(e.killed ? 'SPLATTER' : 'HIT', e.killed ? 'good' : '');
+    if (e.type === 'vehicleDie' && e.player) this.toast('VEHICLE DESTROYED', 'bad');
     void view;
   }
 
@@ -88,7 +91,8 @@ export class HUD {
     for (const k in this.flash) this.flash[k] = Math.max(0, this.flash[k] - dt * 2.2);
     this.el.score.textContent = w.ff ? `WAVE ${w.ff.wave}  ·  ${w.stats.score}` : '';
     const ws = p.weapons[p.cur], d = ws && WEAPONS[ws.id];
-    const scoped = p.zoom && d?.zoom;
+    const ride = p.vehicle ? w.vehicles.find((v) => v.id === p.vehicle) : null;
+    const scoped = !ride && p.zoom && d?.zoom;
 
     // ---- screen effects
     if (scoped) this.drawScope(W, H);
@@ -122,10 +126,20 @@ export class HUD {
     g.fillStyle = `${BLUE}0.7)`; g.font = `${10 * s}px Oxanium, sans-serif`; g.textAlign = 'left';
     g.fillText('SHIELD', bx, by + bh + 13 * s);
 
-    // ---- weapon panel (top left)
+    // ---- weapon panel (top left), or the vehicle panel when riding
     const ax = 20 * s + (this.safeL || 0), ay = 18 * s + (this.safeT || 0);
     this.frame(ax - 6 * s, ay - 6 * s, 250 * s, 64 * s);
-    if (ws) {
+    if (ride) {
+      const vd = VEHICLES[ride.type];
+      g.textAlign = 'left';
+      g.fillStyle = `${BLUE}0.95)`; g.font = `bold ${16 * s}px Oxanium, sans-serif`; g.fillText(vd.name, ax, ay + 14 * s);
+      g.fillStyle = `${AMBER}0.9)`; g.font = `${10 * s}px Oxanium, sans-serif`; g.fillText(p.seat === 'gunner' ? 'TURRET' : vd.seats.driver.weapon ? 'PILOT · FIRE: CANNONS · CROUCH: BOOST' : vd.seats.gunner ? 'DRIVER · SWAP: TURRET' : 'DRIVER', ax, ay + 44 * s);
+      const hk = Math.max(0, ride.hp / ride.maxHp), hw = 150 * s;
+      g.fillStyle = `${BLUE}0.15)`; g.fillRect(ax, ay + 22 * s, hw, 8 * s);
+      g.fillStyle = hk < 0.3 ? `${RED}${0.7 + 0.3 * Math.sin(t * 10)})` : ride.hitT < 0.2 ? 'rgba(255,255,255,0.9)' : `${BLUE}0.85)`; g.fillRect(ax, ay + 22 * s, hw * hk, 8 * s);
+      if (vd.boost) { g.fillStyle = `${BLUE}0.15)`; g.fillRect(ax + 160 * s, ay + 22 * s, 78 * s, 8 * s); g.fillStyle = ride.boosting ? `${AMBER}0.95)` : `${AMBER}0.6)`; g.fillRect(ax + 160 * s, ay + 22 * s, 78 * s * ride.boost, 8 * s); g.fillStyle = `${BLUE}0.6)`; g.font = `${8 * s}px Oxanium, sans-serif`; g.fillText('BOOST', ax + 160 * s, ay + 14 * s); }
+      g.fillStyle = `${BLUE}0.6)`; g.font = `${9 * s}px Oxanium, sans-serif`; g.fillText(`${Math.round(Math.abs(ride.speed) * 3.6)} KM/H`, ax + 160 * s, ay + 44 * s);
+    } else if (ws) {
       g.textAlign = 'left';
       if (d.kind === 'plasma') {
         g.fillStyle = ws.battery < 15 ? `${RED}0.95)` : `${BLUE}0.95)`;
@@ -172,7 +186,8 @@ export class HUD {
     // ---- nav points
     this.drawMarkers(w, view, s, t);
     // ---- reticle + damage arcs
-    if (!scoped) this.drawReticle(d, aim, p, s);
+    if (ride) { const seat = VEHICLES[ride.type].seats[p.seat]; if (seat?.weapon) this.drawReticle(MOUNTED[seat.weapon], aim, p, s); else this.drawReticle({ reticle: 'dot', range: 0 }, aim, p, s); }
+    else if (!scoped) this.drawReticle(d, aim, p, s);
     else this.drawScopeReticle(aim, s);
     this.drawDamage(s, dt);
     // ---- context prompt
@@ -284,16 +299,34 @@ export class HUD {
       case 'arc': { g.arc(x, y, 18 * s, Math.PI * 0.15, Math.PI * 0.85); g.moveTo(x + 18 * s * Math.cos(Math.PI * 1.15), y + 18 * s * Math.sin(Math.PI * 1.15)); g.arc(x, y, 18 * s, Math.PI * 1.15, Math.PI * 1.85); g.stroke(); g.beginPath(); g.arc(x, y, 2 * s, 0, 6.28); g.fill(); break; }
       case 'needle': { for (let i = 0; i < 3; i++) { const a = -Math.PI / 2 + i * 2.094; g.moveTo(x + Math.cos(a) * 8 * s, y + Math.sin(a) * 8 * s); g.lineTo(x + Math.cos(a) * 18 * s, y + Math.sin(a) * 18 * s); } g.stroke(); break; }
       case 'lance': { g.arc(x, y, 26 * s, 0, 6.28); g.moveTo(x, y - 34 * s); g.lineTo(x, y + 34 * s); g.stroke(); break; }
+      case 'chain': { // turret: a wide ring with four gates
+        const r = 30 * s;
+        for (let i = 0; i < 4; i++) { const a = i * Math.PI / 2 + Math.PI / 4; g.arc(x, y, r, a - 0.5, a + 0.5); g.stroke(); g.beginPath(); }
+        for (let i = 0; i < 4; i++) { const a = i * Math.PI / 2; g.moveTo(x + Math.cos(a) * 8 * s, y + Math.sin(a) * 8 * s); g.lineTo(x + Math.cos(a) * 16 * s, y + Math.sin(a) * 16 * s); }
+        g.stroke(); g.beginPath(); g.arc(x, y, 2 * s, 0, 6.28); g.fill();
+        break;
+      }
       default: g.arc(x, y, 3 * s, 0, 6.28); g.fill();
     }
   }
 
   drawScope(W, H) {
-    const g = this.g, r = Math.min(W, H) * 0.46;
+    // Halo-style scope: the world stays bright inside the lens; only the surround is masked,
+    // and with a translucent blue-grey rather than black (the old 92% black read as a dark tint).
+    const g = this.g, r = Math.min(W, H) * 0.47;
     g.save();
-    g.fillStyle = 'rgba(0,0,0,0.92)';
+    g.fillStyle = 'rgba(14,30,46,0.62)';
     g.beginPath(); g.rect(0, 0, W, H); g.arc(W / 2, H / 2, r, 0, 6.28, true); g.fill('evenodd');
-    g.strokeStyle = `${BLUE}0.5)`; g.lineWidth = 2; g.beginPath(); g.arc(W / 2, H / 2, r, 0, 6.28); g.stroke();
+    // soft inner edge + a faint lens highlight
+    const gr = g.createRadialGradient(W / 2, H / 2, r * 0.9, W / 2, H / 2, r);
+    gr.addColorStop(0, 'rgba(110,195,255,0)'); gr.addColorStop(1, 'rgba(110,195,255,0.18)');
+    g.fillStyle = gr; g.beginPath(); g.arc(W / 2, H / 2, r, 0, 6.28); g.fill();
+    g.strokeStyle = `${BLUE}0.7)`; g.lineWidth = 2; g.beginPath(); g.arc(W / 2, H / 2, r, 0, 6.28); g.stroke();
+    g.strokeStyle = `${BLUE}0.25)`; g.lineWidth = 1; g.beginPath(); g.arc(W / 2, H / 2, r * 0.97, 0, 6.28); g.stroke();
+    // corner brackets like the Halo 2 magnum reticle
+    const b = r * 0.55, L = 18 * this.s;
+    g.strokeStyle = `${BLUE}0.55)`; g.lineWidth = 1.5;
+    for (const [sx, sy] of [[-1, -1], [1, -1], [-1, 1], [1, 1]]) { g.beginPath(); g.moveTo(W / 2 + sx * b, H / 2 + sy * (b - L)); g.lineTo(W / 2 + sx * b, H / 2 + sy * b); g.lineTo(W / 2 + sx * (b - L), H / 2 + sy * b); g.stroke(); }
     g.restore();
   }
   drawScopeReticle(aim, s) {

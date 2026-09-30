@@ -9,7 +9,9 @@ import { MenuNav, PAD_PRESETS, padFamily, buttonName } from './pad.js';
 import { LEVELS, CAMPAIGN, TEST_MAPS, PROLOGUE, SPEAKERS } from './levels.js';
 import { DIFFICULTY, TUNING as T } from './tuning.js';
 import { WEAPONS } from './weapons.js';
+import { MOUNTED, VEHICLES } from './vehicles.js';
 import { ENEMIES } from './enemies.js';
+import * as THREE from 'three';
 
 const $ = (id) => document.getElementById(id);
 const NS = 'cca.';
@@ -150,6 +152,10 @@ function renderControls() {
     ['Crouch', 'Hold C / Ctrl', `${pb('crouch')} (toggle)`, 'CROUCH (toggle)'],
     ['Zoom', 'Right click / Shift', pb('zoom'), 'ZOOM'],
     ['Pause', 'Esc / P', pb('pause'), '❚❚'],
+    ['Vehicle: enter / exit', 'Hold E', `${pb('action')} (hold)`, 'ACTION (hold)'],
+    ['Vehicle: drive', 'W S (steers where you look)', 'Left stick + right stick', 'Stick + drag'],
+    ['Vehicle: turret seat', 'Tab', pb('swap'), 'SWAP'],
+    ['Sliver: boost', 'Hold C', pb('crouch'), 'CROUCH'],
     ['Objective', 'O', pb('objective'), 'pause menu'],
   ];
   $('ctltable').innerHTML = `<table><tr><th></th><th>KEYBOARD + MOUSE</th><th>${fam === 'xbox' ? 'XBOX CONTROLLER' : fam === 'ps' ? 'PLAYSTATION PAD' : 'SWITCH PAD'}</th><th>TOUCH</th></tr>${rows.map((r) => `<tr><td>${r[0]}</td><td>${r[1]}</td><td>${r[2]}</td><td>${r[3]}</td></tr>`).join('')}</table>
@@ -195,7 +201,7 @@ function startLevel(id) {
 
 function pause() {
   if (S.mode !== 'play') return;
-  S.mode = 'paused'; S.pausedAt = performance.now();
+  S.mode = 'paused'; S.pausedAt = performance.now(); audio.engine(null);
   input.enabled = false; input.reset(); input.exitLock();
   $('pObj').textContent = S.w?.objective ? `OBJECTIVE: ${S.w.objective}` : '';
   show('pause', false);
@@ -211,7 +217,7 @@ function resume() {
   updateTouchUI();
 }
 function quitToMenu() {
-  S.mode = 'menu'; S.w = null; input.enabled = false; input.exitLock();
+  S.mode = 'menu'; S.w = null; input.enabled = false; input.exitLock(); audio.engine(null);
   $('hud').classList.add('hidden'); $('pausebtn').classList.add('hidden');
   hud.clearSubs();
   startAttract();
@@ -276,11 +282,20 @@ function drainEvents() {
     hud.event(w, e, view);
     switch (e.type) {
       case 'fire': {
-        const d = WEAPONS[e.id];
-        audio.fx(e.charged ? 'chargedShot' : d.kind === 'plasma' ? d.sound : d.sound, 1);
+        const d = WEAPONS[e.id] || MOUNTED[e.id];
+        audio.fx(e.charged ? 'chargedShot' : d.sound, 1);
         input.rumble(e.id === 'shotgun' || e.id === 'lance' ? 0.6 : 0.15, 0.3, e.id === 'rifle' ? 40 : 70);
         break;
       }
+      case 'vehicleEnter': audio.fx('vehicleEnter'); hud.toast(`${VEHICLES[e.vtype].short}: ${e.seat === 'gunner' ? 'TURRET' : 'DRIVER'}`, 'wpn'); break;
+      case 'vehicleExit': audio.fx('vehicleExit'); break;
+      case 'seat': audio.fx('seat'); hud.toast(e.seat === 'gunner' ? 'TURRET SEAT' : 'DRIVER SEAT', 'wpn'); break;
+      case 'splatter': audio.fx('splatter', fall(dist(w, e.x, e.z), 40) + 0.2); if (e.player) input.rumble(0.8, 0.5, 200); break;
+      case 'vehicleBump': audio.fx('vehicleBump', Math.min(1, e.v / 12) * (fall(dist(w, e.x, e.z), 50) + 0.2)); if (w.player.vehicle) input.rumble(0.7, 0.3, 150); break;
+      case 'vehicleLand': audio.fx('vehicleLand', Math.min(1, e.v / 10)); if (w.player.vehicle) input.rumble(0.4, 0.4, 120); break;
+      case 'vehicleHit': if (e.player) { audio.fx('vehicleHit', 0.7); input.rumble(0.3, 0.3, 80); } break;
+      case 'vehicleDie': audio.fx('bigBoom', fall(dist(w, e.x, e.z), 140) + 0.1); input.rumble(1, 1, 500); break;
+      case 'boost': audio.fx('boost', 0.8); break;
       case 'enemyFire': audio.fx(e.weapon === 'caster' ? 'plasma' : e.weapon || 'plasma', 0.55 * fall(dist(w, e.x, e.z))); break;
       case 'impact': audio.fx(e.surface === 'flesh' ? 'hitFlesh' : e.surface === 'shield' ? 'hitShield' : e.surface === 'armor' ? 'armor' : Math.random() < 0.25 ? 'ricochet' : 'hitFlesh', e.surface === 'flesh' || e.surface === 'shield' || e.surface === 'armor' ? 0.8 : 0.3); break;
       case 'shieldHit': audio.fx('hitShield', 0.6); break;
@@ -401,6 +416,10 @@ function frame(now) {
       }
     }
     if (p.shield <= 0 && w.mode === 'play') audio.lowShieldTick(dt);
+    // engine
+    const ride = p.vehicle ? w.vehicles.find((v) => v.id === p.vehicle) : null;
+    if (ride && !ride.dead) audio.engine(ride.type, Math.abs(ride.speed) / VEHICLES[ride.type].maxSpeed + Math.abs(ride.throttle) * 0.12, ride.boosting);
+    else audio.engine(null);
     // music intensity: alerted hostiles nearby
     let k = 0;
     for (const e of w.enemies) if (!e.dead && e.alert && !ENEMIES[e.type].dummy && Math.hypot(e.x - p.pos.x, e.z - p.pos.z) < 40) k += e.type === 'heavy' ? 0.5 : 0.25;
@@ -463,6 +482,7 @@ if ('serviceWorker' in navigator && location.protocol === 'https:') navigator.se
 
 // Test hooks (tools/smoke.mjs, tools/sim-check.mjs, the console).
 window.GAME = {
+  THREE,
   get w() { return S.w; }, get mode() { return S.mode; }, S, view, input, audio, settings, metrics,
   start: startLevel, pause, resume, summary: () => (S.w ? summary(S.w) : null),
   ff(sec) { const w = S.w; for (let i = 0; i < sec * 60; i++) step(w, DT, S.pending); drainEvents(); },

@@ -14,7 +14,7 @@ let fails = 0;
 const bad = (lv, msg) => { fails++; console.log(`  FAIL [${lv.id}] ${msg}`); };
 
 for (const lv of LEVELS) {
-  console.log(`${lv.name} (${lv.id}): ${lv.boxes.length} boxes, ${Object.values(lv.groups || {}).flat().length} enemies, ${lv.sequence.length} steps`);
+  console.log(`${lv.name} (${lv.id}): ${lv.boxes.length} boxes, ${Object.values(lv.groups || {}).flat().length} enemies, ${(lv.vehicles || []).length} vehicles, ${lv.sequence.length} steps`);
   const geo = new CollisionWorld(lv);
   // open every door so reachability ignores the script order
   geo.boxes.forEach((b, i) => { if (b.door) geo.off.add(i); });
@@ -51,6 +51,8 @@ for (const lv of LEVELS) {
     }
   }
   for (const pad of lv.spawnPads || []) if (!reachable(pad.pos[0], pad.pos[1], 2)) bad(lv, `spawn pad ${pad.label} unreachable`);
+  for (const v of lv.vehicles || []) if (!reachable(v.pos[0], v.pos[1], 3)) bad(lv, `vehicle ${v.type} at (${v.pos.map((n) => n.toFixed(1))}) unreachable`);
+  for (const [gid, g] of Object.entries(lv.groups || {})) for (const sp of g) if (sp.ride && !reachable(sp.p[0], sp.p[sp.p.length - 1], 3)) bad(lv, `${gid} rider unreachable`);
   // run the sim for 10 s, standing still, to shake out exceptions
   try {
     const w = createWorld(lv, { difficulty: 'normal' });

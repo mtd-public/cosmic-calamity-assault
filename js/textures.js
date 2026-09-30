@@ -351,6 +351,24 @@ export function spriteTex(name) {
       g.fillStyle = gr; g.fillRect(0, 0, s, s);
     }
   });
+  else if (name === 'grass') t = canvasTex(128, (g, s) => {
+    g.clearRect(0, 0, s, s);
+    for (let i = 0; i < 26; i++) {
+      const x0 = s * (0.1 + Math.random() * 0.8), h = s * (0.45 + Math.random() * 0.5), lean = (Math.random() - 0.5) * s * 0.35, wdt = 3 + Math.random() * 3;
+      const gr = g.createLinearGradient(0, s, 0, s - h); gr.addColorStop(0, 'rgba(60,90,30,1)'); gr.addColorStop(1, 'rgba(150,190,80,1)');
+      g.fillStyle = gr; g.beginPath(); g.moveTo(x0 - wdt, s); g.quadraticCurveTo(x0 + lean * 0.4, s - h * 0.6, x0 + lean, s - h); g.quadraticCurveTo(x0 + lean * 0.5, s - h * 0.6, x0 + wdt, s); g.fill();
+    }
+  });
+  else if (name === 'flag') t = canvasTex(128, (g, s) => {
+    g.fillStyle = '#2b3a2a'; g.fillRect(0, 0, s, s);
+    g.fillStyle = '#e0a040'; g.fillRect(0, s * 0.42, s, s * 0.16);
+    g.strokeStyle = '#dfe9f3'; g.lineWidth = 6; g.beginPath(); g.arc(s / 2, s / 2, s * 0.26, 0, 6.28); g.stroke();
+    g.fillStyle = '#dfe9f3'; g.font = `bold ${s * 0.22}px Oxanium, sans-serif`; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillText('ECS', s / 2, s / 2 + 2);
+  });
+  else if (name === 'leaf') t = canvasTex(64, (g, s) => {
+    g.clearRect(0, 0, s, s);
+    for (let i = 0; i < 9; i++) { const x = s * (0.2 + Math.random() * 0.6), y = s * (0.2 + Math.random() * 0.6), r = s * (0.12 + Math.random() * 0.14); const gr = g.createRadialGradient(x, y, 0, x, y, r); gr.addColorStop(0, 'rgba(120,170,70,1)'); gr.addColorStop(0.7, 'rgba(70,120,40,0.9)'); gr.addColorStop(1, 'rgba(50,90,30,0)'); g.fillStyle = gr; g.fillRect(0, 0, s, s); }
+  });
   else if (name === 'waterfall') {
     t = canvasTex(128, (g, s) => { for (let x = 0; x < s; x += 2) { const b = 170 + Math.random() * 85; g.fillStyle = `rgba(${b},${b + 10},${b + 20},${0.5 + Math.random() * 0.5})`; g.fillRect(x, 0, 2, s); for (let y = 0; y < s; y += 8) if (Math.random() < 0.3) { g.fillStyle = 'rgba(255,255,255,0.8)'; g.fillRect(x, y, 2, 6); } } });
     t.wrapS = t.wrapT = THREE.RepeatWrapping;

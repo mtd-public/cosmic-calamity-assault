@@ -42,11 +42,11 @@ export default async function (F, params = {}) {
   for (let k = 0; k < 4; k++) poses['ABCD'[k]] = () => walk(R, gun, k, { style: 'patrol', carry: 'longLow', stride: 0.66, lean: 0.1 });
   for (const [i, f] of [...'HIJKL'].entries()) poses[f] = () => death(R, i, { gun, pool: ichor, dropWorld: V3(0.2, 0.03, 0.45) });
   await renderChar(F, params, {
-    prefix: 'HYBR', dir: 'sprites/monsters', root: R.root,
+    prefix: 'HYBR', dir: 'sprites/monsters', root: R.root, R,
     reset: () => { R.reset(); ichor.visible = false; gun.flash.visible = false; },
     after: () => R.after(),
     poses, rot8: 'ABCDEFG', rot0: 'HIJKL',
-    bounds: { w: 2.0, top: 2.15, bottom: -0.05 },
-    bounds0: { w: 2.8, top: 2.3, bottom: -0.45 }, elev0: 18,
+    bounds: { w: 2.5, top: 2.15, bottom: -0.05 },
+    bounds0: { w: 3.3, top: 2.3, bottom: -0.45 }, elev0: 18,
   });
 }

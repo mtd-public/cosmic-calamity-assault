@@ -18,11 +18,107 @@ class CCASelfTest : EventHandler
 		let p = players[consoleplayer].mo;
 		if (!p) return;
 		t++;
+		if (CVar.FindCVar("cca_selftest").GetInt() == 2) { Walk(p); return; }
 		if (t == 5) StepSpawnAll(p);
 		if (t == 40) StepWeapons(p);
 		if (t == 60) StepMission(p);
 		if (t == 120) StepCleanup(p);
 		if (t == 121) Console.Printf("CCA-SELFTEST %s %d/%d", fail ? "FAIL" : "PASS", pass, pass + fail);
+	}
+
+	// ------------------------------------------------------------------ walkthrough (cca_selftest 2)
+	// Plays the level's objective chain in-engine: objective items, hack
+	// terminals (fast-forwarded), boss kill, exit gate, exit line. Proves the
+	// map's tags and specials actually work, not just that areas connect.
+	int wstep, wwait;
+	void Say2(String s) { Console.Printf("CCA-WALK %s", s); }
+	override void WorldUnloaded(WorldEvent e)
+	{
+		let cv = CVar.FindCVar("cca_selftest");
+		if (cv && cv.GetInt() == 2 && wstep >= 5) Console.Printf("CCA-WALK PASS: %s exited", Level.MapName);
+	}
+	void Walk(Actor p)
+	{
+		let ev = CCAEvents.Get();
+		if (!ev) return;
+		if (wwait > 0) { wwait--; return; }
+		p.bNoTarget = true; p.bInvulnerable = true;
+		switch (wstep)
+		{
+		case 0:   // objective items
+		{
+			let it = ThinkerIterator.Create("CCAObjectiveItem");
+			let item = CCAObjectiveItem(it.Next());
+			if (item) { p.SetOrigin(item.pos, false); Say2("pickup " .. item.GetClassName()); item.Touch(p); wwait = 10; return; }
+			wstep = 1; return;
+		}
+		case 1:   // hack terminals
+		{
+			let it = ThinkerIterator.Create("HackTerminal");
+			HackTerminal term;
+			while ((term = HackTerminal(it.Next())) != null)
+			{
+				if (term.done) continue;
+				if (!term.active) { term.Used(p); Say2("hack " .. term.args[0] .. "s"); }
+				p.SetOrigin(term.pos + (p.AngleToVector(0, 48), 0), false);
+				term.progress = max(term.progress, term.total - 2);
+				wwait = 12;
+				return;
+			}
+			wwait = 20; wstep = 2; return;   // items the terminals opened (HDD) come next
+		}
+		case 2:   // objective items revealed by terminals
+		{
+			let it = ThinkerIterator.Create("CCAObjectiveItem");
+			let item = CCAObjectiveItem(it.Next());
+			if (item) { p.SetOrigin(item.pos, false); Say2("pickup " .. item.GetClassName()); item.Touch(p); wwait = 10; return; }
+			wstep = 3; return;
+		}
+		case 3:   // boss
+		{
+			let it = ThinkerIterator.Create("HiveMind");
+			let boss = HiveMind(it.Next());
+			if (boss && boss.health > 0)
+			{
+				if (boss.bInvulnerable) { Say2("FAIL: hive mind still shielded after the objectives"); wstep = 99; return; }
+				boss.DamageMobj(p, p, boss.health + 10, 'None', DMG_FORCED);
+				Say2("hive mind killed"); wwait = 90; return;
+			}
+			wstep = 4; wwait = 40; return;
+		}
+		case 4:   // exit gate should have opened
+		{
+			let it = ThinkerIterator.Create("ExitGate");
+			ExitGate g; bool allOpen = true; int n = 0;
+			while ((g = ExitGate(it.Next())) != null) { n++; if (!g.opened) allOpen = false; }
+			String objs = "";
+			for (int i = 0; i < ev.objDone.Size(); i++) objs = objs .. (ev.objDone[i] ? "x" : "-");
+			Say2(String.Format("objectives [%s], exit gates %d %s", objs, n, allOpen ? "open" : "CLOSED"));
+			if (!allOpen) { Say2("FAIL: exit gate still closed"); wstep = 99; return; }
+			wstep = 5; wwait = 70; return;   // let the door open
+		}
+		case 5:   // the exit line
+		{
+			for (int i = 0; i < Level.Lines.Size(); i++)
+			{
+				Line ln = Level.Lines[i];
+				if (ln.special != 243 && ln.special != 244) continue;   // Exit_Normal / Exit_Secret
+				if (ln.special == 244) continue;
+				Vector2 mid = (ln.v1.p + ln.v2.p) / 2;
+				Vector2 nrm = (ln.delta.y, -ln.delta.x).Unit();     // front side
+				p.SetOrigin((mid + nrm * 24, ln.frontsector.floorplane.ZAtPoint(mid + nrm * 24)), false);
+				p.angle = atan2(-nrm.y, -nrm.x);
+				int act = (ln.activation & SPAC_Use) ? SPAC_Use : (ln.activation & SPAC_Cross) ? SPAC_Cross : SPAC_Use;
+				Say2(String.Format("exit line %d (%s)", i, act == SPAC_Use ? "use" : "cross"));
+				ln.Activate(p, 0, act);
+				wstep = 6; wwait = 100;
+				return;
+			}
+			Say2("FAIL: no exit line"); wstep = 99; return;
+		}
+		case 6:
+			Say2("FAIL: still on the map after the exit line"); wstep = 99; return;
+		}
 	}
 
 	void StepSpawnAll(Actor p)

@@ -384,7 +384,7 @@ export function checkLevel(lv) {
   }
   // ---- lint: 1-cell-wide passages (legal in the engine, miserable to walk through)
   {
-    const secAt = (r, c) => { const cell = lv.cells[r] && lv.cells[r][c]; return cell && cell.pieces && cell.pieces.F ? cell.pieces.F.sector : null; };
+    const secAt = (r, c) => { const cell = lv.cells[r] && lv.cells[r][c]; if (cell && cell.kind === 'diag') return { kind: 'door', p: {} }; return cell && cell.pieces && cell.pieces.F ? cell.pieces.F.sector : null; };
     const open = (a, b) => b && (b.kind === 'door' || b.kind === 'lift' || (b.kind !== 'window' && !b.p.block && Math.abs(b.floor - a.floor) <= 24 && b.ceil - Math.max(a.floor, b.floor) >= 56));
     const squeezes = [];
     for (let r = 1; r < lv.H - 1; r++) for (let c = 1; c < lv.W - 1; c++) {

@@ -118,10 +118,10 @@ export default async function (F, params = {}) {
   };
   for (const [i, f] of [...'IJKLM'].entries()) poses[f] = () => death(i);
   await renderChar(F, params, {
-    prefix: 'STLK', dir: 'sprites/monsters', root: R.root,
+    prefix: 'STLK', dir: 'sprites/monsters', root: R.root, R,
     reset: () => { R.reset(); ichor.visible = false; },
     poses, rot8: 'ABCDEFGH', rot0: 'IJKLM',
-    bounds: { w: 2.6, top: 2.1, bottom: -0.05 },
-    bounds0: { w: 3.3, top: 2.4, bottom: -0.5 }, elev0: 18,
+    bounds: { w: 3.3, top: 2.1, bottom: -0.1 },
+    bounds0: { w: 3.3, top: 2.9, bottom: -0.5 }, elev0: 18,
   });
 }

@@ -10,7 +10,7 @@ import { renderChar } from '../lib/chr/job.js';
 import { pool } from '../lib/chr/parts.js';
 import { V3 } from '../lib/chr/core.js';
 
-const B = { w: 2.5, top: 1.1, bottom: -0.75 };
+const B = { w: 2.9, top: 1.1, bottom: -0.8 };
 const ELEV = 30;
 
 function setArm(A, x, z, ex = 0, ez = 0) { A.sh.rotation.set(x, 0, -A.side * z); A.el.rotation.set(ex, 0, -A.side * ez); }

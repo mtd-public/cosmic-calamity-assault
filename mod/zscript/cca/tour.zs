@@ -20,13 +20,43 @@ class CCATour : EventHandler
 		int slot = t - 20;
 		if (slot < 0) return;
 		int k = slot / 45, ph = slot % 45;
-		if (k >= pts.Size() || k >= cv.GetInt() * 12)
+		int npts = min(pts.Size(), cv.GetInt() * 12);
+		if (k < npts)
 		{
-			if (ph == 0 && k == pts.Size()) Console.Printf("CCA-TOUR DONE %d", pts.Size());
+			if (ph == 0) Visit(p, pts[k]);
+			if (ph == 30) Level.MakeScreenShot();
 			return;
 		}
-		if (ph == 0) Visit(p, pts[k]);
-		if (ph == 30) Level.MakeScreenShot();
+		// weapon showcase: every gun whose art exists, hip / ADS / dual
+		int wk = (slot - npts * 45) / 30, wph = (slot - npts * 45) % 30;
+		static const Name guns[] = { 'CCA_Pistol', 'CCA_Shotgun', 'CCA_SMG', 'CCA_AssaultRifle', 'CCA_BattleRifle', 'CCA_Knife', 'CCA_Stinger', 'CCA_Scatter', 'CCA_PlasmaSMG', 'CCA_HarvesterBlade', 'CCA_Singularity' };
+		int gi = wk / 3, mode = wk % 3;
+		if (gi >= guns.Size()) { if (wph == 0 && gi == guns.Size() && mode == 0) Console.Printf("CCA-TOUR DONE %d", npts); return; }
+		if (wph == 0) Showcase(p, guns[gi], mode);
+		if (wph == 20)
+		{
+			let w = CCAWeapon(p.FindInventory(guns[gi]));
+			if (w && p.player.ReadyWeapon == w && (mode == 0 || (mode == 1 && w.adsZoom > 0) || (mode == 2 && w.canDual))) Level.MakeScreenShot();
+		}
+	}
+
+	void Showcase(Actor p, Name gun, int mode)
+	{
+		let pl = p.player;
+		p.A_GiveInventory(gun, 1);
+		let w = CCAWeapon(p.FindInventory(gun));
+		if (!w) return;
+		if (pl.ReadyWeapon != w)
+		{
+			// switch instantly
+			if (pl.ReadyWeapon) { let ow = CCAWeapon(pl.ReadyWeapon); if (ow) { ow.WantDual(false); ow.ClearOverlays(p); } }
+			pl.ReadyWeapon = w; pl.PendingWeapon = WP_NOCHANGE;
+			pl.SetPSprite(PSP_WEAPON, w.GetReadyState());
+			let ps = pl.GetPSprite(PSP_WEAPON); if (ps) { ps.y = WEAPONTOP; ps.x = 0; }
+		}
+		w.holdADS = (mode == 1);
+		if (mode == 1 && w.adsZoom > 0) { w.SetADS(p, true); pl.SetPSprite(PSP_WEAPON, w.FindState("ADSReady")); }
+		if (mode == 2 && w.canDual) { if (w.ads) w.SetADS(p, false); pl.SetPSprite(PSP_WEAPON, w.GetReadyState()); p.A_GiveInventory(gun, 1); w.WantDual(true); }
 	}
 
 	void Build()

@@ -168,7 +168,7 @@ export default async function (F, params = {}) {
   if (params.only && !params.only.split(',').includes('IRIS')) return;
   const names = ['IRISI0', 'IRISI1', 'IRISI2', 'IRISI3', 'IRIST0', 'IRIST1', 'IRIST2', 'IRIST3', 'IRISL0', 'IRISR0', 'IRISA0', 'IRISA1', 'IRISG0', 'IRISG1', 'IRISG2'];
   const c = document.createElement('canvas'); c.width = c.height = W;
-  const g = c.getContext('2d');
+  const g = c.getContext('2d', { willReadFrequently: true });
   for (const name of names) {
     const st = frameState(name);
     drawFace(g, st);

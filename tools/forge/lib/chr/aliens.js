@@ -115,14 +115,14 @@ export function buildGrey(o = {}) {
 // waist under a heavy ribbed chest and hunched shoulders, a long ridged skull with a
 // hinged jaw, blade claws.
 export function buildStalker() {
-  const skin = mat(0x8a977c, { rough: 0.5, map: camo('alien', 0.3) });
+  const skin = mat(0x7f8d71, { rough: 0.5, map: camo('alien', 0.3) });
   const ribs = mat(0x84917a, { rough: 0.5, map: camo('ribbed', 0.2) });
   const dark = mat(0x4f5947, { rough: 0.45 });
   const bone = mat(0xdcd3b8, { rough: 0.35 });
   const R = makeBiped({
     hipY: 1.12, hipX: 0.11, hipDY: -0.03,
     thigh: [0.5, 0.1, 0.055, 0.12], shin: [0.47, 0.06, 0.034, 0.065],
-    foot: { h: 0.03, heel: 0.02, toe: 0.3 },
+    foot: { h: 0.03, heel: 0.02, toe: 0.4 },
     waistY: 0.14, chestY: 0.22, shX: 0.23, shY: 0.14, shZ: -0.02,
     upper: [0.44, 0.078, 0.05, 0.085], fore: [0.44, 0.058, 0.036, 0.065],
     neckY: 0.17, neckZ: 0.05, neckLen: 0.16,
@@ -189,9 +189,23 @@ export function buildStalker() {
   // digitigrade feet: the long metatarsal runs forward-down from the ankle to clawed toes
   for (const L of R.legs) {
     const mt = mesh(limbGeo(0.3, 0.045, 0.032), skin); mt.rotation.x = -Math.PI / 2; L.ankle.add(mt);
-    for (const sd of [-1, 0, 1]) L.ankle.add(mesh(new THREE.ConeGeometry(0.015, 0.11, 5), bone, sd * 0.03, -0.025, 0.34, Math.PI / 2 + 0.5, sd * 0.25, 0));
+    for (const sd of [-1, 0, 1]) L.ankle.add(mesh(new THREE.ConeGeometry(0.015, 0.1, 5), bone, sd * 0.03, -0.01, 0.34, Math.PI / 2 + 0.15, sd * 0.25, 0));
     L.ankle.add(mesh(new THREE.ConeGeometry(0.013, 0.07, 5), bone, 0, 0.0, -0.045, -Math.PI / 2, 0, 0)); // dew claw
   }
+  // chitin: dark plates along the forearms, thighs and shins, bone spurs at the elbows
+  const plate = mat(0x323a2c, { rough: 0.35, metal: 0.1, env: true, envI: 0.3 });
+  for (const A of R.arms) {
+    const fp = mesh(ellipsoidGeo(0.05, 0.2, 0.03, 10, 6), plate, 0, -0.22, -0.035); A.el.add(fp);
+    A.el.add(mesh(new THREE.ConeGeometry(0.022, 0.16, 5), bone, 0, 0.02, -0.07, -2.2, 0, 0)); // elbow spur
+    A.sh.add(mesh(ellipsoidGeo(0.06, 0.18, 0.035, 10, 6), plate, -A.side * 0.04, -0.2, -0.03, 0, 0, 0));
+  }
+  for (const L of R.legs) {
+    L.hip.add(mesh(ellipsoidGeo(0.045, 0.2, 0.08, 10, 6), plate, -L.side * 0.07, -0.22, 0.0));
+    L.knee.add(mesh(ellipsoidGeo(0.04, 0.2, 0.035, 10, 6), plate, 0, -0.22, 0.035));
+    L.knee.add(mesh(new THREE.ConeGeometry(0.02, 0.1, 5), bone, 0, 0.0, 0.07, 1.9, 0, 0)); // knee spike
+  }
+  // paler belly under the ribs
+  R.spine.add(mesh(ellipsoidGeo(0.085, 0.12, 0.05, 12, 8), mat(0xa6b096, { rough: 0.55, map: camo('ribbed', 0.12) }), 0, 0.02, 0.07));
   R.onReset = () => { jaw.rotation.set(0, 0, 0); for (const h of R.hands) h.pose(0.2, 0.3); };
   return R;
 }

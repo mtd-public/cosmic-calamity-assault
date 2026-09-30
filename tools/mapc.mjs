@@ -26,7 +26,8 @@
 //
 //   kinds and keys
 //     solid / void  tex=                   (' ' is always void; '#' is a plain wall if undefined)
-//     room    floor ceil ff cf wall upper lower light color=#RRGGBB fade=#RRGGBB
+//     room    floor ceil ff cf wall upper lower light color=#RRGGBB fade=#RRGGBB   (sky = cf F_SKY1;
+//             a sky in defaults applies to entries without their own cf=; nosky cancels it)
 //             damage=N dmgtype= secret sky (ceiling F_SKY1) tag=N|@name[,..] merge block
 //             enter=Special(args) [enterrepeat]   walk-over trigger on every line into/out of the region
 //             slab=z0..z1 slabtop= slabbot= slabside= slablight= slabtype= slabalpha=

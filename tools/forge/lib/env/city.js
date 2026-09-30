@@ -70,8 +70,12 @@ export function poster(s, x0, y0, w, h, fn, o = {}) {
   rag([x0 + w, y0 + h], [x0, y0 + h], 8, r() > torn); rag([x0, y0 + h], [x0, y0], 8, r() > torn);
   const c = document.createElement('canvas'); c.width = s.w; c.height = s.h;
   const g = c.getContext('2d');
-  g.save(); g.beginPath(); pts.forEach(([x, y], k) => (k ? g.lineTo(x, y) : g.moveTo(x, y))); g.closePath(); g.clip();
-  g.translate(x0, y0); fn(g, w, h); g.restore();
+  // drawn at the 3x3 wrap offsets so a poster crossing an edge continues on the far side
+  for (const oy of [-s.h, 0, s.h]) for (const ox of [-s.w, 0, s.w]) {
+    g.save(); g.translate(ox, oy);
+    g.beginPath(); pts.forEach(([x, y], k) => (k ? g.lineTo(x, y) : g.moveTo(x, y))); g.closePath(); g.clip();
+    g.translate(x0, y0); fn(g, w, h); g.restore();
+  }
   const d = g.getImageData(0, 0, s.w, s.h).data;
   const fade = o.fade ?? 0.2;
   for (let i = 0; i < s.n; i++) {

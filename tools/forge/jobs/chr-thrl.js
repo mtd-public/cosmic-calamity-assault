@@ -31,11 +31,11 @@ export default async function (F, params = {}) {
   for (const [i, f] of [...'MNOP'].entries()) poses[f] = () => { gib(R, G, i); gun.visible = true; R.root.add(gun); gun.position.set(0.35, 0.02, 0.3); gun.quaternion.setFromEuler(new THREE.Euler(0, 0.8, Math.PI / 2)); };
 
   await renderChar(F, params, {
-    prefix: 'THRL', dir: 'sprites/monsters', root: R.root,
+    prefix: 'THRL', dir: 'sprites/monsters', root: R.root, R,
     reset: () => { R.reset(); ungib(R, G); oil.visible = false; gun.flash.visible = false; },
     after: () => R.after(),
     poses, rot8: 'ABCDEFG', rot0: 'HIJKLMNOP',
     bounds: { w: 1.7, top: 2.0, bottom: -0.05 },
-    bounds0: { w: 2.6, top: 2.2, bottom: -0.45 }, elev0: 18,
+    bounds0: { w: 3.2, top: 2.2, bottom: -0.5 }, elev0: 18,
   });
 }

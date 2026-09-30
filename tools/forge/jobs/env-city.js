@@ -33,7 +33,7 @@ export default async function (F) {
     // pilasters are the brick at the sides; sign board across the top
     s.rect(0, 0, w, 44, { h: 7, bevel: 2, op: 'set', color: signCol });
     hband(s, 44, 50, { h: 8, bevel: 2, color: [60, 60, 62], spec: 0.6 });
-    if (text) s.apply(textMask(s, text, w / 2, 32, { font: 'bold 24px "DejaVu Sans", sans-serif', align: 'center', sx: 0.9, spacing: 3 }), { color: sign });
+    if (text) s.apply(textMask(s, text, w / 2, 31, { font: 'bold 21px "DejaVu Sans", sans-serif', align: 'center', sx: 0.9, spacing: 3 }), { color: sign });
   };
   const glassPane = (s, x0, y0, x1, y1, inside, o = {}) => {
     s.rect(x0 - 5, y0 - 5, x1 + 5, y1 + 5, { h: 6, bevel: 2, op: 'set', color: [150, 152, 150], spec: 0.8 });
@@ -279,7 +279,7 @@ export default async function (F) {
     spray(s, (g) => { g.font = 'bold 44px "DejaVu Sans", sans-serif'; g.save(); g.translate(128, 200); g.rotate(0.05); g.textAlign = 'center'; g.fillText('THEY LIE', 0, 0); g.restore(); }, [200, 26, 26], { seed: 614, drips: 10 });
     spray(s, (g) => { g.lineWidth = 3; g.beginPath(); g.arc(200, 70, 26, 0, 7); g.stroke(); g.font = 'bold 26px "DejaVu Sans", sans-serif'; g.textAlign = 'center'; g.fillText('51', 200, 80); }, [236, 200, 40], { seed: 615, drips: 3 });
     spray(s, (g) => { g.lineWidth = 2; g.lineCap = 'round'; g.beginPath(); g.moveTo(150, 130); g.bezierCurveTo(170, 100, 180, 150, 200, 120); g.bezierCurveTo(210, 100, 230, 140, 246, 118); g.stroke(); }, [40, 60, 200], { seed: 616 });
-    s.grime([60, 56, 50], (u, v) => sstep(0.75, 1, v) * 0.4 + 0.05, { seed: 617, fx: 10, fy: 6 });
+    s.grime([60, 56, 50], (u, v) => sstep(0.75, 1, v) * 0.4 + sstep(0.15, 0, v) * 0.3 + 0.05, { seed: 617, fx: 10, fy: 6 });
   }, { shadow: 4, amb: 0.5 });
 
   // ---------------------------------------------------------------- POSTERS: brick plastered with torn bills

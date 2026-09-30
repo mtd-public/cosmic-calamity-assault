@@ -144,10 +144,10 @@ export default async function (F, params = {}) {
   }
 
   await renderChar(F, params, {
-    prefix: 'GREY', dir: 'sprites/monsters', root: R.root,
+    prefix: 'GREY', dir: 'sprites/monsters', root: R.root, R,
     reset: () => { R.reset(); ichor.visible = false; },
     poses, rot8: 'ABCDEFGH', rot0: 'IJKLM',
-    bounds: { w: 1.5, top: 1.45, bottom: -0.05 },
+    bounds: { w: 1.9, top: 1.45, bottom: -0.05 },
     bounds0: { w: 2.2, top: 1.45, bottom: -0.3 }, elev0: 18,
   });
 }

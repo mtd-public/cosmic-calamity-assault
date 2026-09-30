@@ -51,7 +51,7 @@ function resolveLegend(lv, ctx) {
   for (const [ch, e] of src.legend) {
     if (!SECTOR_KINDS.has(e.kind) && !SOLID_KINDS.has(e.kind)) { lv.err(`legend '${ch}': unknown kind "${e.kind}" (room door lift stairs window solid void)`, e.line); continue; }
     const p = SOLID_KINDS.has(e.kind) ? { ...e.props } : { ...src.defaults, ...e.props };
-    if (p.sky) p.cf = 'F_SKY1';
+    if (p.sky && e.props.cf === undefined && !e.props.nosky) p.cf = 'F_SKY1';   // an entry's own cf= wins over a default sky
     lv.legend.set(ch, { char: ch, kind: e.kind, p, own: e.props, line: e.line });
   }
   // implicit plain wall if the source did not define '#'

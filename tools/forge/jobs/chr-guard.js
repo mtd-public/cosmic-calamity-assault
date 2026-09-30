@@ -83,10 +83,10 @@ export default async function (F, params = {}) {
     };
     for (const [i, f] of [...'EFGH'].entries()) poses[f] = () => slump(i);
     await renderChar(F, params, {
-      prefix: 'GRDW', dir: 'sprites/npcs', root: R.root,
+      prefix: 'GRDW', dir: 'sprites/npcs', root: R.root, R,
       reset: () => { R.reset(); R.headMesh.setFace(null); blood.position.set(-0.05, 0.004, 0.15); blood.scale.setScalar(1); },
       poses, rot8: 'ABCD', rot0: 'EFGH',
-      bounds: { w: 2.2, top: 1.6, bottom: -0.25 }, elev: 10,
+      bounds: { w: 2.3, top: 1.6, bottom: -0.45 }, elev: 10,
       bounds0: { w: 2.2, top: 1.4, bottom: -0.35 }, elev0: 18,
     });
   }
@@ -103,11 +103,11 @@ export default async function (F, params = {}) {
     for (let k = 0; k < 4; k++) poses['ABCD'[k]] = () => walk(R, gun, k, { style: 'patrol', carry: 'pistolReady' });
     for (const [i, f] of [...'HIJKL'].entries()) poses[f] = () => { death(R, i, { gun, pool: blood }); if (i >= 2) R.headMesh.setFace({ eyes: 'closed', mouth: 'open' }); };
     await renderChar(F, params, {
-      prefix: 'GRDA', dir: 'sprites/npcs', root: R.root,
+      prefix: 'GRDA', dir: 'sprites/npcs', root: R.root, R,
       reset: () => { R.reset(); blood.visible = false; gun.flash.visible = false; R.headMesh.setFace(null); },
       poses, rot8: 'ABCDEFG', rot0: 'HIJKL',
-      bounds: { w: 1.7, top: 2.05, bottom: -0.05 },
-      bounds0: { w: 2.6, top: 2.2, bottom: -0.45 }, elev0: 18,
+      bounds: { w: 1.9, top: 2.05, bottom: -0.05 },
+      bounds0: { w: 3.1, top: 2.2, bottom: -0.5 }, elev0: 18,
     });
   }
 }

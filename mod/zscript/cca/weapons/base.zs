@@ -38,6 +38,7 @@ class CCAWeapon : Weapon abstract
 	// ---------------------------------------------------------------- runtime
 	int mag, magL;
 	bool hasPair, dual, ads;
+	bool holdADS;           // test hook (tour screenshots): behave as if ADS is held
 	double bloom;           // extra spread from sustained fire, decays
 	double heat;            // 0..100
 	bool venting;
@@ -253,7 +254,7 @@ class CCAWeapon : Weapon abstract
 		// ADS (hold); melee weapons use alt-fire for their heavy attack instead
 		if (!w.dual && w.adsZoom > 0)
 		{
-			bool want = (btn & BT_ALTATTACK) != 0;
+			bool want = (btn & BT_ALTATTACK) != 0 || w.holdADS;
 			if (want && !w.ads) { w.SetADS(self, true); player.SetPSprite(PSP_WEAPON, w.FindState("ADSIn")); return; }
 			if (!want && w.ads) { w.SetADS(self, false); player.SetPSprite(PSP_WEAPON, w.FindState("ADSOut")); return; }
 		}

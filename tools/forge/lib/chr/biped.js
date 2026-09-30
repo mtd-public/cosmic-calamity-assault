@@ -88,10 +88,13 @@ export function makeBiped(S) {
     pelvis.position.set(0, S.hipY, 0); pelvis.rotation.set(0, 0, 0);
     spine.rotation.set(0, 0, 0); chest.rotation.set(0, 0, 0);
     neck.rotation.set(0, 0, 0); head.rotation.set(0, 0, 0);
-    for (const L of legs) { L.hip.quaternion.identity(); L.knee.quaternion.identity(); L.ankle.quaternion.identity(); }
+    for (const L of legs) { L.hip.quaternion.identity(); L.knee.quaternion.identity(); L.ankle.quaternion.identity(); L.last = null; }
     for (const A of arms) { A.sh.quaternion.identity(); A.el.quaternion.identity(); A.wrist.quaternion.identity(); }
     R.onReset?.();
   };
+  // Re-solve the legs to their last targets (after a pose moved or turned the pelvis),
+  // so planted feet stay planted.
+  R.replant = () => { for (const L of legs) if (L.last) R.leg(L.i, L.last); };
   // hip joint position in rig space
   R.hipPos = (i) => R.toRig(legs[i].hip);
   R.shPos = (i) => R.toRig(arms[i].sh);
@@ -99,6 +102,7 @@ export function makeBiped(S) {
   // o: { x, z, y (ankle height; default from pitch), lift, pitch, yaw, roll, pole (rig dir) }
   R.leg = (i, o = {}) => {
     const L = legs[i];
+    L.last = { ...o };
     const pitch = o.pitch ?? 0;
     const hp = R.hipPos(i);
     const x = o.x ?? hp.x, z = o.z ?? 0;

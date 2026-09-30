@@ -106,6 +106,36 @@ IRIS_HIVE_SHIELD = "IRIS|Shield's down! Everything you've got, now!";
 IRIS_HIVE_DEAD = "IRIS|It's dying. The whole ship can feel it. So can I.";
 IRIS_CONDUIT = "IRIS|Conduit down. It's weakening.";
 
+// ------------------------------------------------------------ IRIS: MAP01 beats (IrisTrigger args[0])
+IRIS_101 = "IRIS|Your cell door's open from the outside. Whatever did that went left.";
+IRIS_102 = "IRIS|That guard's still breathing. Hold X on him. He can still shoot, and he's got the blue card.";
+IRIS_103 = "IRIS|Security office. The blue card opens the stairwell to the surface.";
+IRIS_104 = "IRIS|The yard. The floodlights are down and the fences are cut. They came over the wire.";
+IRIS_105 = "IRIS|Warehouse 9. Forty years of things they said didn't exist, stacked in crates.";
+IRIS_106 = "IRIS|The freight lift back down to S-4 is at the far end. Watch the catwalks.";
+IRIS_107 = "IRIS|S-4. Xenobiology. Keep your voice down. Not everything in here is dead.";
+IRIS_108 = "IRIS|Observation deck. They watched them through the glass. Now the glass is on the floor.";
+IRIS_109 = "IRIS|Records. The Committee's dossier is in here. The waypoint's on your HUD.";
+IRIS_110 = "IRIS|That terminal is wired into the hull growth. Plug me in and hold the room.";
+IRIS_111 = "IRIS|The hangar. They reverse-engineered it. Badly. It's still trying to leave.";
+IRIS_112 = "IRIS|Surface lift. It won't move until we have the dossier and the drive.";
+IRIS_113 = "IRIS|Containment wing. Every cell was opened from the inside.";
+IRIS_114 = "IRIS|Dissection theatre. I'd rather you didn't look at the table, Marsh.";
+
+// ------------------------------------------------------------ IRIS: MAP02 beats
+IRIS_201 = "KADE|Marsh? Where are you? Half of D.C. is on fire and the other half is staring at the sky.";
+IRIS_202 = "IRIS|The Pink Flamingo. Rooms by the hour, visitors by the thousand.";
+IRIS_203 = "IRIS|Alleys. Stay out of the beams. Whatever they touch stops being where it was.";
+IRIS_204 = "IRIS|The plaza. They're landing troops. We hold here or we don't get across.";
+IRIS_205 = "KADE|I'm watching this on three channels and for once none of them are lying.";
+IRIS_206 = "IRIS|The subway's dead. The power's out; the trains aren't. Mind the third rail.";
+IRIS_207 = "IRIS|The tunnel runs under Pennsylvania Avenue to the Bureau. So do they.";
+IRIS_208 = "KADE|That's our lobby. Somebody put an alien through the metal detector.";
+IRIS_209 = "IRIS|Your old basement office is three floors down. Nobody ever cleaned it.";
+IRIS_210 = "IRIS|Your case file. Six years of 'crackpot' in one folder.";
+IRIS_211 = "IRIS|Plug me in. Every newsroom, every wire service. Hold them off for a minute.";
+IRIS_212 = "IRIS|Rooftop access. Condor's inbound. Don't make me wait.";
+
 // ------------------------------------------------------------ NPCs
 NPC_SCI1 = "SCIENTIST|They were never supposed to wake up!";
 NPC_SCI2 = "SCIENTIST|I only did the paperwork! I only did the paperwork!";

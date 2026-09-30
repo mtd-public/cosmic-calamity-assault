@@ -31,6 +31,24 @@ Sprite "P9MMO0", 698, 412 { XScale 3.0 YScale 3.0 Offset -355, -212 Patch "graph
 Sprite "P9MMP0", 672, 319 { XScale 3.0 YScale 3.0 Offset -480, -305 Patch "graphics/hud/P9MMP0.png", 0, 0 }
 Sprite "P9MMX0", 144, 96 { XScale 3.0 YScale 3.0 Offset -474, -165 Patch "graphics/hud/P9MMX0.png", 0, 0 }
 Sprite "P9MMY0", 214, 210 { XScale 3.0 YScale 3.0 Offset -372, -97 Patch "graphics/hud/P9MMY0.png", 0, 0 }
+Sprite "SHOTA0", 692, 409 { XScale 3.0 YScale 3.0 Offset -450, -215 Patch "graphics/hud/SHOTA0.png", 0, 0 }
+Sprite "SHOTB0", 626, 515 { XScale 3.0 YScale 3.0 Offset -458, -109 Patch "graphics/hud/SHOTB0.png", 0, 0 }
+Sprite "SHOTC0", 695, 439 { XScale 3.0 YScale 3.0 Offset -450, -185 Patch "graphics/hud/SHOTC0.png", 0, 0 }
+Sprite "SHOTD0", 635, 474 { XScale 3.0 YScale 3.0 Offset -423, -150 Patch "graphics/hud/SHOTD0.png", 0, 0 }
+Sprite "SHOTE0", 890, 505 { XScale 3.0 YScale 3.0 Offset -95, -119 Patch "graphics/hud/SHOTE0.png", 0, 0 }
+Sprite "SHOTF0", 880, 507 { XScale 3.0 YScale 3.0 Offset -109, -117 Patch "graphics/hud/SHOTF0.png", 0, 0 }
+Sprite "SHOTG0", 706, 339 { XScale 3.0 YScale 3.0 Offset -446, -285 Patch "graphics/hud/SHOTG0.png", 0, 0 }
+Sprite "SHOTH0", 685, 587 { XScale 3.0 YScale 3.0 Offset -451, -37 Patch "graphics/hud/SHOTH0.png", 0, 0 }
+Sprite "SHOTI0", 664, 446 { XScale 3.0 YScale 3.0 Offset -429, -178 Patch "graphics/hud/SHOTI0.png", 0, 0 }
+Sprite "SHOTJ0", 687, 425 { XScale 3.0 YScale 3.0 Offset -442, -199 Patch "graphics/hud/SHOTJ0.png", 0, 0 }
+Sprite "SHOTK0", 689, 414 { XScale 3.0 YScale 3.0 Offset -450, -210 Patch "graphics/hud/SHOTK0.png", 0, 0 }
+Sprite "SHOTL0", 805, 421 { XScale 3.0 YScale 3.0 Offset -25, -203 Patch "graphics/hud/SHOTL0.png", 0, 0 }
+Sprite "SHOTM0", 724, 487 { XScale 3.0 YScale 3.0 Offset 22, -137 Patch "graphics/hud/SHOTM0.png", 0, 0 }
+Sprite "SHOTN0", 789, 440 { XScale 3.0 YScale 3.0 Offset -13, -184 Patch "graphics/hud/SHOTN0.png", 0, 0 }
+Sprite "SHOTO0", 1039, 417 { XScale 3.0 YScale 3.0 Offset -25, -207 Patch "graphics/hud/SHOTO0.png", 0, 0 }
+Sprite "SHOTP0", 849, 254 { XScale 3.0 YScale 3.0 Offset -303, -370 Patch "graphics/hud/SHOTP0.png", 0, 0 }
+Sprite "SHOTX0", 96, 79 { XScale 3.0 YScale 3.0 Offset -414, -82 Patch "graphics/hud/SHOTX0.png", 0, 0 }
+Sprite "SHOTY0", 199, 199 { XScale 3.0 YScale 3.0 Offset -380, -57 Patch "graphics/hud/SHOTY0.png", 0, 0 }
 Graphic "INTERPIC", 640, 400 { XScale 2.0 YScale 2.0 Patch "texsrc/gfx/INTERPIC.png", 0, 0 }
 Graphic "M_DOOM", 360, 110 { XScale 2.0 YScale 2.0 Patch "texsrc/gfx/M_DOOM.png", 0, 0 }
 Graphic "TITLEPIC", 640, 400 { XScale 2.0 YScale 2.0 Patch "texsrc/gfx/TITLEPIC.png", 0, 0 }

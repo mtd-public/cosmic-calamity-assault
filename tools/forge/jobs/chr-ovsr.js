@@ -128,10 +128,10 @@ export default async function (F, params = {}) {
   };
   for (const [i, f] of [...'JKLMNO'].entries()) poses[f] = () => death(i);
   await renderChar(F, params, {
-    prefix: 'OVSR', dir: 'sprites/monsters', root: R.root,
+    prefix: 'OVSR', dir: 'sprites/monsters', root: R.root, R,
     reset: () => { R.reset(); ichor.visible = false; robe.position.y = 0; rig.position.set(0, 0, 0); R.collar.scale.set(1, 1, 1); R.collar.visible = true; R.cplates.forEach((c, i) => { c.rotation.x = 0.28 + Math.abs((i / 8 - 0.5) * Math.PI * 1.15) * 0.12; }); },
     poses, rot8: 'ABCDEFGHI', rot0: 'JKLMNO',
-    bounds: { w: 2.2, top: 3.2, bottom: -0.05 },
+    bounds: { w: 3.5, top: 3.2, bottom: -0.05 },
     bounds0: { w: 3.2, top: 3.2, bottom: -0.8 }, elev0: 18,
   });
 }

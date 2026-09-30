@@ -236,7 +236,7 @@ class RandomFire : Actor
 }
 class GlassShards : Actor
 {
-	Default { +NOBLOCKMAP; +NOGRAVITY; Scale 0.5; }
+	Default { +NOBLOCKMAP; +NOGRAVITY; +FLATSPRITE; Scale 0.5; }
 	States { Spawn: DGLS A -1; Stop; }
 }
 class SparkSpot : Actor

@@ -19,12 +19,12 @@ export default async function (F, params = {}) {
     };
     for (const [i, f] of [...'HIJKL'].entries()) poses[f] = () => { death(R, i, { pool: blood }); if (i >= 3) R.headMesh.setFace({ eyes: 'closed', mouth: 'open' }); };
     await renderChar(F, params, {
-      prefix, dir: 'sprites/npcs', root: R.root,
+      prefix, dir: 'sprites/npcs', root: R.root, R,
       reset: () => { R.reset(); blood.visible = false; R.headMesh.setFace(null); R.coatK = R.coatCap = R.coatFlare = undefined; },
       after: () => R.after(),
       poses, rot8: 'ABCDEFG', rot0: 'HIJKL',
-      bounds: { w: 1.8, top: 2.0, bottom: -0.05 },
-      bounds0: { w: 2.6, top: 2.1, bottom: -0.45 }, elev0: 18,
+      bounds: { w: 1.9, top: 2.3, bottom: -0.05 },
+      bounds0: { w: 3.1, top: 2.2, bottom: -0.5 }, elev0: 18,
     });
   }
 }

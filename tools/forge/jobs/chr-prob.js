@@ -154,7 +154,7 @@ export default async function (F, params = {}) {
     D: () => { body.position.set(0, CY + 0.03, -0.04); body.rotation.set(-0.18, 0, 0); P.antPose(3, 2); for (const b of blades) b.position.y = 0.28; burst.visible = true; },
     // pain: knocked askew, the lens dims, a plate jolted loose
     E: () => {
-      body.position.set(0.05, CY - 0.05, -0.03); body.rotation.set(0.3, 0.2, 0.35); P.antPose(4, 2.5);
+      body.position.set(0.05, CY + 0.04, -0.03); body.rotation.set(0.3, 0.2, 0.35); P.antPose(4, 2.5);
       iris.material = P.irisDim;
       plates[1].position.copy(plates[1].dir).multiplyScalar(0.06); plates[1].rotation.set(0.2, 0, 0.15);
     },
@@ -219,7 +219,7 @@ export default async function (F, params = {}) {
     prefix: 'PROB', dir: 'sprites/monsters', root: P.root,
     reset: () => P.reset(),
     poses, rot8: 'ABCDE', rot0: 'FGHIJ',
-    bounds: { w: 1.5, top: 1.3, bottom: -0.05 },
-    bounds0: { w: 2.6, top: 2.0, bottom: -0.3 }, elev0: 12,
+    bounds: { w: 2.0, top: 1.3, bottom: -0.05 },
+    bounds0: { w: 2.6, top: 2.0, bottom: -0.6 }, elev0: 12,
   });
 }

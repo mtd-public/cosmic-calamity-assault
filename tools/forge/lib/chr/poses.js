@@ -130,6 +130,7 @@ export function pain(R, gun, kind) {
 // ------------------------------------------------------------------ death: 5 frames, falling backwards to a corpse
 // o: { yaw (display), shift [x per frame], gun, dropAt: rig-space pos for the dropped gun, pool }
 export function death(R, k, o = {}) {
+  if (o.forward) return deathForward(R, k, o);
   const { rig, pelvis, spine, chest, legs, arms, hands } = R;
   rig.rotation.y = o.yaw ?? 1.15;
   const gun = o.gun;
@@ -178,6 +179,60 @@ export function death(R, k, o = {}) {
     hands[0].pose(0.45, 0.3); hands[1].pose(0.35, 0.4);
     if (gun) { R.rig.remove(gun); R.root.add(gun); gun.position.copy(o.dropWorld ?? V3(0.25, 0.02, 0.35)); gun.quaternion.copy(eulerQ(0, 0.8, Math.PI / 2)); }
     if (R.coat) R.coatFlare = k >= 3 ? -0.12 : 0;
+    R.noHemClamp = true; R.after?.(); R.noHemClamp = false;
+    R.ground();
+    if (k === 4 && o.pool) {
+      o.pool.visible = true;
+      R.sync();
+      const cp = R.chest.getWorldPosition(V3()); R.root.worldToLocal(cp);
+      o.pool.position.set(cp.x, 0.004, cp.z);
+    }
+  }
+}
+
+// Forward collapse, like cut strings (the possessed): the head drops, the knees go,
+// the body pitches onto its face.
+export function deathForward(R, k, o = {}) {
+  const { rig, pelvis, spine, chest, legs, arms, hands } = R;
+  rig.rotation.y = o.yaw ?? 1.15;
+  const gun = o.gun;
+  if (k === 0) {
+    stand(R, { dz: [0.04, -0.04], wide: 1.3, crouch: 0.08 });
+    pelvis.rotation.set(0.1, 0, 0.05);
+    spine.rotation.set(0.2, -0.1, 0.05); chest.rotation.set(0.15, 0, 0.1);
+    headTurn(R, 1.0, 0.25, 0.4);
+    R.armHang(0, 0.25, { reach: 0.97, out: 0.1, hand: null }); R.armHang(1, 0.15, { reach: 0.97, out: 0.15 });
+    hands[0].pose(0.8, 0); hands[1].pose(0.3, 0.2);
+    if (gun) gunInHand(R, gun, 0);
+  } else if (k === 1) {
+    // on its knees, slumped, arms hanging
+    pelvis.position.set(0, 0.62, -0.02);
+    pelvis.rotation.set(0.1, 0.05, 0.06);
+    R.leg(0, { x: legs[0].hx * 1.3, z: -0.42, y: 0.05, pitch: 1.35, pole: V3(0, -0.3, 1) });
+    R.leg(1, { x: legs[1].hx * 1.5, z: -0.38, y: 0.05, pitch: 1.35, pole: V3(0, -0.3, 1) });
+    spine.rotation.set(0.35, 0.1, 0.08); chest.rotation.set(0.3, 0.05, 0.05);
+    headTurn(R, 1.1, -0.2, 0.3);
+    R.armHang(0, 0.15, { reach: 0.98, out: 0.1 }); R.armHang(1, 0.1, { reach: 0.98, out: 0.15 });
+    hands[0].pose(0.4, 0.2); hands[1].pose(0.4, 0.2);
+    if (gun) { R.rig.add(gun); gun.position.copy(o.dropAt ?? V3(-0.3, 0.02, 0.35)); gun.quaternion.copy(eulerQ(0, 0.8, Math.PI / 2)); }
+  } else {
+    const fall = [0, 0, 0.75, 1.38, 1.55][k];
+    rig.rotation.x = fall;
+    rig.position.x = (o.shift ?? [0, 0, -0.3, -0.6, -0.7])[k];
+    pelvis.position.set(0, R.S.hipY, 0);
+    const kb = [0, 0, 1.3, 0.3, 0.05][k];
+    for (const L of legs) {
+      L.hip.rotation.set(kb * 0.5 - (k >= 3 ? 0.08 : 0), 0, -L.side * [0, 0, 0.1, 0.15, 0.2][k]);
+      L.knee.rotation.set(kb * 1.6, 0, 0);
+      L.ankle.rotation.set(k >= 3 ? 0.15 : 0.4, 0, L.side * 0.4);
+    }
+    spine.rotation.set(0.05, 0, 0.04); chest.rotation.set(0.02, 0.05, 0);
+    headTurn(R, [0, 0, 0.4, -0.2, -0.1][k], [0, 0, 0.3, 0.9, 1.35][k], [0, 0, 0.1, 0.2, 0.3][k]);
+    // arms: forward to break the fall, then out on the floor (face down: frontal-plane rotations)
+    const AX = [[0, 0], [0, 0], [-1.3, -1.1], [-0.3, -0.2], [-0.1, -0.08]][k], AZ = [[0, 0], [0, 0], [0.3, 0.3], [1.9, 0.9], [2.5, 0.45]][k];
+    for (const A of arms) { A.sh.rotation.set(AX[A.i], 0, -A.side * AZ[A.i]); A.el.rotation.set(0, 0, -A.side * (k === 4 && A.i ? 0.7 : 0.3)); A.wrist.rotation.set(0, 0, 0); }
+    hands[0].pose(0.45, 0.3); hands[1].pose(0.35, 0.4);
+    if (gun) { R.rig.remove(gun); R.root.add(gun); gun.position.copy(o.dropWorld ?? V3(0.25, 0.02, 0.35)); gun.quaternion.copy(eulerQ(0, 0.8, Math.PI / 2)); }
     R.noHemClamp = true; R.after?.(); R.noHemClamp = false;
     R.ground();
     if (k === 4 && o.pool) {

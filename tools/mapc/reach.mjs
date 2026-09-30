@@ -1,8 +1,8 @@
 // Provability check: can the level be finished from the player start?
 //
-// Model: the map is sampled on a 16-unit sub-grid. The player is a 48x48 box (3x3 sub-cells;
-// the real player is 32 wide, so 1-cell squeezes don't count as passable) standing at a feet
-// height z. A move of 16 units lands on the highest surface <= z + STEP in every sub-cell under
+// Model: the map is sampled on a 16-unit sub-grid. The player is the real 32x32 box (2x2 sub-cells,
+// positions on the 16-unit lattice) standing at a feet height z. (1-cell-wide squeezes are legal in
+// the engine but awful to play; mapc lints them separately.) A move of 16 units lands on the highest surface <= z + STEP in every sub-cell under
 // the box (floors, lift platforms, 3D-floor tops); it needs 56 units of headroom there (and at
 // the old z if the player drops) and no 3D slab cutting through the body. Any drop is allowed.
 // Doors are open once their key is held, remote doors/floors/lifts once their trigger fired;
@@ -86,7 +86,7 @@ export function checkLevel(lv) {
       return best;
     };
     const clear = (sx, sy, z) => {
-      for (let dy = -1; dy <= 1; dy++) for (let dx = -1; dx <= 1; dx++) {
+      for (let dy = -1; dy <= 0; dy++) for (let dx = -1; dx <= 0; dx++) {
         const c = cols[(sy + dy) * W + sx + dx];
         if (!c || z + HEIGHT > c.ceil || z < c.floor) return false;
         for (const [z0, z1] of c.slabs) if (z0 < z + HEIGHT && z1 > z) return false;
@@ -94,9 +94,9 @@ export function checkLevel(lv) {
       return true;
     };
     const standAt = (sx, sy, z) => { // landing height of the box at (sx,sy) for feet z, or null
-      if (sx < 1 || sy < 1 || sx >= W - 1 || sy >= H - 1) return null;
+      if (sx < 1 || sy < 1 || sx >= W || sy >= H) return null;
       let zl = -Infinity;
-      for (let dy = -1; dy <= 1; dy++) for (let dx = -1; dx <= 1; dx++) {
+      for (let dy = -1; dy <= 0; dy++) for (let dx = -1; dx <= 0; dx++) {
         const l = landing((sy + dy) * W + sx + dx, z);
         if (l === null) return null;
         if (l > zl) zl = l;
@@ -106,7 +106,7 @@ export function checkLevel(lv) {
     };
     const liftAt = (sx, sy) => {
       let id = null;
-      for (let dy = -1; dy <= 1; dy++) for (let dx = -1; dx <= 1; dx++) {
+      for (let dy = -1; dy <= 0; dy++) for (let dx = -1; dx <= 0; dx++) {
         const c = cols[(sy + dy) * W + sx + dx];
         if (!c || c.lift === null) return null;
         if (id === null) id = c.lift; else if (id !== c.lift) return null;
@@ -159,7 +159,7 @@ export function checkLevel(lv) {
     const cx = x / SUB, cy = -y / SUB;
     const r = rad / SUB;
     for (let sy = Math.floor(cy - r - 1); sy <= Math.ceil(cy + r); sy++) for (let sx = Math.floor(cx - r - 1); sx <= Math.ceil(cx + r); sx++) {
-      if (Math.abs(sx + 0.5 - cx) * SUB > rad || Math.abs(sy + 0.5 - cy) * SUB > rad) continue;
+      if (Math.abs(sx - cx) * SUB > rad || Math.abs(sy - cy) * SUB > rad) continue;
       const zs = at.get(sy * W + sx);
       if (!zs) continue;
       for (const z of zs) if (tz - z >= zlo && tz - z <= zhi) return true;
@@ -215,7 +215,7 @@ export function checkLevel(lv) {
 
   function startStates(cols) {
     const mv = makeMover(cols, STEP);
-    const sx0 = Math.floor(start.x / SUB), sy0 = Math.floor(-start.y / SUB);
+    const sx0 = Math.round(start.x / SUB), sy0 = Math.round(-start.y / SUB);
     for (let r = 0; r <= 2; r++) for (let dy = -r; dy <= r; dy++) for (let dx = -r; dx <= r; dx++) {
       const zl = mv.standAt(sx0 + dx, sy0 + dy, start.z);
       if (zl !== null) return [key(sx0 + dx, sy0 + dy, zl)];
@@ -339,6 +339,7 @@ export function checkLevel(lv) {
       fail(`softlock: ${bad.length} reachable positions cannot reach the exit (e.g. col ${(sx / 2) | 0} row ${(sy / 2) | 0} z ${z})`);
     }
     // earlier states: positions that cannot return to the start must be able to finish from there
+    const reported = new Set();
     for (const h of main.history.slice(0, -1)) {
       const back = reverseReach(h.res.edges, h.starts);
       const oneWay = [...h.res.seen].filter((s) => !back.has(s));
@@ -348,9 +349,10 @@ export function checkLevel(lv) {
         const sub = solve([s], h.state, false);
         for (const t of sub.res.seen) done.add(t);
         if (!sub.st.exit) {
-          softlocks++;
           const [sx, sy, z] = unkey(s);
-          fail(`softlock: from col ${(sx / 2) | 0} row ${(sy / 2) | 0} z ${z} (a one-way drop) the level cannot be finished`);
+          const where = `col ${(sx / 2) | 0} row ${(sy / 2) | 0} z ${z}`;
+          if (!bad.length && !reported.has(where)) { softlocks++; fail(`softlock: from ${where} (a one-way drop) the level cannot be finished`); }
+          reported.add(where);
           break;
         }
       }
@@ -360,25 +362,45 @@ export function checkLevel(lv) {
   // ---- coverage stats
   const walk = new Uint8Array(N), reached = new Uint8Array(N);
   const mv = makeMover(cols, STEP);
-  for (let sy = 1; sy < H - 1; sy++) for (let sx = 1; sx < W - 1; sx++) {
+  for (let sy = 1; sy < H; sy++) for (let sx = 1; sx < W; sx++) {
     const c = cols[sy * W + sx];
     if (!c || c.scenery) continue;
-    for (const z of c.surf) if (mv.clear(sx, sy, z)) { walk[sy * W + sx] = 1; break; }
+    let ok = false;
+    for (const [ox, oy] of [[0, 0], [1, 0], [0, 1], [1, 1]]) {
+      for (const z of c.surf) if (mv.clear(sx + ox, sy + oy, z)) { ok = true; break; }
+      if (ok) break;
+    }
+    if (ok) walk[sy * W + sx] = 1;
   }
   let dmg = 0;
   for (const s of res.seen) {
     const [sx, sy] = unkey(s);
-    for (let dy = -1; dy <= 1; dy++) for (let dx = -1; dx <= 1; dx++) reached[(sy + dy) * W + sx + dx] = 1;
+    for (let dy = -1; dy <= 0; dy++) for (let dx = -1; dx <= 0; dx++) reached[(sy + dy) * W + sx + dx] = 1;
   }
   let nWalk = 0, nReach = 0;
   for (let k = 0; k < N; k++) {
     if (walk[k]) { nWalk++; if (reached[k]) nReach++; }
     if (reached[k] && cols[k] && cols[k].damage) dmg++;
   }
+  // ---- lint: 1-cell-wide passages (legal in the engine, miserable to walk through)
+  {
+    const secAt = (r, c) => { const cell = lv.cells[r] && lv.cells[r][c]; return cell && cell.pieces && cell.pieces.F ? cell.pieces.F.sector : null; };
+    const open = (a, b) => b && (b.kind === 'door' || b.kind === 'lift' || (b.kind !== 'window' && !b.p.block && Math.abs(b.floor - a.floor) <= 24 && b.ceil - Math.max(a.floor, b.floor) >= 56));
+    const squeezes = [];
+    for (let r = 1; r < lv.H - 1; r++) for (let c = 1; c < lv.W - 1; c++) {
+      const S = secAt(r, c);
+      if (!reached[(r * 2) * W + c * 2] && !reached[(r * 2 + 1) * W + c * 2 + 1]) continue;
+      if (!S || S.kind === 'door' || S.kind === 'window' || S.kind === 'stairs' || S.ceil - S.floor < 56 || S.p.scenery) continue;
+      const w = open(S, secAt(r, c - 1)), e = open(S, secAt(r, c + 1)), n = open(S, secAt(r - 1, c)), so = open(S, secAt(r + 1, c));
+      if ((!w && !e && n && so) || (!n && !so && w && e)) squeezes.push(`col ${c} row ${r}`);
+    }
+    if (squeezes.length) warn(`${squeezes.length} one-cell-wide squeeze(s), e.g. ${squeezes.slice(0, process.env.MAPC_DEBUG ? 999 : 4).join("; ")}`);
+  }
+
   if (dmg) rep.info.push(`the reachable area includes ${dmg * 256} sq units of damaging floor`);
   const secrets = lv.sectors.filter((s) => s.p && s.p.secret && s.kind !== 'door');
   const reachedC = new Uint8Array(N);
-  for (const s of clamber.seen) { const [sx, sy] = unkey(s); reachedC[sy * W + sx] = 1; }
+  for (const s of clamber.seen) { const [sx, sy] = unkey(s); for (let dy = -1; dy <= 0; dy++) for (let dx = -1; dx <= 0; dx++) reachedC[(sy + dy) * W + sx + dx] = 1; }
   const hit = (arr, s) => s.pieces.some((p) => arr[(p.r * 2) * W + p.c * 2] || arr[(p.r * 2 + 1) * W + p.c * 2 + 1] || arr[(p.r * 2) * W + p.c * 2 + 1] || arr[(p.r * 2 + 1) * W + p.c * 2]);
   for (const s of secrets) {
     if (hit(reached, s)) continue;

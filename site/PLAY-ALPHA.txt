@@ -1,0 +1,23 @@
+COSMIC CALAMITY: ASSAULT - Case File 51  (alpha: MAP01 "Groom Lake")
+===========================================================================
+
+1. Install GZDoom 4.14 (https://zdoom.org / GitHub releases) or UZDoom.
+2. Get Freedoom: Phase 2 (freedoom2.wad, free) or use your DOOM II doom2.wad.
+3. Run:   gzdoom -iwad freedoom2.wad -file cosmic-calamity-assault.pk3
+   (or drag the .pk3 onto gzdoom.exe and pick Freedoom 2 / DOOM II)
+4. First time: Options > "Controller Layout (Xbox)" > Apply Xbox layout
+   or Options > "Keyboard & Mouse Layout" > Apply keyboard & mouse layout.
+5. New Game > Case File 51 > pick a difficulty.
+
+Controls (Xbox / keyboard+mouse)
+  RT / left click ...... fire          LT / right click ... aim down sights
+  A / Space ............ jump (again at a ledge in the air: clamber)
+  B / C ................ crouch (hold in the air: dolphin dive)
+  X / R, E ............. reload / use doors, terminals, revive guards (hold)
+  LB / G ............... grenade (hold to cook)   RB / Q ... quick melee
+  D-pad up / F ......... flashlight               D-pad down / H ... IRIS objective
+  R3 / V ............... dual wield (with two of the same gun)
+  View / Tab ........... map                      F6 / F9 .. quicksave / quickload
+
+Alpha notes: only MAP01 is in; some weapons, items and effects are still
+being rendered, and the other three maps follow.

@@ -5,31 +5,45 @@
 // grooves show as teal light; one material drives the whole pulse.
 import * as THREE from 'three';
 import { renderChar } from '../lib/chr/job.js';
-import { mesh, mat, glow, sph, cyl, V3, fbm, mulberry32, tubeGeo, ellipsoidGeo } from '../lib/chr/core.js';
+import { mesh, mat, glow, sph, cyl, V3, hash, mulberry32, tubeGeo, ellipsoidGeo } from '../lib/chr/core.js';
+import { mergeVertices } from '../lib/addons/BufferGeometryUtils.js';
 import { pool, glowOrb } from '../lib/chr/parts.js';
 
 const C = V3(0, 1.75, 0);          // brain centre
 const RX = 2.0, RY = 1.3, RZ = 1.6; // brain radii
 
+// 3D value noise (no pole or seam distortion on the sphere)
+function vn3(x, y, z, seed) {
+  const xi = Math.floor(x), yi = Math.floor(y), zi = Math.floor(z);
+  const xf = x - xi, yf = y - yi, zf = z - zi;
+  const u = xf * xf * (3 - 2 * xf), v = yf * yf * (3 - 2 * yf), w = zf * zf * (3 - 2 * zf);
+  const h = (a, b, c) => hash(a + c * 57, b - c * 131, seed);
+  const l = (a, b, t) => a + (b - a) * t;
+  return l(l(l(h(xi, yi, zi), h(xi + 1, yi, zi), u), l(h(xi, yi + 1, zi), h(xi + 1, yi + 1, zi), u), v),
+    l(l(h(xi, yi, zi + 1), h(xi + 1, yi, zi + 1), u), l(h(xi, yi + 1, zi + 1), h(xi + 1, yi + 1, zi + 1), u), v), w);
+}
+const fbm3 = (x, y, z, seed, oct = 3) => { let t = 0, a = 0.5, f = 1, n = 0; for (let i = 0; i < oct; i++) { t += vn3(x * f, y * f, z * f, seed + i * 7) * a; n += a; a *= 0.5; f *= 2; } return t / n; };
+
 function coralGeo(detail = 6) {
-  const g = new THREE.IcosahedronGeometry(1, detail);
+  let g = new THREE.IcosahedronGeometry(1, detail);
+  g.deleteAttribute('normal'); g.deleteAttribute('uv');
+  g = mergeVertices(g, 1e-5);
   const p = g.attributes.position, v = new THREE.Vector3();
   const col = new Float32Array(p.count * 3);
-  const ridge = new THREE.Color(0xd2aeb6), side = new THREE.Color(0x8a5f86), groove = new THREE.Color(0x3a2440);
+  const ridge = new THREE.Color(0xd6b2ba), side = new THREE.Color(0x8e6288), groove = new THREE.Color(0x3a2440);
   for (let i = 0; i < p.count; i++) {
     v.fromBufferAttribute(p, i).normalize();
-    const u = Math.atan2(v.x, v.z) / (Math.PI * 2) + 0.5, w = v.y * 0.5 + 0.5;
-    // meandering ridges: a stripe field bent by two noise warps; big lobes on top
-    const w1 = fbm(u * 4, w * 3, 4, 3, 71), w2 = fbm(u * 5 + 3, w * 4, 5, 3, 73);
-    const s = Math.sin((u * 26 + w1 * 5.5) * Math.PI * 2 * 0.5 + (w * 10 + w2 * 4) * Math.PI);
-    const r = Math.abs(s);                    // 0 in a groove, 1 on a ridge crest
-    const lobe = 1 + 0.08 * (fbm(u * 3, w * 2, 3, 3, 79) - 0.5) + 0.05 * Math.sin(u * Math.PI * 6) * Math.sin(w * Math.PI * 3);
-    const h = r < 0.28 ? 0.86 + 0.1 * (r / 0.28) : 0.96 + 0.04 * Math.sin((r - 0.28) / 0.72 * Math.PI / 2);
-    // flatter underside where it sits in the cradle
-    const k = h * lobe;
-    v.multiplyScalar(k);
+    // brain coral: the contour lines of a warped noise field are the grooves
+    const wx = fbm3(v.x * 1.6 + 5, v.y * 1.6, v.z * 1.6, 11) - 0.5, wy = fbm3(v.x * 1.6, v.y * 1.6 + 9, v.z * 1.6, 13) - 0.5;
+    const n = fbm3(v.x * 2.2 + wx * 1.4, v.y * 2.2 + wy * 1.4, v.z * 2.2, 17, 2);
+    const d = Math.abs(((n * 10) % 1 + 1) % 1 - 0.5); // 0.5 on a contour line → groove; 0 midway → ridge crest
+    const r = 1 - d * 2;                                  // 0 in a groove .. 1 on a crest
+    const lobe = 1;
+    const G = 0.3;
+    const h = r < G ? 0.87 + 0.09 * (r / G) : 0.96 + 0.045 * Math.sin((r - G) / (1 - G) * Math.PI / 2);
+    v.multiplyScalar(h * lobe);
     p.setXYZ(i, v.x * RX, v.y * RY, v.z * RZ);
-    const c = r < 0.28 ? groove.clone().lerp(side, r / 0.28) : side.clone().lerp(ridge, Math.min(1, (r - 0.28) / 0.5));
+    const c = r < G ? groove.clone().lerp(side, r / G) : side.clone().lerp(ridge, Math.min(1, (r - G) / 0.5));
     col[i * 3] = c.r; col[i * 3 + 1] = c.g; col[i * 3 + 2] = c.b;
   }
   g.setAttribute('color', new THREE.BufferAttribute(col, 3));
@@ -41,9 +55,9 @@ function buildHive() {
   const root = new THREE.Group();
   const brain = new THREE.Group(); brain.position.copy(C); root.add(brain);
   const coralM = new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.45, metalness: 0.0 });
-  const coral = new THREE.Mesh(coralGeo(6), coralM); brain.add(coral);
+  const coral = new THREE.Mesh(coralGeo(72), coralM); brain.add(coral);
   const innerM = new THREE.MeshBasicMaterial({ color: 0x2ee8d0, toneMapped: false });
-  const inner = mesh(ellipsoidGeo(RX * 0.915, RY * 0.915, RZ * 0.915, 40, 24), innerM); brain.add(inner);
+  const inner = mesh(ellipsoidGeo(RX * 0.93, RY * 0.93, RZ * 0.93, 48, 28), innerM); brain.add(inner);
   // the core: a glowing eye of light at the front that swells to fire
   const core = glowOrb(0.35, 0xffffff, 0x7ffff0, 1); core.position.set(0, -0.1, RZ * 0.93); core.visible = false; brain.add(core);
   const flare = new THREE.Group(); flare.position.copy(core.position); flare.visible = false; brain.add(flare);
@@ -104,7 +118,7 @@ function buildHive() {
   const sparks = new THREE.Group(); root.add(sparks);
   for (const c of conduits) for (let i = 0; i < 5; i++) { const s = mesh(new THREE.ConeGeometry(0.03, 0.35, 4), glow(i % 2 ? 0xffffff : 0x9ffff4, 1)); s.position.copy(c.to).add(V3((rnd() - 0.5) * 0.3, (rnd() - 0.5) * 0.3, 0.1)); s.rotation.set(rnd() * 6, rnd() * 6, rnd() * 6); sparks.add(s); }
   const smoke = new THREE.Group(); root.add(smoke);
-  for (let i = 0; i < 12; i++) { const s = mesh(sph(0.3 + rnd() * 0.35, 10, 8), mat(i % 2 ? 0x34303a : 0x4c4652, { rough: 1 })); s.base = V3((rnd() - 0.5) * 3.2, 2.6 + rnd() * 1.0, (rnd() - 0.2) * 1.4); smoke.add(s); }
+  for (let i = 0; i < 22; i++) { const s = mesh(sph(0.14 + rnd() * 0.22, 10, 8), mat(i % 3 ? 0x3a3640 : 0x57505c, { rough: 1 })); s.base = V3((rnd() - 0.5) * 2.8, 2.2 + rnd() * 1.2, (rnd() - 0.1) * 1.4); s.scale.y = 0.8; smoke.add(s); }
   const puddle = pool(1.6, 0x3fd06c, 21, { glow: true, sx: 1.5, sz: 0.8 }); puddle.position.z = 0.8; root.add(puddle);
   const H = { root, brain, coral, coralM, inner, innerM, core, flare, conduits, buildConduit, spray, sparks, smoke, puddle, cradle, ribs };
   H.reset = () => {
@@ -146,7 +160,7 @@ export default async function (F, params = {}) {
     spray.visible = k === 1 || k === 2;
     for (const s of spray.children) { const t = k === 1 ? 0.6 : 1.1; s.position.copy(C).add(V3(0, 0.3, 0.6)).addScaledVector(s.dir, s.sp * t * 1.6); if (k === 2) s.position.y -= 0.8; }
     smoke.visible = k >= 2 && k <= 4;
-    for (const s of smoke.children) { s.position.copy(s.base); s.position.y += (k - 2) * 0.3; s.scale.setScalar(1 + (k - 2) * 0.25); }
+    for (const s of smoke.children) { s.position.copy(s.base); s.position.y += (k - 2) * 0.35 - (s.base.y > 3 ? 0 : 0.4); const q = [1, 1, 0.8, 1.05, 1.25, 1][k]; s.scale.set(q, q * 0.8, q); s.visible = (k - 2) * 7 + (s.base.x * 3 | 0) % 5 < 18; }
     puddle.visible = k >= 2; puddle.scale.setScalar([0, 0, 0.5, 0.8, 1, 1.1][k]);
     // conduits tear loose one after another and droop
     conduits.forEach((c, i) => {

@@ -27,7 +27,7 @@ export default async function (F, params = {}) {
     F: () => aim(R, gun, 'pistol1', { fire: true }),
     G: () => pain(R, gun, 'pistol'),
   };
-  for (const [i, f] of [...'HIJKL'].entries()) poses[f] = () => death(R, i, { gun, pool: oil });
+  for (const [i, f] of [...'HIJKL'].entries()) poses[f] = () => death(R, i, { gun, pool: oil, forward: true });
   for (const [i, f] of [...'MNOP'].entries()) poses[f] = () => { gib(R, G, i); gun.visible = true; R.root.add(gun); gun.position.set(0.35, 0.02, 0.3); gun.quaternion.setFromEuler(new THREE.Euler(0, 0.8, Math.PI / 2)); };
 
   await renderChar(F, params, {

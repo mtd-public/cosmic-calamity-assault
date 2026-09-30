@@ -164,6 +164,15 @@ class CCAWeapon : Weapon abstract
 			if (d.HitType == TRACE_HitWall && d.HitLine && d.HitLine.special && (d.HitLine.activation & SPAC_Use)) return false;
 			if (d.HitType == TRACE_HitActor && d.HitActor && (d.HitActor is "DownedGuard" || d.HitActor is "HackTerminal" || d.HitActor is "CCANPC")) return false;
 		}
+		// a seated guard or a low terminal sits under the eye-level trace: look around the feet too
+		let it = BlockThingsIterator.Create(mo, 96);
+		while (it.Next())
+		{
+			let a = it.thing;
+			if (!a || !(a is "DownedGuard" || a is "HackTerminal" || a is "CCANPC") || a.health <= 0) continue;
+			if (mo.Distance2D(a) > 96) continue;
+			if (abs(DeltaAngle(mo.angle, mo.AngleTo(a))) < 40) return false;
+		}
 		return true;
 	}
 

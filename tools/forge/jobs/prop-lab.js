@@ -517,7 +517,7 @@ export default async function (F) {
     const folder = boxUp(M(0xd6be86, { rough: 0.8 }), 0.25, 0.012, 0.33, 0.003); add(root, folder, 0.15, 0.002, 0.05, 0, 0.7, 0);
     const photo = canvasTex(48, 36, (g) => { g.fillStyle = '#eee'; g.fillRect(0, 0, 48, 36); g.fillStyle = '#1a2230'; g.fillRect(3, 3, 42, 26); g.fillStyle = '#9aa4b0'; g.beginPath(); g.ellipse(24, 14, 10, 3, 0, 0, 7); g.fill(); });
     const ph = new THREE.Mesh(new THREE.PlaneGeometry(0.15, 0.11), K.texMat(photo)); add(root, ph, -0.25, 0.03, 0.2, -Math.PI / 2, 0, 0.4);
-    await prop(F, { prefix: 'DPAP', root, w: 1.6, top: 0.7, bottom: -0.6, yaw: 0, elev: 38 });
+    root.scale.z = 1.2; await prop(F, { prefix: 'DPAP', root, w: 1.6, top: 0.75, bottom: -0.75, yaw: 0, elev: 89.9 });
   }
   if (want('DBLD')) {
     const root = new THREE.Group(), r = rng(93);
@@ -526,7 +526,7 @@ export default async function (F) {
     add(root, new THREE.Mesh(shape(0.5, 28, 0.35), bm), 0, 0.003, 0, -Math.PI / 2, 0, 0).scale.set(1.2, 0.8, 1);
     for (let k = 0; k < 10; k++) { const rr = 0.03 + r() * 0.08; add(root, new THREE.Mesh(shape(rr, 10, 0.4), bm), (r() - 0.5) * 1.6, 0.003, (r() - 0.5) * 1.0, -Math.PI / 2, 0, 0); }
     add(root, new THREE.Mesh(shape(0.25, 16, 0.3), new THREE.MeshStandardMaterial({ color: 0x2a0202, roughness: 0.35 })), 0.1, 0.005, -0.05, -Math.PI / 2, 0, 0);
-    await prop(F, { prefix: 'DBLD', root, w: 1.9, top: 0.6, bottom: -0.6, yaw: 0, elev: 38 });
+    root.scale.z = 1.2; await prop(F, { prefix: 'DBLD', root, w: 1.9, top: 0.8, bottom: -0.8, yaw: 0, elev: 89.9 });
   }
   if (want('DGLS')) {
     const root = new THREE.Group(), r = rng(95);
@@ -539,7 +539,7 @@ export default async function (F) {
       const d = Math.sqrt(r()) * 0.6, a = r() * 6.28;
       add(root, m, Math.cos(a) * d * 1.3, 0.004, Math.sin(a) * d * 0.8, -Math.PI / 2 + (r() - 0.5) * 0.5, 0, r() * 6);
     }
-    await prop(F, { prefix: 'DGLS', root, w: 1.8, top: 0.5, bottom: -0.6, yaw: 0, elev: 38, lights: { key: 3.2, rim: 1.6 } });
+    root.scale.z = 1.2; await prop(F, { prefix: 'DGLS', root, w: 1.8, top: 0.75, bottom: -0.75, yaw: 0, elev: 89.9, lights: { key: 3.2, rim: 1.6 } });
   }
 
   // ------------------------------------------------------------ DALN: alien conduit growth (A-B pulse)
@@ -585,8 +585,10 @@ export default async function (F) {
     for (let k = 0; k <= 8; k++) add(root, torus(M(0x8a8a86, { metal: 0.7, rough: 0.3 }), 0.02, 0.005, 4, 10), -Wd / 2 + k * Wd / 8, Ht + 0.01, 0);
     // billow cycle: t in [0,1): blown in toward the viewer, falls back, sucked out through the window
     const pose = (f) => {
-      const t = 'ABCDEF'.indexOf(f) / 6, p = geo.attributes.position;
-      const out = Math.sin(t * Math.PI * 2 + 0.3);
+      // frames run monotonically for the ZScript's ping-pong (CURT ABCDEFEDCB):
+      // A sucked out through the frame, B hanging, C-F billowing into the room
+      const k = 'ABCDEF'.indexOf(f), t = k / 6, p = geo.attributes.position;
+      const out = [-0.95, -0.15, 0.3, 0.6, 0.85, 1.0][k];
       const inn = Math.max(0, out), suck = Math.max(0, -out);
       for (let i = 0; i < p.count; i++) {
         const x = rest[i * 3], y = rest[i * 3 + 1];

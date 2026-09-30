@@ -50,7 +50,7 @@ export default async function (F) {
       }
     }
     // inner filler so the crown isn't see-through
-    add(root, new THREE.Mesh(new THREE.ConeGeometry(1.1, 6.6, 10, 1, true), M(0x1c2e1e, { rough: 1 })), 0, 5.2, 0);
+    add(root, new THREE.Mesh(new THREE.ConeGeometry(0.75, 6.2, 10, 1, true), M(0x14200f, { rough: 1, detail: 'wool' })), 0, 5.3, 0);
     add(root, new THREE.Mesh(new THREE.ConeGeometry(0.35, 1.3, 8, 1, true), mats[2]), 0, 9.1, 0);
     await prop(F, { prefix: 'DTRE', root, w: 5.6, top: 9.8, yaw: 0, elev: 6, lights: { hemi: 1.4, key: 2.2 } });
   }
@@ -68,11 +68,11 @@ export default async function (F) {
     });
     const lm = new THREE.MeshStandardMaterial({ map: leafTex, alphaTest: 0.5, side: THREE.DoubleSide, roughness: 0.9 });
     const r = rng(12);
-    add(root, sphere(M(0x1a2616, { rough: 1 }), 0.5, 12, 8), 0, 0.45, 0).scale.set(1.3, 0.8, 1.1);
-    for (let k = 0; k < 34; k++) {
+    add(root, sphere(M(0x121a0e, { rough: 1 }), 0.4, 12, 8), 0, 0.42, 0).scale.set(1.2, 0.8, 1.0);
+    for (let k = 0; k < 70; k++) {
       const c = new THREE.Mesh(new THREE.PlaneGeometry(0.7, 0.7), lm);
-      const a = r() * 6.28, rr = 0.2 + r() * 0.5;
-      add(root, c, Math.cos(a) * rr * 1.2, 0.25 + r() * 0.7, Math.sin(a) * rr, r() * 3, r() * 3, r() * 3);
+      const a = r() * 6.28, rr = 0.25 + r() * 0.45, hy = r();
+      add(root, c, Math.cos(a) * rr * 1.3 * (1 - hy * 0.4), 0.2 + hy * 0.85, Math.sin(a) * rr * (1 - hy * 0.4), r() * 3, r() * 3, r() * 3);
     }
     for (let k = 0; k < 5; k++) { const a = r() * 6.28; add(root, taper(M(0x3a2a1c), [[0, 0, 0], [Math.cos(a) * 0.3, 0.3, Math.sin(a) * 0.3], [Math.cos(a) * 0.5, 0.8, Math.sin(a) * 0.5]], (t) => 0.02 * (1 - t * 0.7), 8, 4)); }
     await prop(F, { prefix: 'DBSH', root, w: 2.0, top: 1.5, yaw: 0, elev: 10 });
@@ -98,7 +98,7 @@ export default async function (F) {
     for (const x of [-1.8, -0.6, 0.6, 1.8]) for (const s2 of [-1, 1]) { add(root, tube(rope, [[x, wall + 0.1, s2 * Wd / 2], [x, 0.6, s2 * (Wd / 2 + 0.9)], [x, 0.05, s2 * (Wd / 2 + 1.5)]], 0.008, 6, 4)); add(root, cyl(M(0x333333), 0.015, 0.2, 5), x, 0.05, s2 * (Wd / 2 + 1.5)); }
     const st = canvasTex(128, 64, (g) => { g.fillStyle = 'rgba(30,30,20,0.75)'; g.font = 'bold 26px "DejaVu Sans Mono", monospace'; g.textAlign = 'center'; g.fillText('CP-2', 64, 30); g.font = 'bold 12px "DejaVu Sans Mono", monospace'; g.fillText('US ARMY', 64, 52); });
     add(root, decal(st, 0.9, 0.45), 0.4, 0.8, Wd / 2 + 0.03);
-    await prop(F, { prefix: 'DTNT', root, w: 6.2, top: 3.2, yaw: 0.65, elev: 12 });
+    await prop(F, { prefix: 'DTNT', root, w: 6.2, top: 3.2, yaw: -0.6, elev: 12 });
   }
 
   // ------------------------------------------------------------ DFLD: floodlight on a tripod
@@ -158,7 +158,10 @@ export default async function (F) {
     rs.each((u, v, x, y, i) => { const n = fbm(u, v, 6, 6, 5, 31), l = fbm(u, v, 12, 12, 3, 32); let c = [116, 110, 100]; const k = 0.7 + n * 0.4; c = [c[0] * k, c[1] * k, c[2] * k]; if (l > 0.62) c = [c[0] * 0.8, c[1] * 0.95, c[2] * 0.7]; rs.setC(i, c); });
     const rockM = K.texMat(K.surfTex(rs, { repeat: [1.5, 1.5] }), { rough: 0.9 });
     for (const [x, z, s2, sy, seed] of [[0, 0, 0.75, 0.7, 3], [0.9, 0.3, 0.45, 0.6, 7], [-0.8, 0.25, 0.5, 0.8, 11], [0.3, 0.7, 0.28, 0.6, 5]]) {
-      const m = new THREE.Mesh(K.THREE.BufferGeometry ? F.rockGeo(seed, 2, 0.3) : null, rockM);
+      const geo = F.rockGeo(seed, 3, 0.34), pp = geo.attributes.position, uv = [];
+      for (let i = 0; i < pp.count; i++) { const x0 = pp.getX(i), y0 = pp.getY(i), z0 = pp.getZ(i); uv.push(Math.atan2(z0, x0) / Math.PI + 1, y0 * 0.8); }
+      geo.setAttribute('uv', new THREE.Float32BufferAttribute(uv, 2));
+      const m = new THREE.Mesh(geo, rockM);
       m.scale.set(s2 * 1.2, s2 * sy, s2); m.position.set(x, s2 * sy * 0.3, z); m.rotation.y = seed; root.add(m);
     }
     await prop(F, { prefix: 'DRCK', root, w: 2.8, top: 1.4, yaw: 0, elev: 12 });

@@ -47,5 +47,5 @@ defaultbind DPadRight cca_gtype
 defaultbind Pad_Back togglemap
 defaultbind Pad_Start menu_main
 
-alias cca_padlayout "bind RTrigger +attack; bind LTrigger +altattack; bind Pad_A +jump; bind Pad_B +crouch; bind Pad_X +use; bind Pad_Y weapnext; bind LShoulder +user1; bind RShoulder +user2; bind LThumb +speed; bind RThumb cca_dual; bind DPadUp cca_flashlight; bind DPadDown cca_iris; bind DPadLeft weapprev; bind DPadRight cca_gtype; bind Pad_Back togglemap; bind Pad_Start menu_main; echo $CCA_PADAPPLIED"
-alias cca_kbmlayout "bind mouse1 +attack; bind mouse2 +altattack; bind r +reload; bind e +use; bind g +user1; bind q +user2; bind f cca_flashlight; bind v cca_dual; bind t cca_gtype; bind h cca_iris; bind c +crouch; bind space +jump; bind tab togglemap; bind f6 quicksave; bind f9 quickload; echo $CCA_KBMAPPLIED"
+alias cca_padlayout "bind RTrigger +attack; bind LTrigger +altattack; bind Pad_A +jump; bind Pad_B +crouch; bind Pad_X +use; bind Pad_Y weapnext; bind LShoulder +user1; bind RShoulder +user2; bind LThumb +speed; bind RThumb cca_dual; bind DPadUp cca_flashlight; bind DPadDown cca_iris; bind DPadLeft weapprev; bind DPadRight cca_gtype; bind Pad_Back togglemap; bind Pad_Start menu_main; echo Xbox layout applied."
+alias cca_kbmlayout "bind mouse1 +attack; bind mouse2 +altattack; bind r +reload; bind e +use; bind g +user1; bind q +user2; bind f cca_flashlight; bind v cca_dual; bind t cca_gtype; bind h cca_iris; bind c +crouch; bind space +jump; bind tab togglemap; bind f6 quicksave; bind f9 quickload; echo Keyboard and mouse layout applied."

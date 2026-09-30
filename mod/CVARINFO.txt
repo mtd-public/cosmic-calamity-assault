@@ -1,1 +1,3 @@
-server int cca_selftest = 0;
+// test hooks (tools/gz-smoke.sh, tools/gz-tour.sh); never saved to the ini
+server noarchive int cca_selftest = 0;
+server noarchive int cca_tour = 0;

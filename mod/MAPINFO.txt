@@ -5,7 +5,7 @@ gameinfo
 {
 	PlayerClasses = "CCAPlayer"
 	StatusBarClass = "CCAStatusBar"
-	AddEventHandlers = "CCAEvents", "CCAOverlay", "CCASelfTest"
+	AddEventHandlers = "CCAEvents", "CCAOverlay", "CCASelfTest", "CCATour"
 	TitleMusic = "music/title.mid"
 	TitleTime = 11
 	FinaleMusic = "music/title.mid"

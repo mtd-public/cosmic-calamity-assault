@@ -335,12 +335,13 @@ function makeSectors(lv) {
       s.openCeil = Math.min(...nb.map((n) => n.ceil)) - 4;
       if (s.openCeil - s.floor < 56) lv.err(`door '${s.char}' at ${where(s)} opens only ${s.openCeil - s.floor} high (< 56)`, s.def.line);
       s.ceil = p.open ? s.openCeil : s.floor;
-      for (const n of nb) if (n.ceil - (s.openCeil + 4) > 16 && !p.secret) {
+      const passNb = nb.filter((n) => n.floor < s.openCeil - 56);   // sides you walk through (not raised blocks at the jambs)
+      for (const n of passNb) if (n.ceil - (s.openCeil + 4) > 16 && !p.secret) {
         lv.warn(`door '${s.char}' at ${where(s)}: the ${n.char} side's ceiling is ${n.ceil - s.openCeil - 4} above the doorway, so the door texture repeats above it (put a lower-ceiling frame cell in front)`, s.def.line);
         break;
       }
       s.cf = s.def.own.cf ?? 'METLFLR';
-      const hiFloors = nb.map((n) => n.floor);
+      const hiFloors = passNb.map((n) => n.floor);
       if (Math.max(...hiFloors) - s.floor > 24) lv.warn(`door '${s.char}' at ${where(s)}: neighbour floors differ by ${Math.max(...hiFloors) - s.floor}`, s.def.line);
       s.lock = p.lock ? String(p.lock) : null;
       if (s.lock && !(s.lock in LOCKS)) lv.err(`door '${s.char}': lock=${s.lock} (blue|red|yellow)`, s.def.line);

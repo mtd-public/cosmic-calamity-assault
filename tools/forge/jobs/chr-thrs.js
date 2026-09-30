@@ -25,7 +25,7 @@ export default async function (F, params = {}) {
     G: () => pain(R, gun, 'long'),
   };
   for (let k = 0; k < 4; k++) poses['ABCD'[k]] = () => walk(R, gun, k, { style: 'shamble', carry: 'longLow', jitter: J, stride: 0.52 });
-  for (const [i, f] of [...'HIJKL'].entries()) poses[f] = () => death(R, i, { gun, pool: oil, dropWorld: V3(0.1, 0.03, 0.45) });
+  for (const [i, f] of [...'HIJKL'].entries()) poses[f] = () => death(R, i, { gun, pool: oil, forward: true, yaw: -1.15, shift: [0, 0, 0.3, 0.6, 0.7], dropWorld: V3(-0.1, 0.03, 0.45) });
   for (const [i, f] of [...'MNOP'].entries()) poses[f] = () => { gib(R, G, i, { yaw: -1.1 }); R.root.add(gun); gun.position.set(-0.4, 0.03, 0.35); gun.quaternion.setFromEuler(new THREE.Euler(0, -0.5, Math.PI / 2)); };
 
   await renderChar(F, params, {

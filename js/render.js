@@ -5,7 +5,7 @@
 //   view.render()
 import * as THREE from 'three';
 import { FX, LightPool } from './fx.js';
-import { GB, MAT, buildStatic, makeTarget, makePines, makeCondor, glowMat, basicGlow, emissiveMat, setQuality, rockGeo } from './models.js';
+import { GB, MAT, buildStatic, makeTarget, makePines, makeCondor, makeMountains, glowMat, basicGlow, emissiveMat, setQuality, rockGeo, trs } from './models.js';
 import { makeWeapon, makePickup, makeGrenade } from './gunmodels.js';
 import { makeEnemy, makePlayerBody, animatePlayerBody } from './rigs.js';
 import { ViewModel } from './viewmodel.js';
@@ -205,23 +205,22 @@ export class View {
     const cx = (lv.bounds.x0 + lv.bounds.x1) / 2, cz = (lv.bounds.z0 + lv.bounds.z1) / 2;
     // distant skyline
     if (sky.skyline === 'city' || sky.skyline === 'port') {
+      // towers with lit windows, set-back upper floors, rooftop tanks and masts; a few on fire
       const gb = new GB();
-      const n = sky.skyline === 'city' ? 70 : 40;
+      const n = sky.skyline === 'city' ? 80 : 44;
       for (let i = 0; i < n; i++) {
-        const a = rng() * Math.PI * 2, R = 300 + rng() * 160;
-        const x = cx + Math.cos(a) * R, z = cz + Math.sin(a) * R, w = 14 + rng() * 26, h = 20 + rng() * (sky.skyline === 'city' ? 110 : 40);
-        gb.cbox('concrete', [x - w / 2, -5, z - w / 2], [x + w / 2, h, z + w / 2], 0.5);
-        if (rng() < 0.3) this.fx.spawn({ p: [x, h * 0.4, z], stat: true, size: 30, color: 0xff6a20, alpha: 0.4, tile: 0 });
+        const a = rng() * Math.PI * 2, R = 280 + rng() * 180;
+        const x = cx + Math.cos(a) * R, z = cz + Math.sin(a) * R, w = 14 + rng() * 24, dd = 14 + rng() * 24, h = 18 + rng() * (sky.skyline === 'city' ? 120 : 36);
+        const mat = rng() < 0.85 ? 'windows' : 'concrete';
+        gb.cbox(mat, [x - w / 2, -5, z - dd / 2], [x + w / 2, h, z + dd / 2], 0.3);
+        if (h > 50 && rng() < 0.6) { const w2 = w * (0.5 + rng() * 0.3), d2 = dd * (0.5 + rng() * 0.3), h2 = h + 10 + rng() * 30; gb.cbox(mat, [x - w2 / 2, h - 1, z - d2 / 2], [x + w2 / 2, h2, z + d2 / 2], 0.3); if (rng() < 0.5) gb.addGeo('metal', new THREE.CylinderGeometry(0.4, 0.6, 18 + rng() * 14, 5), trs(x, h2 + 9, z)); }
+        if (rng() < 0.5) gb.addGeo('concrete', new THREE.CylinderGeometry(2.5, 2.5, 4, 8), trs(x + (rng() - 0.5) * w * 0.5, h + 2, z + (rng() - 0.5) * dd * 0.5), { su: 2, sv: 1 });
+        if (rng() < 0.25) { this.fx.spawn({ p: [x, h * 0.5, z], stat: true, size: 34, color: 0xff6a20, alpha: 0.35, tile: 0 }); }
       }
-      for (const m of gb.meshes()) { m.material = m.material.clone(); m.material.color.set(0x404650); m.castShadow = false; this.scene.add(m); }
+      for (const m of gb.meshes()) { m.material = m.material.clone(); if (m.material.map === getTex('windows').map) { m.material.color.set(0x8a8e94); m.material.emissiveIntensity = lv.theme === 'day' ? 0.25 : 1.1; } else m.material.color.set(0x50565e); m.castShadow = false; this.scene.add(m); }
     }
     if (sky.skyline === 'mesa') {
-      for (let i = 0; i < 16; i++) {
-        const a = (i / 16) * Math.PI * 2 + rng() * 0.2, R = 380 + rng() * 120;
-        const m = new THREE.Mesh(rockGeo(rng() * 100, 1, 0.2), MAT('rock'));
-        m.scale.set(60 + rng() * 60, 30 + rng() * 40, 60 + rng() * 60); m.position.set(cx + Math.cos(a) * R, 0, cz + Math.sin(a) * R);
-        this.scene.add(m);
-      }
+      const mesa = makeMountains(cx, cz, 300, 780, 7); mesa.material.color.set(0xd8c8a8); this.scene.add(mesa);
     }
     // Vyrr capital ships hanging over the horizon: the invasion is everywhere
     if (sky.ships) {
@@ -324,19 +323,8 @@ export class View {
   }
 
   buildMountains(lv) {
-    const rng = mulberry32(12);
     const cx = (lv.bounds.x0 + lv.bounds.x1) / 2, cz = (lv.bounds.z0 + lv.bounds.z1) / 2;
-    const mat = MAT('cliff').clone(); mat.color.set(0xb8c0c8);
-    for (let i = 0; i < 22; i++) {
-      const a = (i / 22) * Math.PI * 2 + rng() * 0.2, R = 280 + rng() * 260;
-      const m = new THREE.Mesh(rockGeo(rng() * 50, 2, 0.35), mat);
-      const h = 90 + rng() * 140;
-      m.scale.set(80 + rng() * 70, h, 80 + rng() * 70); m.position.set(cx + Math.cos(a) * R, -20, cz + Math.sin(a) * R);
-      this.scene.add(m);
-      const snow = new THREE.Mesh(rockGeo(rng() * 50, 1, 0.3), new THREE.MeshPhongMaterial({ color: 0xf4f8ff, shininess: 20 }));
-      snow.scale.set(m.scale.x * 0.35, h * 0.3, m.scale.z * 0.35); snow.position.set(m.position.x, -20 + h * 0.62, m.position.z);
-      this.scene.add(snow);
-    }
+    this.scene.add(makeMountains(cx, cz, 240, 760, 12));
   }
 
   // ------------------------------------------------------------ terrain

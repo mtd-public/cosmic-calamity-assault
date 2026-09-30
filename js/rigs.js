@@ -39,17 +39,18 @@ export function makePlayerArms() {
   const mk = (side) => {
     const holder = new THREE.Group(); // the shoulder joint IS the arm's root, so IK targets live in the viewmodel's space
     const L1 = 0.47, L2 = 0.45;
-    const up = bone(holder, L1, 0.062, 0.052, MAT('gunmetal'), { seg: 10 });
+    const up = bone(holder, L1, 0.062, 0.052, MAT('suit'), { seg: 12 });
     holder.remove(up.joint);
     const root = up.joint;
-    // pauldron + upper-arm plate
-    const pad = mesh(new THREE.SphereGeometry(0.095, 10, 8, 0, Math.PI * 2, 0, 1.5), 'ecsArmor'); pad.position.y = 0.01; pad.scale.set(1.1, 0.9, 1.1); up.joint.add(pad);
-    const plate = mesh(new THREE.CylinderGeometry(0.075, 0.068, 0.3, 8, 1, true, side > 0 ? -1.6 : 1.5, 3.1), 'ecsArmor'); plate.position.y = -0.24; up.joint.add(plate);
-    const el = bone(up.end, L2, 0.052, 0.046, MAT('gunmetal'), { seg: 10 });
-    // gauntlet: forearm plate, wrist ring, status light
-    const gaunt = mesh(new THREE.CylinderGeometry(0.066, 0.06, 0.3, 8, 1, true, side > 0 ? -1.8 : 1.3, 3.4), 'ecsArmor'); gaunt.position.y = -0.24; el.joint.add(gaunt);
-    const ring = mesh(new THREE.TorusGeometry(0.055, 0.012, 6, 12), 'black'); ring.rotation.x = Math.PI / 2; ring.position.y = -L2 + 0.03; el.joint.add(ring);
-    const light = new THREE.Mesh(new THREE.BoxGeometry(0.012, 0.03, 0.006), emissiveMat(0x4fe3ff, 2)); light.position.set(side * 0.06, -0.14, 0.0); el.joint.add(light);
+    // pauldron + upper-arm plate: dark composite over the charcoal sleeve
+    const pad = mesh(new THREE.SphereGeometry(0.095, 12, 8, 0, Math.PI * 2, 0, 1.5), 'suitPlate'); pad.position.y = 0.01; pad.scale.set(1.1, 0.9, 1.1); up.joint.add(pad);
+    const plate = mesh(new THREE.CylinderGeometry(0.074, 0.066, 0.3, 12, 1, true, side > 0 ? -1.6 : 1.5, 3.1), 'suitPlate'); plate.position.y = -0.24; up.joint.add(plate);
+    const el = bone(up.end, L2, 0.052, 0.046, MAT('suit'), { seg: 12 });
+    // gauntlet: forearm plate, wrist strap, a wrist computer with a lit screen
+    const gaunt = mesh(new THREE.CylinderGeometry(0.066, 0.058, 0.3, 12, 1, true, side > 0 ? -1.8 : 1.3, 3.4), 'suitPlate'); gaunt.position.y = -0.24; el.joint.add(gaunt);
+    const ring = mesh(new THREE.TorusGeometry(0.055, 0.012, 8, 14), 'harness'); ring.rotation.x = Math.PI / 2; ring.position.y = -L2 + 0.03; el.joint.add(ring);
+    const wrist = mesh(new THREE.BoxGeometry(0.05, 0.07, 0.02), 'suitPlate'); wrist.position.set(side * 0.055, -L2 + 0.1, 0.0); wrist.rotation.z = side * -0.3; el.joint.add(wrist);
+    const light = new THREE.Mesh(new THREE.BoxGeometry(0.03, 0.045, 0.006), emissiveMat(0x4fe3ff, 1.8)); light.position.set(side * 0.068, -L2 + 0.1, 0.0); light.rotation.z = side * -0.3; el.joint.add(light);
     const hand = makeHand(mats, 1.15, side);
     el.end.add(hand);
     root.traverse((o) => { if (o.isMesh) o.castShadow = false; });
@@ -63,7 +64,7 @@ export function makePlayerArms() {
 // ======================================================================
 export function makePlayerBody() {
   const spec = {
-    type: 'anvil', bodyY: 1.0, skin: 'gunmetal', armor: 'ecsArmor',
+    type: 'anvil', bodyY: 1.0, skin: 'suit', armor: 'suitPlate',
     hip: { x: 0.14, y: -0.06, z: 0 }, thigh: { len: 0.44, r0: 0.09, r1: 0.075 }, shin: { len: 0.44, r0: 0.07, r1: 0.055 }, foot: { len: 0.14, r0: 0.05, r1: 0.04, angle: 0.95 },
     toe: [0.11, 0.05, 0.16], legPole: [0, -0.3, -1], stride: 0.42, lift: 0.14,
     shoulder: { x: 0.24, y: 0.5, z: 0 }, upper: { len: 0.32, r0: 0.062, r1: 0.052 }, fore: { len: 0.3, r0: 0.052, r1: 0.045 }, handScale: 1.15, hand: { glove: 'black', skin: 'gunmetal' },
@@ -72,32 +73,34 @@ export function makePlayerBody() {
   const r = buildBiped(spec);
   const b = r.body;
   // torso: chest plate, abdomen, back unit
-  const chest = mesh(lathe([[0.18, -0.15], [0.26, 0.05], [0.27, 0.35], [0.2, 0.55], [0.08, 0.62]], 10), 'ecsArmor'); chest.scale.set(1.15, 1, 0.8); r.chest.add(chest);
-  const abd = mesh(new THREE.CylinderGeometry(0.2, 0.22, 0.3, 10), 'gunmetal'); abd.position.y = -0.1; b.add(abd);
-  const belt = mesh(new THREE.TorusGeometry(0.23, 0.035, 6, 12), 'black'); belt.rotation.x = Math.PI / 2; belt.position.y = -0.2; b.add(belt);
-  const pelvis = mesh(new THREE.SphereGeometry(0.22, 10, 8), 'ecsArmor'); pelvis.scale.set(1.15, 0.6, 0.9); pelvis.position.y = -0.24; b.add(pelvis);
-  const pack = mesh(new THREE.BoxGeometry(0.34, 0.4, 0.16), 'ecsArmor'); pack.position.set(0, 0.25, 0.22); r.chest.add(pack);
+  const chest = mesh(lathe([[0.18, -0.15], [0.26, 0.05], [0.27, 0.35], [0.2, 0.55], [0.08, 0.62]], 12), 'suitPlate'); chest.scale.set(1.15, 1, 0.8); r.chest.add(chest);
+  for (const sx of [-1, 1]) { const strap = mesh(new THREE.BoxGeometry(0.07, 0.62, 0.02), 'harness'); strap.position.set(sx * 0.12, 0.28, -0.24); strap.rotation.z = sx * -0.12; r.chest.add(strap); }
+  const abd = mesh(new THREE.CylinderGeometry(0.2, 0.22, 0.3, 12), 'suit'); abd.position.y = -0.1; b.add(abd);
+  const belt = mesh(new THREE.TorusGeometry(0.23, 0.035, 8, 14), 'harness'); belt.rotation.x = Math.PI / 2; belt.position.y = -0.2; b.add(belt);
+  const pelvis = mesh(new THREE.SphereGeometry(0.22, 12, 8), 'suit'); pelvis.scale.set(1.15, 0.6, 0.9); pelvis.position.y = -0.24; b.add(pelvis);
+  const pack = mesh(new THREE.BoxGeometry(0.34, 0.4, 0.16), 'suitPlate'); pack.position.set(0, 0.25, 0.22); r.chest.add(pack);
   for (const s of [-1, 1]) { const vent = new THREE.Mesh(new THREE.BoxGeometry(0.06, 0.16, 0.01), emissiveMat(0x4fe3ff, 1.6)); vent.position.set(s * 0.1, 0.25, 0.305); r.chest.add(vent); }
   const seam = new THREE.Mesh(new THREE.BoxGeometry(0.02, 0.3, 0.012), emissiveMat(0x4fe3ff, 1.6)); seam.position.set(0, 0.25, -0.22); r.chest.add(seam);
   // thigh + shin plates
   for (const L of r.legs) {
-    const tp = mesh(new THREE.CylinderGeometry(0.1, 0.085, 0.3, 8, 1, true, -1.2, 2.4), 'ecsArmor'); tp.position.y = -0.2; L.hip.add(tp);
-    const sp = mesh(new THREE.CylinderGeometry(0.08, 0.065, 0.3, 8, 1, true, -1.2, 2.4), 'ecsArmor'); sp.position.y = -0.2; L.knee.add(sp);
+    const tp = mesh(new THREE.CylinderGeometry(0.1, 0.085, 0.3, 10, 1, true, -1.2, 2.4), 'suitPlate'); tp.position.y = -0.2; L.hip.add(tp);
+    const sp = mesh(new THREE.CylinderGeometry(0.08, 0.065, 0.3, 10, 1, true, -1.2, 2.4), 'suitPlate'); sp.position.y = -0.2; L.knee.add(sp);
   }
   // helmet with an amber visor
   const helm = new THREE.Group(); r.head.add(helm);
-  const dome = mesh(new THREE.SphereGeometry(0.14, 12, 10), 'ecsArmor'); dome.scale.set(1, 1.1, 1.1); dome.position.y = 0.12; helm.add(dome);
-  const visor = new THREE.Mesh(new THREE.SphereGeometry(0.125, 12, 8, Math.PI * 0.62, Math.PI * 0.76, 0.9, 1.0), new THREE.MeshPhongMaterial({ color: 0xffa030, emissive: 0xff8020, emissiveIntensity: 0.9, specular: 0xffffff, shininess: 90 }));
+  const dome = mesh(new THREE.SphereGeometry(0.14, 14, 10), 'suitPlate'); dome.scale.set(1, 1.1, 1.1); dome.position.y = 0.12; helm.add(dome);
+  const visor = new THREE.Mesh(new THREE.SphereGeometry(0.125, 14, 8, Math.PI * 0.62, Math.PI * 0.76, 0.9, 1.0), new THREE.MeshPhongMaterial({ color: 0xd08a30, emissive: 0xc06a18, emissiveIntensity: 0.6, specular: 0xffffff, shininess: 110 }));
   visor.position.y = 0.11; visor.scale.set(1.05, 1.12, 1.12); helm.add(visor);
-  const jawG = mesh(new THREE.BoxGeometry(0.2, 0.09, 0.14), 'gunmetal'); jawG.position.set(0, 0.0, -0.05); helm.add(jawG);
+  const jawG = mesh(new THREE.SphereGeometry(0.11, 10, 8, 0, Math.PI * 2, 1.2, 1.4), 'suit'); jawG.position.set(0, 0.06, -0.03); jawG.scale.set(1.2, 1, 1.15); helm.add(jawG);
+  const brow = mesh(new THREE.TorusGeometry(0.135, 0.018, 6, 16, Math.PI * 1.1), 'harness'); brow.position.set(0, 0.16, 0.0); brow.rotation.set(Math.PI / 2, 0, Math.PI * 0.95); helm.add(brow);
   r.helmet = helm;
   // chest rig pouches, knee pads, boots, jump-kit thrusters
-  for (const s of [-1, 1]) for (let i = 0; i < 2; i++) { const pouch = mesh(new THREE.BoxGeometry(0.1, 0.11, 0.07), 'black'); pouch.position.set(s * (0.09 + i * 0.12), 0.15 - i * 0.02, -0.24); r.chest.add(pouch); }
+  for (const s of [-1, 1]) for (let i = 0; i < 2; i++) { const pouch = mesh(new THREE.BoxGeometry(0.1, 0.11, 0.07), 'harness'); pouch.position.set(s * (0.09 + i * 0.12), 0.15 - i * 0.02, -0.24); r.chest.add(pouch); }
   for (const L of r.legs) {
-    const kp = mesh(new THREE.SphereGeometry(0.09, 8, 6, 0, Math.PI * 2, 0, 1.4), 'black'); kp.position.set(0, -L.L1 + 0.02, -0.05); kp.rotation.x = -1.4; L.hip.add(kp);
-    const boot = mesh(new THREE.CylinderGeometry(0.085, 0.08, 0.22, 8, 1, true), 'black'); boot.position.y = -L.L2 + 0.13; L.knee.add(boot);
+    const kp = mesh(new THREE.SphereGeometry(0.09, 10, 6, 0, Math.PI * 2, 0, 1.4), 'suitPlate'); kp.position.set(0, -L.L1 + 0.02, -0.05); kp.rotation.x = -1.4; L.hip.add(kp);
+    const boot = mesh(new THREE.CylinderGeometry(0.085, 0.08, 0.22, 10, 1, true), 'black'); boot.position.y = -L.L2 + 0.13; L.knee.add(boot);
   }
-  for (const s of [-1, 1]) { const thr = mesh(new THREE.CylinderGeometry(0.05, 0.06, 0.16, 8), 'gunmetal'); thr.position.set(s * 0.12, 0.05, 0.26); thr.rotation.x = 0.3; r.chest.add(thr); }
+  for (const s of [-1, 1]) { const thr = mesh(new THREE.CylinderGeometry(0.05, 0.06, 0.16, 10), 'gunmetal'); thr.position.set(s * 0.12, 0.05, 0.26); thr.rotation.x = 0.3; r.chest.add(thr); }
   return r;
 }
 
@@ -146,26 +149,50 @@ export function buildBiped(spec) {
   return { root, body, chest, head, neck: neck.joint, legs, arms, tail, spec, gaitPh: 0, gait: 0, lean: V(), fall: 0, spin: 0, twist: 0, headYaw: 0, headPitch: 0 };
 }
 
-// A Vyrr reptile head: skull, snout, hinged jaw, crest, eyes. Returns the group; group.jaw is the jaw joint.
-function reptileHead(scale, crest, eyeColor = 0xffd040) {
+// A Vyrr pilot's head: a hard-shell helmet with a lowered dark visor (the eyes
+// glow through it), and a snouted breathing mask for Earth's air, with a filter
+// canister on each cheek and a hose down to the chest pack. Reptile underneath:
+// the neck and the shape of the muzzle say so.
+function pilotHead(scale, o = {}) {
   const h = new THREE.Group();
-  const skull = mesh(new THREE.SphereGeometry(0.2 * scale, 12, 9), 'scales'); skull.scale.set(1, 0.85, 1.25); h.add(skull);
-  const brow = mesh(new THREE.SphereGeometry(0.19 * scale, 10, 6, 0, Math.PI * 2, 0, 1.2), 'vyrr'); brow.position.set(0, 0.06 * scale, 0.02 * scale); brow.scale.set(1.02, 0.7, 1.2); h.add(brow);
-  const snout = mesh(new THREE.CylinderGeometry(0.07 * scale, 0.16 * scale, 0.34 * scale, 8), 'scales');
-  snout.rotation.x = -Math.PI / 2; snout.position.set(0, -0.03 * scale, -0.3 * scale); h.add(snout);
-  for (let i = 0; i < 4; i++) for (const s of [-1, 1]) { const tooth = mesh(new THREE.ConeGeometry(0.012 * scale, 0.04 * scale, 4), 'vyrrGold'); tooth.position.set(s * 0.06 * scale, -0.085 * scale, -0.22 * scale - i * 0.06 * scale); tooth.rotation.x = Math.PI; h.add(tooth); }
-  const jaw = joint(0, -0.08 * scale, -0.08 * scale); h.add(jaw); h.jaw = jaw;
-  const jawM = mesh(new THREE.CylinderGeometry(0.05 * scale, 0.11 * scale, 0.3 * scale, 8), 'scales'); jawM.rotation.x = -Math.PI / 2; jawM.position.set(0, -0.02 * scale, -0.14 * scale); jawM.scale.y = 0.6; jaw.add(jawM);
+  const shell = o.shell || 'vyrr', trim = o.trim || 'vyrrGold';
+  const dome = mesh(new THREE.SphereGeometry(0.2 * scale, 14, 11), shell); dome.scale.set(1, 1.05, 1.15); dome.position.y = 0.04 * scale; h.add(dome);
+  const ridge = mesh(new THREE.BoxGeometry(0.05 * scale, 0.06 * scale, 0.36 * scale), trim); ridge.position.set(0, 0.22 * scale, 0.0); h.add(ridge);
+  const rim = mesh(new THREE.TorusGeometry(0.2 * scale, 0.02 * scale, 6, 18), trim); rim.rotation.x = Math.PI / 2; rim.position.y = -0.02 * scale; rim.scale.set(1, 1.15, 1); h.add(rim);
+  // visor: a dark glossy shell over the face, slightly see-through so the eyes show
+  const vm = new THREE.MeshPhongMaterial({ color: 0x0c1016, specular: 0xffffff, shininess: 140, transparent: true, opacity: 0.82 });
+  const visor = new THREE.Mesh(new THREE.SphereGeometry(0.19 * scale, 14, 10, Math.PI * 0.6, Math.PI * 0.8, 0.95, 0.95), vm);
+  visor.position.set(0, 0.03 * scale, 0.0); visor.scale.set(1.04, 1.02, 1.18); h.add(visor);
+  for (const s of [-1, 1]) { const eye = new THREE.Mesh(new THREE.SphereGeometry(0.03 * scale, 8, 6), emissiveMat(o.eye || 0xffd040, 2.6)); eye.position.set(s * 0.085 * scale, 0.04 * scale, -0.16 * scale); h.add(eye); }
+  // the mask: a muzzle-shaped cup over the snout, canisters, a hose
+  const mask = mesh(lathe([[0.02, 0], [0.11, 0.04], [0.14, 0.18], [0.1, 0.3], [0.03, 0.34]].map(([r, y]) => [r * scale, y * scale]), 10), o.mask || 'suitPlate');
+  mask.rotation.x = Math.PI / 2 + 0.25; mask.position.set(0, -0.09 * scale, -0.12 * scale); mask.scale.set(1.1, 1, 0.8); h.add(mask);
   for (const s of [-1, 1]) {
-    const eye = new THREE.Mesh(new THREE.SphereGeometry(0.036 * scale, 8, 6), emissiveMat(eyeColor, 2.4)); eye.position.set(s * 0.12 * scale, 0.05 * scale, -0.13 * scale); h.add(eye);
-    const lid = mesh(new THREE.SphereGeometry(0.042 * scale, 8, 5, 0, Math.PI * 2, 0, 1.4), 'scales'); lid.position.copy(eye.position); lid.rotation.x = -0.6; h.add(lid);
+    const can = mesh(new THREE.CylinderGeometry(0.05 * scale, 0.05 * scale, 0.06 * scale, 10), trim); can.rotation.z = Math.PI / 2; can.position.set(s * 0.15 * scale, -0.08 * scale, -0.12 * scale); h.add(can);
+    const grille = new THREE.Mesh(new THREE.CylinderGeometry(0.035 * scale, 0.035 * scale, 0.065 * scale, 8), emissiveMat(0x8cffb0, 0.9)); grille.rotation.z = Math.PI / 2; grille.position.copy(can.position); h.add(grille);
+    const cup = mesh(new THREE.SphereGeometry(0.05 * scale, 8, 6), shell); cup.position.set(s * 0.19 * scale, 0.05 * scale, 0.02 * scale); cup.scale.set(0.6, 1, 1); h.add(cup); // ear cups
   }
-  if (crest) {
-    for (let i = 0; i < 3; i++) { const c = mesh(lathe([[0.02, 0], [0.07, 0.1], [0.04, 0.32], [0, 0.4]], 5), 'vyrr'); c.rotation.x = 0.7 + i * 0.35; c.position.set(0, (0.12 - i * 0.04) * scale, (0.02 + i * 0.09) * scale); c.scale.setScalar(scale * (1 - i * 0.2)); h.add(c); }
-  } else {
-    for (const s of [-1, 1]) { const frill = mesh(new THREE.ConeGeometry(0.03 * scale, 0.16 * scale, 4), 'vyrr'); frill.position.set(s * 0.16 * scale, 0.02 * scale, 0.1 * scale); frill.rotation.set(-0.5, 0, s * 1.6); h.add(frill); }
-  }
+  const hose = mesh(new THREE.TorusGeometry(0.16 * scale, 0.022 * scale, 6, 12, Math.PI * 0.75), 'harness'); hose.position.set(0.05 * scale, -0.25 * scale, -0.06 * scale); hose.rotation.set(0.3, -0.4, 2.4); h.add(hose);
+  const strap = mesh(new THREE.BoxGeometry(0.42 * scale, 0.03 * scale, 0.02 * scale), 'harness'); strap.position.set(0, -0.06 * scale, -0.02 * scale); h.add(strap);
+  h.jaw = null;
   return h;
+}
+
+// Flight-suit body parts shared by the Vyrr: chest pack with a gauge, harness straps, belt with pouches, plates over the suit.
+function pilotSuit(r, k = 1, o = {}) {
+  const c = r.chest, b = r.body;
+  const pack = mesh(new THREE.BoxGeometry(0.26 * k, 0.24 * k, 0.12 * k), o.plate || 'vyrr'); pack.position.set(0, 0.16 * k, -0.3 * k); c.add(pack);
+  const gauge = new THREE.Mesh(new THREE.CircleGeometry(0.045 * k, 12), emissiveMat(0x8cffb0, 1.6)); gauge.position.set(0.06 * k, 0.2 * k, -0.362 * k); c.add(gauge);
+  const valve = mesh(new THREE.CylinderGeometry(0.03 * k, 0.03 * k, 0.05 * k, 8), 'vyrrGold'); valve.position.set(-0.07 * k, 0.2 * k, -0.36 * k); valve.rotation.x = Math.PI / 2; c.add(valve);
+  for (const sx of [-1, 1]) { const strap = mesh(new THREE.BoxGeometry(0.07 * k, 0.6 * k, 0.02 * k), 'harness'); strap.position.set(sx * 0.13 * k, 0.28 * k, -0.27 * k); strap.rotation.z = sx * -0.14; c.add(strap); }
+  const cross = mesh(new THREE.BoxGeometry(0.06 * k, 0.5 * k, 0.02 * k), 'harness'); cross.position.set(0, 0.3 * k, 0.28 * k); cross.rotation.z = 0.7; c.add(cross);
+  const belt = mesh(new THREE.TorusGeometry(0.24 * k, 0.035 * k, 8, 14), 'harness'); belt.rotation.x = Math.PI / 2; belt.position.y = -0.14 * k; b.add(belt);
+  for (const sx of [-1, 1]) { const pouch = mesh(new THREE.BoxGeometry(0.11 * k, 0.12 * k, 0.08 * k), 'harness'); pouch.position.set(sx * 0.17 * k, -0.2 * k, -0.18 * k); b.add(pouch); }
+  for (const L of r.legs) {
+    const kp = mesh(new THREE.SphereGeometry(0.095 * k, 10, 6, 0, Math.PI * 2, 0, 1.4), o.plate || 'vyrr'); kp.position.set(0, -L.L1 + 0.02, -0.06 * k); kp.rotation.x = -1.4; L.hip.add(kp);
+    const boot = mesh(new THREE.CylinderGeometry(0.095 * k, 0.085 * k, 0.24 * k, 10, 1, true), 'black'); boot.position.y = -L.L2 + 0.14 * k; L.knee.add(boot);
+  }
+  for (const A of r.arms) { const cuff = mesh(new THREE.TorusGeometry(0.075 * k, 0.014 * k, 6, 12), 'harness'); cuff.rotation.x = Math.PI / 2; cuff.position.y = -A.L2 + 0.05; A.el.add(cuff); }
 }
 
 // ======================================================================
@@ -180,57 +207,51 @@ export function makeEnemy(type) {
 }
 
 function skitterRig() {
+  // A short humanoid: a pilot built like a child in an oversized helmet, with the breathing tank on its back.
   const r = buildBiped({
-    type: 'skitter', bodyY: 0.58, skin: 'scales', armor: 'vyrr',
-    hip: { x: 0.16, y: -0.12, z: 0.02 }, thigh: { len: 0.26, r0: 0.09, r1: 0.07 }, shin: { len: 0.24, r0: 0.065, r1: 0.05 }, foot: { len: 0.14, r0: 0.045, r1: 0.035, angle: 0.8 },
-    toe: [0.12, 0.04, 0.2], legPole: [0, -0.3, 1], stride: 0.26, lift: 0.1,
-    shoulder: { x: 0.3, y: 0.28, z: -0.02 }, upper: { len: 0.22, r0: 0.06, r1: 0.05 }, fore: { len: 0.22, r0: 0.05, r1: 0.04 }, handScale: 0.8,
-    neck: { y: 0.42, len: 0.1, r: 0.07, z: -0.06 }, tail: { n: 4, len: 0.16, r0: 0.07, r1: 0.02, y: -0.18, z: 0.15 },
+    type: 'skitter', bodyY: 0.68, skin: 'flightsuit', armor: 'vyrr',
+    hip: { x: 0.13, y: -0.1, z: 0 }, thigh: { len: 0.27, r0: 0.085, r1: 0.07 }, shin: { len: 0.26, r0: 0.065, r1: 0.05 }, foot: { len: 0.1, r0: 0.045, r1: 0.04, angle: 1.05 },
+    toe: [0.11, 0.045, 0.17], legPole: [0, -0.3, -1], stride: 0.3, lift: 0.1,
+    shoulder: { x: 0.25, y: 0.3, z: 0 }, upper: { len: 0.22, r0: 0.06, r1: 0.05 }, fore: { len: 0.21, r0: 0.05, r1: 0.042 }, handScale: 0.85, hand: { glove: 'black', skin: 'scales' },
+    neck: { y: 0.4, len: 0.08, r: 0.06, z: -0.02 }, tail: null,
   });
   const b = r.body, c = r.chest;
-  const torso = mesh(new THREE.SphereGeometry(0.36, 12, 9), 'scales'); torso.scale.set(1, 0.95, 0.85); torso.position.y = 0.18; c.add(torso);
-  const armor = mesh(new THREE.SphereGeometry(0.38, 10, 6, 0, Math.PI * 2, 0, 1.3), 'vyrr'); armor.position.y = 0.24; armor.scale.set(1, 0.8, 0.9); c.add(armor);
-  const belly = mesh(new THREE.SphereGeometry(0.3, 10, 8), 'scales'); belly.scale.set(1, 0.6, 0.8); belly.position.y = -0.1; b.add(belly);
-  // methane-style breathing tank on the back, hoses to the mask
-  const tank = mesh(lathe([[0.02, -0.28], [0.2, -0.22], [0.24, 0], [0.2, 0.26], [0.08, 0.34]], 8), 'pod'); tank.position.set(0, 0.28, 0.36); c.add(tank);
-  const tg = new THREE.Mesh(new THREE.CylinderGeometry(0.1, 0.1, 0.5, 6), basicGlow(0x55ffe0, 0.8)); tg.position.set(0, 0.28, 0.36); c.add(tg);
-  for (const s of [-1, 1]) { const hose = mesh(new THREE.TorusGeometry(0.22, 0.025, 6, 10, Math.PI * 0.9), 'black'); hose.position.set(s * 0.18, 0.4, 0.15); hose.rotation.set(0, s * 1.2, 1.5); c.add(hose); }
-  const head = reptileHead(1.0, false, 0xffd040); r.head.add(head); r.jaw = head.jaw;
-  const mask = mesh(new THREE.SphereGeometry(0.11, 8, 6, 0, Math.PI * 2, 0, 1.6), 'pod'); mask.position.set(0, -0.06, -0.25); mask.rotation.x = -1.4; head.add(mask);
+  const torso = mesh(lathe([[0.16, -0.16], [0.24, 0.0], [0.26, 0.24], [0.2, 0.38], [0.08, 0.44]], 12), 'flightsuit'); torso.scale.set(1.15, 1, 0.85); c.add(torso);
+  const plate = mesh(new THREE.SphereGeometry(0.24, 10, 6, 0, Math.PI, 0.3, 1.5), 'vyrr'); plate.rotation.y = Math.PI; plate.position.set(0, 0.16, -0.05); plate.scale.set(1, 0.8, 0.55); c.add(plate);
+  const pelvis = mesh(new THREE.SphereGeometry(0.18, 10, 8), 'flightsuit'); pelvis.scale.set(1.15, 0.6, 0.9); pelvis.position.y = -0.12; b.add(pelvis);
+  pilotSuit(r, 0.75);
+  // the tank on the back, hoses to the mask
+  const tank = mesh(lathe([[0.02, -0.24], [0.14, -0.2], [0.16, 0], [0.14, 0.22], [0.06, 0.28]], 10), 'pod'); tank.position.set(0.0, 0.2, 0.3); c.add(tank);
+  const tg = new THREE.Mesh(new THREE.CylinderGeometry(0.07, 0.07, 0.4, 8), basicGlow(0x55ffe0, 0.7)); tg.position.copy(tank.position); c.add(tg);
+  const head = pilotHead(0.95, { eye: 0xffd040 }); r.head.add(head);
   r.gun = null; r.height = 1.3; r.type = 'skitter';
-  r.gunPose = { aim: [0.12, 0.2, -0.28], idle: [0.2, -0.05, -0.15] };
+  r.gunPose = { aim: [0.12, 0.18, -0.26], idle: [0.2, -0.05, -0.15] };
   r.animate = (e, ctx) => animateBiped(r, e, ctx);
   return r;
 }
 
 function trooperRig(holo = false, shielded = false) {
-  // Partially humanoid: an upright soldier with human proportions and forward
-  // knees, in plate armour with a chest rig, knee pads and boots. The reptile
-  // head, the tail and the four-fingered claws are what mark it as Vyrr.
+  // A tall humanoid fighter pilot: quilted flight suit, harness and life-support pack, plate armour on the
+  // shoulders, thighs and shins, and the helmet-and-mask that lets a Vyrr breathe Earth's air.
   const r = buildBiped({
-    type: 'trooper', bodyY: 1.14, skin: 'scales', armor: 'vyrr',
+    type: 'trooper', bodyY: 1.14, skin: 'flightsuit', armor: 'vyrr',
     hip: { x: 0.18, y: -0.18, z: 0 }, thigh: { len: 0.46, r0: 0.12, r1: 0.095 }, shin: { len: 0.46, r0: 0.09, r1: 0.07 }, foot: { len: 0.16, r0: 0.06, r1: 0.05, angle: 1.05 },
-    toe: [0.15, 0.06, 0.24], legPole: [0, -0.3, -1], stride: 0.55, lift: 0.14, thighMat: 'vyrr',
-    shoulder: { x: 0.34, y: 0.5, z: 0 }, upper: { len: 0.34, r0: 0.085, r1: 0.07 }, fore: { len: 0.32, r0: 0.07, r1: 0.06 }, handScale: 1.25, foreMat: 'vyrr',
-    neck: { y: 0.66, len: 0.14, r: 0.08, z: -0.02 }, tail: { n: 5, len: 0.2, r0: 0.09, r1: 0.025, y: -0.22, z: 0.16 },
+    toe: [0.15, 0.06, 0.24], legPole: [0, -0.3, -1], stride: 0.55, lift: 0.14, thighMat: 'flightsuit',
+    shoulder: { x: 0.34, y: 0.5, z: 0 }, upper: { len: 0.34, r0: 0.085, r1: 0.07 }, fore: { len: 0.32, r0: 0.07, r1: 0.06 }, handScale: 1.25, foreMat: 'flightsuit', hand: { glove: 'black', skin: 'scales' },
+    neck: { y: 0.66, len: 0.14, r: 0.08, z: -0.02 }, tail: null,
   });
   const b = r.body, c = r.chest;
-  const chest = mesh(lathe([[0.2, -0.2], [0.3, -0.02], [0.34, 0.3], [0.28, 0.55], [0.12, 0.64]], 10), 'vyrr'); chest.scale.set(1.15, 1, 0.8); c.add(chest);
-  const plate = mesh(new THREE.SphereGeometry(0.36, 10, 6, 0, Math.PI, 0.3, 1.6), 'vyrrGold'); plate.rotation.y = Math.PI; plate.position.set(0, 0.28, -0.05); plate.scale.set(1, 0.9, 0.6); c.add(plate);
-  // chest rig: pouches and a collar, like a grunt's tactical vest
-  for (const s of [-1, 1]) for (let i = 0; i < 2; i++) { const pouch = mesh(new THREE.BoxGeometry(0.11, 0.12, 0.08), 'black'); pouch.position.set(s * (0.1 + i * 0.13), 0.12 - i * 0.02, -0.3); c.add(pouch); }
-  const collar = mesh(new THREE.TorusGeometry(0.2, 0.05, 6, 12), 'vyrr'); collar.rotation.x = Math.PI / 2; collar.position.y = 0.62; c.add(collar);
-  const spine = mesh(new THREE.BoxGeometry(0.12, 0.5, 0.08), 'vyrrGold'); spine.position.set(0, 0.25, 0.3); c.add(spine);
-  const pack = mesh(new THREE.BoxGeometry(0.28, 0.32, 0.12), 'vyrr'); pack.position.set(0, 0.3, 0.32); c.add(pack);
-  for (const s of [-1, 1]) { const pad = mesh(new THREE.SphereGeometry(0.17, 8, 6, 0, Math.PI * 2, 0, 1.4), 'vyrr'); pad.position.set(s * 0.36, 0.56, 0); pad.rotation.z = -s * 0.5; pad.scale.set(1.2, 0.9, 1.1); c.add(pad); }
-  const pelvis = mesh(new THREE.SphereGeometry(0.24, 10, 6), 'scales'); pelvis.scale.set(1.2, 0.6, 0.9); pelvis.position.y = -0.18; b.add(pelvis);
-  const abd = mesh(new THREE.CylinderGeometry(0.2, 0.22, 0.24, 10), 'scales'); abd.position.y = -0.04; b.add(abd);
-  const belt = mesh(new THREE.TorusGeometry(0.24, 0.035, 6, 12), 'black'); belt.rotation.x = Math.PI / 2; belt.position.y = -0.14; b.add(belt);
-  for (const L of r.legs) {
-    const kp = mesh(new THREE.SphereGeometry(0.1, 8, 6, 0, Math.PI * 2, 0, 1.4), 'vyrrGold'); kp.position.set(0, -L.L1 + 0.02, -0.06); kp.rotation.x = -1.4; L.hip.add(kp); // knee pad
-    const boot = mesh(new THREE.CylinderGeometry(0.095, 0.085, 0.24, 8, 1, true), 'vyrr'); boot.position.y = -L.L2 + 0.14; L.knee.add(boot);
-  }
-  const head = reptileHead(1.45, true, 0xffd040); r.head.add(head); r.jaw = head.jaw;
+  const chest = mesh(lathe([[0.2, -0.2], [0.3, -0.02], [0.34, 0.3], [0.28, 0.55], [0.12, 0.64]], 12), 'flightsuit'); chest.scale.set(1.15, 1, 0.8); c.add(chest);
+  const plate = mesh(new THREE.SphereGeometry(0.36, 12, 6, 0, Math.PI, 0.3, 1.6), 'vyrr'); plate.rotation.y = Math.PI; plate.position.set(0, 0.3, -0.05); plate.scale.set(1, 0.85, 0.6); c.add(plate);
+  const collar = mesh(new THREE.TorusGeometry(0.2, 0.05, 8, 14), 'vyrr'); collar.rotation.x = Math.PI / 2; collar.position.y = 0.62; c.add(collar);
+  const pack = mesh(new THREE.BoxGeometry(0.3, 0.36, 0.14), 'vyrr'); pack.position.set(0, 0.3, 0.32); c.add(pack);
+  for (const s of [-1, 1]) { const tk = mesh(new THREE.CylinderGeometry(0.06, 0.06, 0.34, 10), 'pod'); tk.position.set(s * 0.1, 0.3, 0.42); c.add(tk); }
+  for (const s of [-1, 1]) { const pad = mesh(new THREE.SphereGeometry(0.17, 10, 6, 0, Math.PI * 2, 0, 1.4), 'vyrr'); pad.position.set(s * 0.36, 0.56, 0); pad.rotation.z = -s * 0.5; pad.scale.set(1.2, 0.9, 1.1); c.add(pad); }
+  const pelvis = mesh(new THREE.SphereGeometry(0.24, 12, 6), 'flightsuit'); pelvis.scale.set(1.2, 0.6, 0.9); pelvis.position.y = -0.18; b.add(pelvis);
+  const abd = mesh(new THREE.CylinderGeometry(0.2, 0.22, 0.24, 12), 'flightsuit'); abd.position.y = -0.04; b.add(abd);
+  pilotSuit(r, 1);
+  for (const L of r.legs) { const shin = mesh(new THREE.CylinderGeometry(0.085, 0.075, 0.26, 10, 1, true, -1.1, 2.2), 'vyrr'); shin.position.y = -0.2; L.knee.add(shin); }
+  const head = pilotHead(1.3, { eye: 0xffd040 }); r.head.add(head);
   r.gun = null; r.height = 2.25; r.type = 'trooper';
   r.gunPose = { aim: [0.18, 0.28, -0.42], idle: [0.3, -0.15, -0.22] };
   if (holo) {
@@ -247,22 +268,26 @@ function trooperRig(holo = false, shielded = false) {
 }
 
 function heavyRig() {
+  // A hulking humanoid in a heavy pressure suit: twin tanks on the back feeding a big mask, the glowing
+  // coolant spine down the pack is the weak spot; slab shield and cannon ride the forearms.
   const r = buildBiped({
-    type: 'heavy', bodyY: 1.55, skin: 'scales', armor: 'vyrr',
-    hip: { x: 0.42, y: -0.5, z: 0.05 }, thigh: { len: 0.5, r0: 0.24, r1: 0.19 }, shin: { len: 0.45, r0: 0.18, r1: 0.15 }, foot: { len: 0.28, r0: 0.14, r1: 0.16, angle: 0.5 },
-    toe: [0.36, 0.1, 0.36], legPole: [0, -0.3, 1], stride: 0.55, lift: 0.14, thighMat: 'vyrr',
-    shoulder: { x: 0.88, y: 0.6, z: 0 }, upper: { len: 0.5, r0: 0.2, r1: 0.16 }, fore: { len: 0.46, r0: 0.16, r1: 0.13 }, handScale: 2.2,
-    neck: { y: 0.95, len: 0.2, r: 0.16, z: -0.3 }, tail: { n: 5, len: 0.3, r0: 0.16, r1: 0.04, y: -0.5, z: 0.5 },
+    type: 'heavy', bodyY: 1.55, skin: 'flightsuit', armor: 'vyrr',
+    hip: { x: 0.4, y: -0.5, z: 0.0 }, thigh: { len: 0.5, r0: 0.22, r1: 0.18 }, shin: { len: 0.46, r0: 0.17, r1: 0.14 }, foot: { len: 0.2, r0: 0.13, r1: 0.14, angle: 1.0 },
+    toe: [0.34, 0.1, 0.36], legPole: [0, -0.3, -1], stride: 0.55, lift: 0.14, thighMat: 'vyrr',
+    shoulder: { x: 0.86, y: 0.6, z: 0 }, upper: { len: 0.5, r0: 0.19, r1: 0.16 }, fore: { len: 0.46, r0: 0.16, r1: 0.13 }, handScale: 2.2,
+    neck: { y: 0.95, len: 0.16, r: 0.15, z: -0.15 }, tail: null,
   });
   const b = r.body, c = r.chest;
-  const torso = mesh(lathe([[0.42, -0.6], [0.78, -0.2], [0.88, 0.4], [0.72, 0.9], [0.3, 1.1]], 10), 'vyrr'); torso.scale.set(1.15, 1, 0.9); c.add(torso);
-  const hump = mesh(new THREE.SphereGeometry(0.72, 10, 8), 'scales'); hump.position.set(0, 0.7, 0.4); hump.scale.set(1.1, 0.8, 0.9); c.add(hump);
-  const pelvis = mesh(new THREE.SphereGeometry(0.5, 10, 6), 'scales'); pelvis.scale.set(1.2, 0.6, 0.9); pelvis.position.y = -0.5; b.add(pelvis);
-  // the soft back: glowing spine segments (the weak spot)
+  const torso = mesh(lathe([[0.42, -0.6], [0.76, -0.2], [0.86, 0.4], [0.7, 0.9], [0.3, 1.1]], 12), 'flightsuit'); torso.scale.set(1.15, 1, 0.9); c.add(torso);
+  const plate = mesh(new THREE.SphereGeometry(0.8, 12, 7, 0, Math.PI, 0.3, 1.5), 'vyrr'); plate.rotation.y = Math.PI; plate.position.set(0, 0.35, -0.1); plate.scale.set(1.05, 0.85, 0.55); c.add(plate);
+  const pack = mesh(new THREE.BoxGeometry(0.9, 0.9, 0.35), 'vyrr'); pack.position.set(0, 0.45, 0.62); c.add(pack);
+  for (const s of [-1, 1]) { const tk = mesh(new THREE.CylinderGeometry(0.16, 0.16, 0.9, 12), 'pod'); tk.position.set(s * 0.28, 0.45, 0.85); c.add(tk); }
+  const pelvis = mesh(new THREE.SphereGeometry(0.5, 12, 6), 'flightsuit'); pelvis.scale.set(1.2, 0.6, 0.9); pelvis.position.y = -0.5; b.add(pelvis);
   r.spine = [];
-  for (let i = 0; i < 5; i++) { const sp = new THREE.Mesh(new THREE.SphereGeometry(0.13 - i * 0.015, 8, 6), emissiveMat(0xffa040, 2.2)); sp.position.set(0, 0.95 - i * 0.3, 0.78 - i * 0.06); c.add(sp); r.spine.push(sp); }
-  for (const s of [-1, 1]) { const pad = mesh(new THREE.SphereGeometry(0.34, 8, 6, 0, Math.PI * 2, 0, 1.4), 'vyrrGold'); pad.position.set(s * 0.9, 0.72, 0); pad.rotation.z = -s * 0.4; pad.scale.set(1.2, 0.8, 1.1); c.add(pad); }
-  const head = reptileHead(1.7, true, 0xff8040); r.head.add(head); r.jaw = head.jaw;
+  for (let i = 0; i < 5; i++) { const sp = new THREE.Mesh(new THREE.SphereGeometry(0.13 - i * 0.015, 8, 6), emissiveMat(0xffa040, 2.2)); sp.position.set(0, 0.85 - i * 0.22, 0.82); c.add(sp); r.spine.push(sp); }
+  for (const s of [-1, 1]) { const pad = mesh(new THREE.SphereGeometry(0.34, 10, 6, 0, Math.PI * 2, 0, 1.4), 'vyrrGold'); pad.position.set(s * 0.88, 0.72, 0); pad.rotation.z = -s * 0.4; pad.scale.set(1.2, 0.8, 1.1); c.add(pad); }
+  pilotSuit(r, 2.0, { plate: 'vyrr' });
+  const head = pilotHead(1.5, { eye: 0xff8040, trim: 'vyrrGold' }); r.head.add(head);
   // left forearm: the slab shield; right forearm: the fuel-lance cannon (both ride the hold frames, which follow the hand targets)
   const L = r.arms[0], R = r.arms[1];
   const slab = mesh(new THREE.CylinderGeometry(1.3, 1.3, 2.3, 10, 1, false, -0.6, 1.2), 'vyrrGold');

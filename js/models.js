@@ -48,8 +48,16 @@ const MDEF = {
   vyrr: { tex: 'vyrrArmor', spec: 0xb090ff, shine: 70, rep: 1, em: 0x8cffb0, emI: 0.9 },
   vyrrGold: { tex: 'vyrrArmor', spec: 0xffe0a0, shine: 70, rep: 1, color: 0xd8a860, em: 0xffd080, emI: 0.6 },
   ecsArmor: { tex: 'ecsArmor', spec: 0x77886a, shine: 46, rep: 1 },
+  suit: { tex: 'suit', spec: 0x1a1c20, shine: 10, rep: 1 },
+  suitPlate: { tex: 'suitPlate', spec: 0x6a7078, shine: 48, rep: 1 },
+  flightsuit: { tex: 'flightsuit', spec: 0x30283a, shine: 14, rep: 1 },
+  harness: { tex: 'harness', spec: 0x222222, shine: 12, rep: 1 },
+  visor: { color: 0x0b0f14, spec: 0xffffff, shine: 140 },
+  windows: { tex: 'windows', spec: 0x333333, shine: 30, rep: 12, em: 0xffffff, emI: 1.0 },
+  pineCard: { sprite: 'pineBranch', spec: 0x0a0a0a, shine: 4, rep: 1, alphaTest: 0.5, side: THREE.DoubleSide },
+  leafCard: { sprite: 'leafCard', spec: 0x0a0a0a, shine: 4, rep: 1, alphaTest: 0.5, side: THREE.DoubleSide },
   gunmetal: { tex: 'gunmetal', spec: 0x9aa0a8, shine: 60, rep: 1 },
-  gunOlive: { tex: 'ecsArmor', spec: 0x667755, shine: 40, rep: 1, color: 0xb8c0a0 },
+  gunOlive: { tex: 'suitPlate', spec: 0x778088, shine: 44, rep: 1, color: 0xa8aeb0 },
   sand: { tex: 'sand', spec: 0x111111, shine: 6, rep: 3 },
   black: { color: 0x151515, spec: 0x333333, shine: 30 },
   tire: { color: 0x1a1a1a, spec: 0x111111, shine: 8 },
@@ -64,6 +72,7 @@ export function MAT(name) {
   if (cache.has(name)) return cache.get(name);
   const d = MDEF[name] || MDEF.metal;
   const o = { color: d.color ?? 0xffffff, specular: d.spec ?? 0x222222, shininess: d.shine ?? 20 };
+  if (d.sprite) { o.map = spriteTex(d.sprite); o.map.wrapS = o.map.wrapT = THREE.RepeatWrapping; }
   if (d.tex) {
     const t = getTex(d.tex);
     o.map = t.map;
@@ -449,10 +458,20 @@ export function buildStatic(level, gb, dyn) {
         }
         break;
       }
-      case 'tree': { // a broadleaf: trunk + leaf blobs (no pines here)
-        const rr = Math.min(w, d) * 0.5;
-        gb.addGeo('wood', new THREE.CylinderGeometry(0.18, 0.28, h * 0.55, 7), trs(cx, y0 + h * 0.27, cz), { su: 2, sv: 2 });
-        for (let i = 0; i < 5; i++) { const a = i * 1.26 + rng(), rd = i === 4 ? 0 : rr * 0.9; gb.addGeo('bush', rockGeo(rng() * 40, 1, 0.3), trs(cx + Math.cos(a) * rd, y0 + h * (0.62 + (i === 4 ? 0.2 : rng() * 0.15)), cz + Math.sin(a) * rd, 0, rng() * 6, 0, rr * 1.4, rr * 1.0, rr * 1.4)); }
+      case 'tree': { // a broadleaf: trunk, forking branches, dark leaf mass inside, leaf cards on the outside
+        const rr = Math.max(1.6, Math.min(w, d) * 0.5 + 1.2);
+        gb.addGeo('wood', new THREE.CylinderGeometry(0.16, 0.3, h * 0.5, 9), trs(cx, y0 + h * 0.25, cz), { su: 2, sv: 2 });
+        for (let i = 0; i < 4; i++) {
+          const a = i * 1.57 + rng() * 0.6, tilt = 0.55 + rng() * 0.3, L = h * 0.42;
+          gb.addGeo('wood', new THREE.CylinderGeometry(0.06, 0.13, L, 6), trs(cx + Math.cos(a) * Math.sin(tilt) * L * 0.45, y0 + h * 0.48 + Math.cos(tilt) * L * 0.45, cz + Math.sin(a) * Math.sin(tilt) * L * 0.45, Math.cos(a) * tilt * 0.0 + Math.sin(a) * tilt, 0, -Math.cos(a) * tilt), { su: 1, sv: 2 });
+        }
+        for (let i = 0; i < 3; i++) { const a = rng() * 6.28, rd = rr * 0.35; gb.addGeo('bush', rockGeo(rng() * 40, 1, 0.3), trs(cx + Math.cos(a) * rd, y0 + h * 0.72 + rng() * 0.6, cz + Math.sin(a) * rd, 0, rng() * 6, 0, rr * 0.9, rr * 0.7, rr * 0.9)); }
+        for (let i = 0; i < 16; i++) {
+          const a = rng() * 6.28, el = (rng() - 0.35) * 1.6, rd = rr * (0.55 + rng() * 0.5);
+          const px = cx + Math.cos(a) * Math.cos(el) * rd, py = y0 + h * 0.75 + Math.sin(el) * rr * 0.7, pz = cz + Math.sin(a) * Math.cos(el) * rd;
+          const size = rr * (0.9 + rng() * 0.6);
+          gb.addGeo('leafCard', new THREE.PlaneGeometry(size, size), trs(px, py, pz, rng() * 0.8 - 0.4, a + Math.PI / 2 + (rng() - 0.5) * 0.8, rng() * 0.6 - 0.3), { su: 1, sv: 1 });
+        }
         break;
       }
       case 'bench': {
@@ -897,20 +916,72 @@ export function makeTarget(kind) {
 
 // ---- pines ----------------------------------------------------------------
 export function makePines(trees) {
+  // One shared tree: a tapered trunk and seven whorls of drooping branch cards (an alpha-tested
+  // needle-branch texture on vertical planes radiating from the trunk), plus a leader at the top.
+  // Cards read as real foliage from any angle where stacked cones read as a cartoon.
   const n = trees.length;
-  const trunkG = new THREE.CylinderGeometry(0.12, 0.2, 2.6, 6); trunkG.translate(0, 1.3, 0);
-  const layers = [[1.9, 2.6, 1.4], [1.5, 2.3, 2.9], [1.05, 2.0, 4.3], [0.6, 1.6, 5.5]];
-  const folG = mergeGeometries(layers.map(([r, h, y]) => { const c = new THREE.ConeGeometry(r, h, 8, 1, true); c.translate(0, y + h / 2, 0); return c.toNonIndexed(); }));
-  const trunk = new THREE.InstancedMesh(trunkG, MAT('wood'), n);
-  const fol = new THREE.InstancedMesh(folG, MAT('needles'), n);
-  fol.material = MAT('needles').clone(); fol.material.side = THREE.DoubleSide;
-  const m = new THREE.Matrix4(), q = new THREE.Quaternion(), v = new THREE.Vector3(), s = new THREE.Vector3(), col = new THREE.Color();
-  trees.forEach(([x, y, z, sc], i) => {
-    q.setFromEuler(new THREE.Euler(0, x * 13.1 + z, 0));
-    m.compose(v.set(x, y - 0.1, z), q, s.set(sc, sc * (0.9 + ((x * 7) % 1) * 0.3), sc));
-    trunk.setMatrixAt(i, m); fol.setMatrixAt(i, m);
-    fol.setColorAt(i, col.setHSL(0.28 + (((z * 3.3) % 1 + 1) % 1) * 0.06, 0.3, 0.66 + (((x * 1.7) % 1 + 1) % 1) * 0.14));
+  const parts = [], mats = [];
+  const trunkG = new THREE.CylinderGeometry(0.1, 0.24, 6.2, 9); trunkG.translate(0, 3.1, 0);
+  parts.push(trunkG.toNonIndexed()); mats.push(0);
+  const rng = mulberry32(17);
+  const tiers = 7;
+  for (let t = 0; t < tiers; t++) {
+    const f = t / (tiers - 1), y = 1.5 + f * 4.3, len = 2.6 * (1 - f * 0.78) + 0.3, h = len * 0.55;
+    const per = t < tiers - 1 ? 6 : 4;
+    for (let k = 0; k < per; k++) {
+      const a = (k / per) * Math.PI * 2 + t * 0.55 + rng() * 0.3;
+      const card = new THREE.PlaneGeometry(len, h);
+      card.translate(len / 2, 0, 0); // root at the trunk, tip outward
+      card.rotateZ(-0.22 - rng() * 0.2); // droop
+      card.rotateY(a);
+      card.translate(0, y, 0);
+      parts.push(card.toNonIndexed()); mats.push(1);
+    }
+  }
+  const leader = new THREE.ConeGeometry(0.45, 1.4, 6, 1, true); leader.translate(0, 6.4, 0);
+  parts.push(leader.toNonIndexed()); mats.push(1);
+  const geo = mergeGeometries(parts, true);
+  geo.groups.forEach((gr, gi) => { gr.materialIndex = mats[gi]; });
+  const cardMat = MAT('pineCard').clone(); cardMat.color.set(0xe8ffe0);
+  const im = new THREE.InstancedMesh(geo, [MAT('wood'), cardMat], n);
+  const m = new THREE.Matrix4(), q = new THREE.Quaternion(), v = new THREE.Vector3(), sc = new THREE.Vector3(), col = new THREE.Color();
+  trees.forEach(([x, y, z, s], i) => {
+    q.setFromEuler(new THREE.Euler((((x * 3.1) % 1) - 0.5) * 0.06, x * 13.1 + z, (((z * 2.7) % 1) - 0.5) * 0.06));
+    m.compose(v.set(x, y - 0.1, z), q, sc.set(s, s * (0.9 + ((x * 7) % 1) * 0.3), s));
+    im.setMatrixAt(i, m);
+    im.setColorAt(i, col.setHSL(0.27 + (((z * 3.3) % 1 + 1) % 1) * 0.05, 0.35, 0.5 + (((x * 1.7) % 1 + 1) % 1) * 0.2));
   });
-  trunk.castShadow = fol.castShadow = true; trunk.receiveShadow = fol.receiveShadow = true;
-  return [trunk, fol];
+  im.castShadow = false; im.receiveShadow = true; im.frustumCulled = false;
+  return [im];
+}
+
+// A distant mountain range: an annulus of ridges with snow above the tree line, sitting past the fog.
+export function makeMountains(cx, cz, R0 = 240, R1 = 760, seed = 12) {
+  const rng = mulberry32(seed);
+  const NA = 112, NR = 7;
+  const pos = [], col = [], idx = [];
+  const ph = Array.from({ length: 6 }, () => rng() * 6.28);
+  const profile = (a) => Math.max(0, 55 + 75 * Math.sin(a * 5 + ph[0]) + 48 * Math.sin(a * 13 + ph[1]) + 30 * Math.sin(a * 29 + ph[2]) + 18 * Math.sin(a * 61 + ph[3]) + 12 * Math.sin(a * 127 + ph[4]));
+  for (let j = 0; j <= NR; j++) {
+    const t = j / NR, r = R0 + (R1 - R0) * t;
+    const radial = t < 0.45 ? Math.pow(t / 0.45, 1.6) : 1 - (t - 0.45) / 0.55 * 0.35;
+    for (let i = 0; i <= NA; i++) {
+      const a = (i / NA) * Math.PI * 2;
+      const h = (profile(a) * radial + 8 * Math.sin(a * 200 + j * 3) * t) * (1 + 0.3 * Math.sin(a * 3 + t * 5 + ph[5]));
+      const y = -25 + h * 1.9;
+      pos.push(cx + Math.cos(a) * r, y, cz + Math.sin(a) * r);
+      const snow = Math.max(0, Math.min(1, (y - 150) / 60)), shade = 0.55 + 0.45 * Math.min(1, h / 120);
+      const rr = (0.62 + 0.38 * snow) * shade, gg = (0.58 + 0.42 * snow) * shade, bb = (0.55 + 0.45 * snow) * shade;
+      col.push(rr + snow * 0.25, gg + snow * 0.25, bb + snow * 0.3);
+    }
+  }
+  for (let j = 0; j < NR; j++) for (let i = 0; i < NA; i++) { const a = j * (NA + 1) + i, b = a + 1, c = a + NA + 1, d = c + 1; idx.push(a, c, b, b, c, d); }
+  const g = new THREE.BufferGeometry();
+  g.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3));
+  g.setAttribute('color', new THREE.Float32BufferAttribute(col, 3));
+  g.setIndex(idx); g.computeVertexNormals();
+  const mat = new THREE.MeshPhongMaterial({ vertexColors: true, color: 0xbfc4c8, specular: 0x111111, shininess: 6, side: THREE.DoubleSide });
+  const m = new THREE.Mesh(g, mat);
+  m.castShadow = false; m.receiveShadow = false;
+  return m;
 }

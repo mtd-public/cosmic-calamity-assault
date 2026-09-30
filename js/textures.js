@@ -243,7 +243,7 @@ const LIB = {
     const band = v > 0.8 && v < 0.92, stripe = band && ((u * 8 + v * 8) % 1) < 0.5;
     const k = 0.75 + g * 0.3;
     if (band) return stripe ? [210 * k, 150 * k, 30 * k, 0.3] : [30 * k, 30 * k, 30 * k, 0.3];
-    return [86 * k, 96 * k, 66 * k, clamp01(p.edge / 0.03) * 0.6 + rivets(p.fu, p.fv) * 0.4];
+    return [84 * k, 90 * k, 82 * k, clamp01(p.edge / 0.03) * 0.6 + rivets(p.fu, p.fv) * 0.4];
   }),
   pod: () => build(256, (u, v) => {
     const h = hexCell(u, v, 3), g = fbm(u * 8, v * 8, 8, 4, 161);
@@ -282,6 +282,46 @@ const LIB = {
     const k = 0.72 + g * 0.3;
     return [78 * k, 92 * k, 62 * k, clamp01(p.edge / 0.05) * 0.8 + g * 0.1];
   }),
+  suit: () => build(256, (u, v) => { // the player's tactical suit: charcoal ripstop with seams and a subtle weave
+    const p = panels(u, v, 3, 3, 301), g = fbm(u * 10, v * 10, 10, 3, 302);
+    const weave = (hash(Math.floor(u * 128), Math.floor(v * 128), 5) - 0.5) * 0.12;
+    const seam = p.edge < 0.02 ? 1 : 0;
+    const k = 0.8 + g * 0.25 + weave;
+    return [34 * k, 36 * k, 40 * k, (seam ? 0.55 : 0.2) + g * 0.15 + weave * 2];
+  }),
+  suitPlate: () => build(256, (u, v) => { // dark composite plates, matte grey with panel lines and wear on the edges
+    const p = panels(u, v, 2, 3, 311), g = fbm(u * 8, v * 8, 8, 4, 312), s = fbm(u * 60, v * 4, 60, 2, 313);
+    const wear = clamp01((0.06 - p.edge) / 0.06) * 0.25;
+    const k = 0.72 + g * 0.3 + s * 0.06;
+    const c = 58 * k + wear * 40;
+    return [c, c * 1.03, c * 1.08, clamp01(p.edge / 0.03) * 0.7 + rivets(p.fu, p.fv, 0.08) * 0.5 + g * 0.06];
+  }),
+  flightsuit: () => build(256, (u, v) => { // Vyrr pilot suit: quilted violet-grey fabric with pressure seams
+    const q = Math.min(Math.abs(((u * 6) % 1) - 0.5), Math.abs(((v * 6) % 1) - 0.5)), quilt = clamp01(q / 0.08);
+    const seam = Math.abs(((v * 3) % 1) - 0.5) > 0.47 ? 1 : 0;
+    const g = fbm(u * 12, v * 12, 12, 3, 321), weave = (hash(Math.floor(u * 128), Math.floor(v * 128), 6) - 0.5) * 0.1;
+    const k = 0.78 + g * 0.25 + weave;
+    return [64 * k, 52 * k, 88 * k, quilt * 0.5 - seam * 0.3 + g * 0.1 + weave];
+  }),
+  harness: () => build(128, (u, v) => { // black webbing with stitched edges
+    const edge = v < 0.12 || v > 0.88 ? 1 : 0, stitch = edge && ((u * 24) % 1) < 0.5 ? 1 : 0;
+    const g = fbm(u * 8, v * 8, 8, 3, 331);
+    const c = 22 + g * 12 + stitch * 30;
+    return [c, c, c * 1.1, ((u * 40) % 1) < 0.5 ? 0.55 : 0.45 + edge * 0.3];
+  }),
+  windows: () => build(512, (u, v) => { // a facade: dark concrete piers, a grid of windows, some of them lit
+    const cols = 6, rows = 14, cu = u * cols, cv = v * rows, ix = Math.floor(cu), iy = Math.floor(cv), fu = cu - ix, fv = cv - iy;
+    const inWin = fu > 0.18 && fu < 0.82 && fv > 0.25 && fv < 0.8;
+    const g = fbm(u * 8, v * 8, 8, 4, 341);
+    const lit = hash(ix, iy, 12) < 0.42, warm = hash(ix, iy, 13) < 0.7;
+    if (inWin) {
+      const glass = lit ? (warm ? [255, 214, 150] : [190, 220, 255]) : [26, 32, 42];
+      const bright = lit ? 0.55 + hash(ix, iy, 14) * 0.45 : 0;
+      return [glass[0] * (lit ? 0.9 : 1), glass[1] * (lit ? 0.9 : 1), glass[2], -0.4, bright, glass[0], glass[1], glass[2]];
+    }
+    const c = 62 + g * 30 - (fv < 0.1 || fv > 0.95 ? 12 : 0);
+    return [c, c * 0.98, c * 0.94, g * 0.15 + (fu < 0.18 || fu > 0.82 ? 0.25 : 0)];
+  }, { emissive: true }),
   gunmetal: () => build(256, (u, v) => {
     const p = panels(u, v, 3, 3, 221), g = fbm(u * 12, v * 12, 12, 3, 222), s = fbm(u * 80, v * 3, 80, 2, 223);
     const c = 52 + g * 22 + s * 10;
@@ -357,6 +397,29 @@ export function spriteTex(name) {
       const x0 = s * (0.1 + Math.random() * 0.8), h = s * (0.45 + Math.random() * 0.5), lean = (Math.random() - 0.5) * s * 0.35, wdt = 3 + Math.random() * 3;
       const gr = g.createLinearGradient(0, s, 0, s - h); gr.addColorStop(0, 'rgba(60,90,30,1)'); gr.addColorStop(1, 'rgba(150,190,80,1)');
       g.fillStyle = gr; g.beginPath(); g.moveTo(x0 - wdt, s); g.quadraticCurveTo(x0 + lean * 0.4, s - h * 0.6, x0 + lean, s - h); g.quadraticCurveTo(x0 + lean * 0.5, s - h * 0.6, x0 + wdt, s); g.fill();
+    }
+  });
+  else if (name === 'pineBranch') t = canvasTex(256, (g, s) => {
+    // a drooping branch seen side-on: a dark spine with needle tufts either side, transparent elsewhere
+    g.clearRect(0, 0, s, s);
+    const spineY = (x) => s * 0.35 + (x / s) * (x / s) * s * 0.25;
+    for (let i = 0; i < 160; i++) {
+      const x = s * 0.02 + Math.random() * s * 0.96, y = spineY(x), side = Math.random() < 0.5 ? -1 : 1;
+      const len = s * (0.06 + Math.random() * 0.12) * (1 - x / s * 0.35), ang = side * (0.9 + Math.random() * 0.5) + 0.3;
+      const shade = 45 + Math.random() * 70;
+      g.strokeStyle = `rgba(${shade * 0.55}, ${shade + 20}, ${shade * 0.5}, ${0.75 + Math.random() * 0.25})`; g.lineWidth = 1.5 + Math.random() * 1.5;
+      g.beginPath(); g.moveTo(x, y); g.lineTo(x + Math.cos(ang) * len, y + Math.sin(ang) * len); g.stroke();
+    }
+    g.strokeStyle = 'rgba(70,50,30,0.9)'; g.lineWidth = 3; g.beginPath(); g.moveTo(0, spineY(0)); for (let x = 0; x <= s; x += 16) g.lineTo(x, spineY(x)); g.stroke();
+  });
+  else if (name === 'leafCard') t = canvasTex(256, (g, s) => {
+    g.clearRect(0, 0, s, s);
+    for (let i = 0; i < 90; i++) {
+      const x = s * (0.12 + Math.random() * 0.76), y = s * (0.12 + Math.random() * 0.76), r = s * (0.03 + Math.random() * 0.05);
+      const d = Math.hypot(x - s / 2, y - s / 2) / (s * 0.45); if (d > 1) continue;
+      const shade = 0.55 + Math.random() * 0.45;
+      g.fillStyle = `rgba(${70 * shade}, ${120 * shade + 20}, ${40 * shade}, ${0.85 + Math.random() * 0.15})`;
+      g.beginPath(); g.ellipse(x, y, r * 1.4, r * 0.8, Math.random() * 3.14, 0, 6.28); g.fill();
     }
   });
   else if (name === 'flag') t = canvasTex(128, (g, s) => {

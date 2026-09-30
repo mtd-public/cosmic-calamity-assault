@@ -89,7 +89,10 @@ Built from: `mstr-gme-dsgn-tmpt` house rules (sim / render / UI split, fixed ste
 
 ## 7. Art direction: early Xbox
 - **Characters** are jointed skeletons built from "bones": one mesh per limb segment with a sphere at each joint and a tapered shaft between, so a chain of them reads as one continuous limb at any bend (Halo 1's Elites were capsules on a skeleton). Legs plant their feet through two-bone IK, arms hold guns through IK onto the gun's grip and foregrip nodes, tails are bone chains that sway, jaws hinge. Silhouettes borrow from Titanfall pilots and Black Ops operators (chest rigs, pouches, knee pads, jump-kit packs, visor helmets) at original-Xbox polygon counts.
-- **The Vyrr** are partially humanoid where it helps readability: the Trooper stands upright with human proportions, forward knees and boots, in plate armour, and only its reptile head, tail and four-fingered claws say alien; the Skitter stays bestial (hunched, digitigrade, a breathing tank on its back); the Bulwark is a hulking humanoid with a slab shield on one forearm and a fuel-lance cannon on the other.
+- **The Vyrr** are humanoid fighter-pilots. Their atmosphere is not ours, so every one wears a hard-shell helmet with a lowered dark visor and a snouted breathing mask (filter canisters on the cheeks, a hose to the life-support pack on the chest) over a quilted flight suit with harness straps, pouches, knee pads and boots. The Trooper is tall with human proportions and plate armour; the Skitter is short, like a child in an oversized helmet with the tank on its back; the Bulwark is a hulking pressure suit with twin tanks, the glowing coolant spine down the pack as its weak spot, and the slab shield and cannon on its forearms. The reptile shows only in the muzzle shape under the mask, the scaled neck and the claws.
+- **The player's suit** is charcoal ripstop with dark composite plates (pauldrons, gauntlets, thigh and shin plates), harness straps and a wrist computer: grey and black, not olive.
+- **Guns and vehicles** are built from rounded cross-sections (`rrect` profiles extruded along the barrel), swept side profiles with arcs for stocks and receivers, ring trigger guards and many-segment cylinders; the MULE's hood, cab and bed are one curved profile with rounded wheel arches and torus tyres; the Sliver's wings are curved.
+- **Backdrops:** pines are a trunk with seven whorls of drooping branch cards (an alpha-tested needle texture) so they read as foliage from any angle; broadleaf trees fork into branches under leaf cards; distant mountains are a ridged annulus with a snow line; city skylines are towers with a lit-window facade texture, set-back upper floors, rooftop tanks and masts.
 - **The player's arms** run from shoulders at the bottom corners of the view to articulated hands; IK keeps them on the gun through every clip, so a reload is the left hand actually pulling the magazine, dropping it, seating a fresh one and racking the charging handle.
 - **Shapes:**
   - Chamfered boxes, so the bevels catch specular.
@@ -154,6 +157,13 @@ Riders are ordinary Troopers whose position is bound to the seat; shooting the r
 ---
 
 ## Delta log
+### art pass 2 (branch `claude/loving-hypatia-y0lqd9`)
+- Vyrr as humanoid fighter-pilots in atmosphere masks (helmet + visor + snouted mask, flight suits, harnesses, life-support packs); tails dropped.
+- Player suit recoloured to charcoal and dark grey composite; guns in gunmetal instead of olive.
+- Human weapons rebuilt with rounded cross-sections and curved profiles; MULE and Sliver smoothed.
+- Pines as branch-card trees, branching broadleaf trees, ridged mountain range, lit-window skylines.
+- Verification: check-levels OK; sim-check 49/49; smoke: 5 profiles PASS.
+
 ### graphics / art rework (branch `claude/loving-hypatia-y0lqd9`)
 - Rig toolkit (`js/rig.js`): connected bones, analytic two-bone IK, hands with curling fingers.
 - Player: full IK arms in first person; procedural clips for magazine reloads, shell loading, slide/bolt/pump cycling, melee, grenade throw (with the grenade in hand), weapon switch, plasma vent; brass ejection; a full-body cyborg seen when looking down and in vehicles.

@@ -1,0 +1,59 @@
+// Options > Controller Layout: the Xbox mapping explained in game, with
+// commands that apply it (GZDoom menus are navigable with the pad: D-pad + A/B).
+AddOptionMenu "OptionsMenu"
+{
+	StaticText " "
+	Submenu "$CCA_MENU_LAYOUT", "CCAControllerLayout"
+	Submenu "$CCA_MENU_KEYS", "CCAKeyboardLayout"
+}
+
+OptionMenu "CCAControllerLayout"
+{
+	Title "$CCA_MENU_LAYOUT"
+	StaticText "$CCA_PAD_HEAD", 1
+	StaticText " "
+	StaticText "Left stick ........ Move", 0
+	StaticText "Right stick ....... Look (free aim, no autoaim)", 0
+	StaticText "RT ................ Fire (right gun)", 0
+	StaticText "LT ................ Aim down sights  /  fire left gun when dual", 0
+	StaticText "A ................. Jump  (again in the air at a ledge: clamber)", 0
+	StaticText "B ................. Crouch  (hold in the air: dolphin dive)", 0
+	StaticText "X ................. Reload  /  use doors, terminals, revive guards", 0
+	StaticText "Y ................. Next weapon", 0
+	StaticText "LB ................ Grenade: hold to cook, release to throw", 0
+	StaticText "RB ................ Quick melee", 0
+	StaticText "L3 ................ Run", 0
+	StaticText "R3 ................ Dual wield (needs two of the gun)", 0
+	StaticText "D-pad up .......... Flashlight", 0
+	StaticText "D-pad right ....... Grenade type (frag / alien detonator)", 0
+	StaticText "D-pad down ........ IRIS: repeat objective + waypoint", 0
+	StaticText "D-pad left ........ Previous weapon", 0
+	StaticText "View / Menu ....... Map / pause menu (save & load)", 0
+	StaticText " "
+	Command "$CCA_APPLY_PAD", "cca_padlayout"
+	Submenu "$CCA_STICKS", "JoystickOptions"
+	StaticText " "
+	StaticText "$CCA_PAD_NOTE", 1
+}
+
+OptionMenu "CCAKeyboardLayout"
+{
+	Title "$CCA_MENU_KEYS"
+	StaticText "WASD / mouse ...... Move / look", 0
+	StaticText "Left / right click  Fire / aim down sights (left gun when dual)", 0
+	StaticText "Space ............. Jump (again in the air: clamber)", 0
+	StaticText "C ................. Crouch (hold in the air: dolphin dive)", 0
+	StaticText "R / E ............. Reload / use", 0
+	StaticText "G ................. Grenade (hold to cook)", 0
+	StaticText "Q ................. Quick melee", 0
+	StaticText "Shift ............. Run", 0
+	StaticText "V ................. Dual wield", 0
+	StaticText "F ................. Flashlight", 0
+	StaticText "T ................. Grenade type", 0
+	StaticText "H ................. IRIS: objective + waypoint", 0
+	StaticText "Tab ............... Map", 0
+	StaticText "F6 / F9 ........... Quicksave / quickload", 0
+	StaticText " "
+	Command "$CCA_APPLY_KBM", "cca_kbmlayout"
+	Submenu "$CCA_CUSTOMIZE", "CustomizeControls"
+}

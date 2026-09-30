@@ -51,7 +51,7 @@ Built from: GZDoom 4.14 (ZScript, UDMF), the `mstr-gme-dsgn-tmpt` house rules (d
 | Move / look (free vertical and horizontal aim, no autoaim) | Left / right stick | WASD / mouse |
 | Fire (right-hand gun) | RT | Left click |
 | Aim down sights; with two guns, fire the left gun | LT | Right click |
-| Jump | A | Space |
+| Jump (press again in the air at a ledge to **clamber**) | A | Space |
 | Crouch; **hold in the air to dolphin-dive** | B | C / Ctrl |
 | Reload + use (doors, switches, NPCs) | X | R / E |
 | Next weapon (tap) / previous weapon | Y / D-pad left | wheel, 1-7 |
@@ -152,6 +152,7 @@ Difficulty follows Doom's skills (ITYTD to Nightmare), via MAPINFO `skill` defau
 | Armour | Kevlar Vest 100 (1/3 absorb), Tactical Armour 200 (1/2 absorb) | green and blue armour |
 | Flashlight | spotlight, radius 640, inner 12°, outer 28°, warm white | lights a corridor, not a room |
 | View height / jump | 41 / 8 | Doom defaults; jumping is optional |
+| **Clamber** | in the air, press jump again facing a ledge 20-64 units above your feet (mid-body to eye level), including window sills and the far side of gaps: a 9-tic haul-up | the modern-shooter mantle; crate stacks and sills become routes |
 | **Dolphin dive** | hold crouch while airborne and moving: +9 forward impulse, prone view height 16, 0.5 s slide on landing, then stand | Max Payne / Black Ops dive; you can fire, aim and reload throughout |
 
 ## 6. HUD (IRIS)
@@ -201,7 +202,7 @@ Map sources are in `maps-src/*.txt`. A cell is 32×32 map units. The player is 3
 
 | # | Map | Space | Set pieces | Keys |
 |---|---|---|---|---|
-| MAP01 | Groom Lake (Area 51, S-4) | interrogation room → detention block → security office (blue card) → lab corridor with smashed observation windows → experiment rooms (specimen tanks, dissection theatre, containment cell) → records office (**dossier**) → alien-tech lab where the hull has grown into the walls (**HDD cache**, red card) → hangar with the back-engineered saucer → surface lift (exit opens only with the dossier and HDD) | lights die at the start, and the flashlight is the first lesson; scientists run past screaming; a dying guard hands over the blue card; the containment wing opens behind you; a Stalker in the hangar | blue card, red card; objectives: dossier + HDD cache |
+| MAP01 | Groom Lake (Area 51, S-4) | interrogation room → detention block → security office (blue card) → **out into the desert yard at night** (perimeter fences, floodlights, burning jeeps, a Raiders-of-the-Lost-Ark government warehouse with crate-stack aisles and catwalks, all under alien siege) → back down to the labs → lab corridor with smashed observation windows → experiment rooms (specimen tanks, dissection theatre, containment cell) → records office (**dossier**) → alien-tech lab where the hull has grown into the walls (**HDD cache**, red card) → hangar with the back-engineered saucer → surface lift (exit opens only with the dossier and HDD) | lights die at the start, and the flashlight is the first lesson; scientists run past screaming; a dying guard hands over the blue card; the containment wing opens behind you; a Stalker in the hangar | blue card, red card; objectives: dossier + HDD cache |
 | MAP02 | Night of the Harvest (Washington, D.C.) | neon strip (bar, pawn shop, adult cinema marquee, motel) → back alleys → the plaza under the beams (a full-level version of the Firefight arena) → subway station and tunnel → Bureau HQ lobby → the basement office → rooftop | the plaza holdout; the first Overseer in the subway; the case file in the basement | blue card (subway), yellow card (HQ lobby) |
 | MAP03 | Crash Site | overrun Army cordon (tents, floodlights, trucks) → forest ridge → impact trench → inside the saucer | the wreck's interior is the first alien architecture; the Singularity is in its cockpit | red card (command tent), blue glyph (wreck) |
 | MAP04 | Mothership | docking bay with racks of attack craft (ID4) → abduction bays with pods → sleek cyan-lit corridors and consoles (Perfect Dark) → gravity lift → conduit ring → Hive Mind chamber | four conduits drop the Hive Mind's shield; the ship shakes after the kill | yellow glyph, red glyph |

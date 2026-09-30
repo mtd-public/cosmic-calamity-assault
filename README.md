@@ -1,111 +1,62 @@
-# COSMIC CALAMITY: ASSAULT
+# COSMIC CALAMITY: ASSAULT — Case File 51
 
-A **Halo 1/2-style first-person shooter prototype** set in the universe of [Metal Snake: Cosmic Calamity](https://github.com/mtd-public/cosmic-calamity).
+A **GZDoom mod**: 1997, an FBI agent who was right all along, his AI **IRIS**, and a hostile alien invasion. It has pre-rendered custom characters, Call of Duty-style gun handling, and four maps: Area 51 under siege, a seedy late-90s Washington, a crash site, and the mothership.
 
-Six months after Snake broke the Lullaby Array, the Vyrr have dropped the truce and are landing on Earth's cities. You are **ANVIL** of the **Earth Cyborg Squad**, sent on direct operations with IRIS-2 in your head.
+- **Play:** download the `.pk3` from the [GitHub Pages site](https://mtd-public.github.io/cosmic-calamity-assault/). It runs in **GZDoom 4.14** or **UZDoom**, with **Freedoom: Phase 2** (free) or **DOOM II**.
+- **Design:** [GAME_DESIGN.md](GAME_DESIGN.md). **Asset contract:** [docs/ASSETS.md](docs/ASSETS.md).
+- **The previous direction:** a three.js Halo 1/2-style FPS. It is preserved on the branch [`final-halo-like`](https://github.com/mtd-public/cosmic-calamity-assault/tree/final-halo-like) and still playable in the browser at `/halo-like/` on the Pages site.
 
-- **3 missions:** a downed Vyrr carrier in Tacoma, an alien warehouse in Rotterdam, and the Verdon Gorge.
-- **2 tablet test maps:** a weapons/movement range with enemy spawn pads, and an endless Firefight.
-- **8 weapons:** 4 human, 4 Vyrr, each a real assembly with a magazine, slide or bolt, pump, sights and vents that the animations move.
-- **4 enemy types:** Skitter, Trooper, Bulwark, Drone. Every one is a jointed skeleton: limbs are continuous bone chains, feet plant through leg IK, hands hold guns through arm IK. The ground Vyrr are humanoid fighter-pilots: quilted flight suits with harnesses and life-support packs, plate armour, and a hard-shell helmet with a lowered dark visor (the eyes glow through it) over a snouted breathing mask with cheek filter canisters and a hose to the chest pack, so they can breathe Earth's air.
-- **2 vehicles:** the **M12 MULE** (a Warthog-shaped jeep with a driver seat and a rear rotary-chaingun turret; it steers toward where you look) and the **Vyrr SLIVER** (an anti-grav bike with twin plasma cannons and a boost). Vyrr riders patrol the gorge; kill the rider and the bike is yours. Third-person chase camera, splatters, vehicle damage and wrecks.
-- **First-person arms:** shoulders-to-fingertips, driven by IK onto the gun's grip and foregrip, so every action is animated: magazine reloads (pull, drop, seat, rack the charging handle), shell-by-shell shotgun loading, pistol slide cycling, melee swings, grenade draw-and-throw with the grenade in hand, plasma vent flaps, walk bob, jumps and landings. Look down and you see your own legs.
-- **Halo combat:** frag + sticky plasma grenades, melee with back-smacks, a recharging shield, checkpoints, 4 difficulties.
-- **Early-Xbox look:** smooth low-poly models, normal-mapped specular textures and emissive alien tech, all generated in code. Titanfall / Black Ops silhouettes (chest rigs, knee pads, jump-kit packs, visor helmets) at original-Xbox polygon counts; the player wears a charcoal tactical suit with dark composite plates. Guns and vehicles use rounded cross-sections and curved profiles rather than boxes. There are no image, model or audio files.
-- **Dressed levels:** rubble and rebar, wrecks, sandbags, drums, pallets, forklifts, cables, pipes, chains, Vyrr bio-growth, instanced swaying grass, bushes, logs, sun shafts, birds, river mist, puddles, ambient dust, banners and signs. Pines are trunks with whorls of alpha-card branches, broadleaf trees fork into branches under leaf cards, mountains are a ridged range with snow lines, and city skylines are towers with lit windows, set-backs and rooftop masts.
-- **Plays with** keyboard + mouse, **touch (tablet)** and **Xbox controller**, in menus and in game.
-
-Design doc: [GAME_DESIGN.md](GAME_DESIGN.md).
-
-## Run
-There is no build step. Serve the folder:
+## Play
 ```sh
-python3 -m http.server 4180     # open http://localhost:4180/
+gzdoom -iwad freedoom2.wad -file cosmic-calamity-assault.pk3
 ```
+On first run, open **Options → Controller Layout (Xbox)** (or **Keyboard & Mouse Layout**) and choose **Apply**. The full control table is in GAME_DESIGN §4.
 
-URL flags:
-- `?level=fallen-hymn|cold-storage|gorge|proving|plaza` jumps straight into a map.
-- `&diff=easy|normal|heroic|legendary` sets the difficulty.
-- `?quality=low|med|high` overrides the graphics preset.
+## What's in it
+- **Weapons:**
+  - Hip fire is one-handed on the right; aim down sights with LT or right click.
+  - Dual wield any gun you have two of, shotguns included.
+  - Frag grenades you can cook, and sticky alien detonators.
+  - Human: knife, 9 mm, pump shotgun, SMG, assault rifle, 3-round battle rifle.
+  - Alien (one universal energy ammo): Harvester blade, Stinger, Scatter, plasma SMG, the Singularity.
+- **Movement:** dolphin-dive (hold crouch in the air) and keep shooting; clamber onto ledges and sills (jump again in the air).
+- **IRIS:**
+  - An animated portrait on the HUD, with subtitles.
+  - Waypoints to the current objective.
+  - A list of current and completed objectives.
+  - Hints when a secret is close.
+- **People:**
+  - Scientists and lab techs flee and cower.
+  - Downed guards can be revived (hold use) and fight beside you.
+- **Missions:** hack terminals and defend them for 60-90 s while waves arrive; objectives gate the exits; it autosaves after each objective.
 
-## Controls
-| Action | Keyboard + mouse | Xbox controller | Touch |
-|---|---|---|---|
-| Move / look | WASD / mouse | Left / right stick | Left-side floating stick / drag on the right |
-| Fire | Left click | RT | FIRE (drag on it to aim while firing) |
-| Grenade (type) | G (T) | LT (LB) | NADE (G-TYPE) |
-| Jump / crouch | Space / C | A / L3 | JUMP / CROUCH |
-| Melee | Q | B | MELEE |
-| Reload / pick up, use | R / hold E | tap X / hold X | tap / hold ACTION |
-| Switch weapon | Tab, wheel | Y | SWAP |
-| Zoom | Right click | R3 | ZOOM |
-| Pause | Esc | Menu | ❚❚ |
-| Vehicle: enter / exit | Hold E | Hold X | Hold ACTION |
-| Vehicle: drive | W / S (it steers toward where you look) | Left stick + right stick | Stick + drag |
-| MULE: swap to the turret | Tab | Y | SWAP |
-| SLIVER: boost | Hold C | L3 | CROUCH |
-
-- **Menus with the controller:** D-pad or stick to move, A to select, B to go back.
-- **Settings** has:
-  - separate mouse, touch and controller sensitivity
-  - invert look, aim assist, southpaw
-  - a Halo 3-style "Recon" button layout (RB reload)
-  - rumble, volumes, graphics quality
-
-## Checks
-```sh
-node tools/check-levels.mjs     # every objective / pickup / enemy reachable; each map's sim runs 10 s
-node tools/sim-check.mjs        # 49 headless mechanics checks (movement, weapons, AI, vehicles) + every mission's objective chain completes
-python3 -m http.server 4180 &
-BASE=http://localhost:4180/ CHROMIUM=/opt/pw-browsers/chromium node tools/smoke.mjs
-#   desktop, iPad landscape + portrait, iPhone landscape, and an emulated Xbox pad: 0 errors, 0 scroll
-CHROMIUM=/opt/pw-browsers/chromium node tools/tap-spam.mjs 'http://localhost:4180/?quality=low&level=proving' --buttons '[data-btn=fire],[data-btn=jump],[data-btn=action]' --menu '#pausebtn'
-```
-
-## Code map
-| File | What |
+## Build from source
+Everything is generated. The only binary inputs are the tools themselves.
+| Command | Does |
 |---|---|
-| `index.html`, `css/style.css` | Shell, screens, HUD text, tablet buttons |
-| `js/main.js` | Boot, screens, fixed-step loop, event → audio/HUD/rumble glue, attract mode, `window.GAME` test hooks |
-| `js/sim.js` | Simulation (no DOM, no three.js): player, weapons, projectiles, grenades, enemy AI, pickups, scripting, checkpoints, Firefight |
-| `js/world.js` | Collision world (heightfield + AABBs, spatial hash, DDA ray casts) and the nav grid / flow field |
-| `js/levels.js` | The five maps: terrain functions, colliders with render "looks", dressing, enemy groups, objectives, dialogue |
-| `js/tuning.js`, `js/weapons.js`, `js/enemies.js` | Every number, with the reason for it |
-| `js/render.js` | three.js view: sky + sun, triplanar terrain, merged static meshes, living dressing (grass, flags, birds, mist, puddles), vehicles, the third-person chase camera, water, waterfall |
-| `js/models.js` | Procedural static models: geometry builder (chamfers, extrusions, world UVs), every collider "look", the prop catalog, the wreck hull, dropship, spire |
-| `js/rig.js` | Rig toolkit: connected bones (joint spheres + tapered shafts), analytic two-bone IK, hands with curling fingers, keyframe helpers |
-| `js/rigs.js` | Character rigs on the toolkit: the player's arms and body, the Vyrr (generic biped builder + per-type animation: gait, aim, flee, melee, death, riding) |
-| `js/gunmodels.js` | The 8 weapons + the turret chaingun as assemblies with named animatable parts and hand attach nodes; pickups |
-| `js/viewmodel.js` | First-person arms + gun: sway, bob, kick, and the action clips (reloads, shells, melee, throw, vent), brass ejection, muzzle flash |
-| `js/vehicles.js`, `js/vehiclemodels.js` | Vehicle data (MULE, SLIVER, mounted guns) and their models |
-| `js/textures.js` | Procedural diffuse / normal / emissive textures and sprites |
-| `js/fx.js` | Instanced billboard particles (2 draw calls), decals, pooled lights |
-| `js/hud.js` | Halo-style canvas HUD: shield, ammo, motion tracker, reticles, nav points, damage arcs, scope |
-| `js/input.js` | Keyboard/mouse (pointer lock), touch stick + look + buttons, gamepad (curve, turn ramp, rumble) |
-| `js/pad.js` | Controller presets, button names per family, D-pad menu navigation |
-| `js/audio.js` | FPS sound set + monk-choir / percussion score on the template synth |
-| `tools/` | Level validator, headless sim check, smoke test, tap-spam |
+| `node tools/forge/run.mjs [job...]` | Renders sprites, HUD weapons, textures and props from procedural three.js models in headless Chromium (`tools/forge/jobs/*`), with Doom `grAb` offsets |
+| `node tools/sfx.mjs` | Synthesises all sound effects into `mod/sounds/` and writes `SNDINFO` |
+| `node tools/music.mjs` | Generates the MIDI score |
+| `node tools/gfx.mjs` | Title, menu and intermission graphics, and the scope mask |
+| `node tools/mapc.mjs` | Compiles `maps-src/*.txt` (ASCII on a 32-unit grid) to UDMF with zdbsp nodes. It fails if the exit, a key, an objective or a monster is unreachable |
+| `node tools/build.mjs [--strict]` | Generates `TEXTURES` and `DoomEdNums`, checks the asset contract, and writes `dist/cosmic-calamity-assault.pk3` |
+| `tools/gz-smoke.sh [MAP01 ...]` | Runs real GZDoom headless (Xvfb). For each map it runs the in-mod self-test, takes screenshots, and fails on any script or actor error |
+| `node tools/contact.mjs out.png "title" sprites/monsters ...` | Contact sheets for art review |
 
-## Vehicles
-- **Enter:** walk up to a seat and hold ACTION. Approach a MULE from behind for the turret. Hold ACTION again to get out.
-- **MULE:** throttle with W/S (or the left stick); the nose chases where you look, Halo-style. Tab / Y / SWAP hops between the wheel and the turret. The turret is a hitscan rotary chaingun with a wide reticle. It climbs slopes a jeep would and splatters anything it hits at speed.
-- **SLIVER:** FIRE shoots twin plasma bolts along your aim (up to 25° off the nose). Hold crouch for a boost that drains and refills. It drifts wide in the turns.
-- **Vyrr riders** strafe past you, orbit and break off; the rider is a normal Trooper you can shoot off the bike. A bike whose rider is killed coasts to a stop and can be taken.
-- Vehicles take damage from bolts, bullets and explosions; at 0 they blow up, throw you clear (at a cost) and stay as a smoking wreck.
+The **headless GZDoom** setup:
+- GZDoom 4.14.2 built from source (`cmake -S gzdoom -B build -G Ninja`, with ZMusic).
+- Freedoom 2 from apt.
+- `vid_activeinbackground=true` and `vid_fullscreen=false` in the ini.
+- The map must be started from a console chain *after* startup: `+"wait 40; map MAP01; ..."`. Using `+map` on the command line renders black.
 
-## Lineage (what was reused)
-- **`mtd-public/mstr-gme-dsgn-tmpt`:**
-  - House rules: sim / render / UI split, dt clamp, fixed step, Pointer Events, auto-pause on blur, visibility and zoom, namespaced `localStorage`, deploy only from main.
-  - `touch-zoom-guard/`: kit, verbatim.
-  - `js/sfx-synth.js`: consolidated synth kit, verbatim.
-  - `js/utils.js`, and three.js r160 + `BufferGeometryUtils` from `kits/vendor`.
-  - The vanilla-three starter's floating-stick maths (`docs/04`).
-- **`mtd-public/dr-mow`:**
-  - `js/pad.js`: `MenuNav` (D-pad / stick menu focus, A / B), controller family names, and the gamepad polling pattern with radial dead zones.
-  - `tools/smoke.mjs` pattern.
-- **`mtd-public/cosmic-calamity`:**
-  - The Vyrr, IRIS, Hale, Snake, Threnody and the Lullaby Array; the speaker colours and alien palette; the motion-sensor idea.
-  - The `sw.js` / manifest / Pages workflow shape.
+## Layout
+```
+mod/            the pk3 source tree: zscript/cca (gameplay), MAPINFO, LANGUAGE, KEYCONF, MENUDEF, LOCKDEFS,
+                SNDINFO, sprites/, graphics/, textures/, flats/, sounds/, music/, maps/
+maps-src/       map sources (the DSL is documented at the top of tools/mapc.mjs)
+tools/          forge (sprites/textures), mapc (maps), sfx, music, gfx, build, gz-smoke, contact sheets
+site/           the GitHub Pages landing page
+```
 
 ## Deploy
-`.github/workflows/pages.yml` runs the level and sim checks on every push. It publishes to GitHub Pages only from `main`: https://mtd-public.github.io/cosmic-calamity-assault/ On a new repo, set **Settings → Pages → Source: GitHub Actions** if it isn't enabled automatically.
+`.github/workflows/pages.yml` compiles and validates the maps and builds the pk3 on every push. It publishes the site, the `.pk3` and the old Halo-like prototype to GitHub Pages **only from `main`**.

@@ -1,0 +1,29 @@
+// The mod's cards open Doom's lock numbers (UDMF Door_LockedRaise arg3):
+// 1 = blue, 2 = red, 3 = yellow; 129-131 are "any" variants.
+ClearLocks
+
+Lock 1
+{
+	CCABlueCard
+	Message "$C51_PD_BLUECARD"
+	RemoteMessage "$C51_PD_BLUECARD"
+	Mapcolor 0 0 255
+}
+Lock 2
+{
+	CCARedCard
+	Message "$C51_PD_REDCARD"
+	RemoteMessage "$C51_PD_REDCARD"
+	Mapcolor 255 0 0
+}
+Lock 3
+{
+	CCAYellowCard
+	Message "$C51_PD_YELLOWCARD"
+	RemoteMessage "$C51_PD_YELLOWCARD"
+	Mapcolor 255 255 0
+}
+Lock 129 { CCABlueCard Message "$C51_PD_BLUECARD" Mapcolor 0 0 255 }
+Lock 130 { CCARedCard Message "$C51_PD_REDCARD" Mapcolor 255 0 0 }
+Lock 131 { CCAYellowCard Message "$C51_PD_YELLOWCARD" Mapcolor 255 255 0 }
+Lock 100 { Any { CCABlueCard CCARedCard CCAYellowCard } Message "$C51_PD_ANY" }

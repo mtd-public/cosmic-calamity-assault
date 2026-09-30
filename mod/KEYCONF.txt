@@ -1,0 +1,51 @@
+// Case File 51 controls (GAME_DESIGN §4). Defaults only bind keys that are
+// free; Options > Controller Layout > "Apply Xbox layout" forces the pad map.
+alias cca_flashlight "netevent cca_flashlight"
+alias cca_dual "netevent cca_dual"
+alias cca_gtype "netevent cca_gtype"
+alias cca_iris "netevent cca_iris"
+
+addkeysection "$C51_KS_CCA" CaseFile51
+addmenukey "$C51_KB_GRENADE" +user1
+addmenukey "$C51_KB_MELEE" +user2
+addmenukey "$C51_KB_FLASH" cca_flashlight
+addmenukey "$C51_KB_DUAL" cca_dual
+addmenukey "$C51_KB_GTYPE" cca_gtype
+addmenukey "$C51_KB_IRIS" cca_iris
+
+// keyboard + mouse
+defaultbind mouse2 +altattack
+defaultbind r +reload
+defaultbind e +use
+defaultbind g +user1
+defaultbind q +user2
+defaultbind f cca_flashlight
+defaultbind v cca_dual
+defaultbind t cca_gtype
+defaultbind h cca_iris
+defaultbind c +crouch
+defaultbind space +jump
+defaultbind tab togglemap
+defaultbind f6 quicksave
+defaultbind f9 quickload
+
+// Xbox controller (SDL game controller names)
+defaultbind RTrigger +attack
+defaultbind LTrigger +altattack
+defaultbind Pad_A +jump
+defaultbind Pad_B +crouch
+defaultbind Pad_X +use
+defaultbind Pad_Y weapnext
+defaultbind LShoulder +user1
+defaultbind RShoulder +user2
+defaultbind LThumb +speed
+defaultbind RThumb cca_dual
+defaultbind DPadUp cca_flashlight
+defaultbind DPadDown cca_iris
+defaultbind DPadLeft weapprev
+defaultbind DPadRight cca_gtype
+defaultbind Pad_Back togglemap
+defaultbind Pad_Start menu_main
+
+alias cca_padlayout "bind RTrigger +attack; bind LTrigger +altattack; bind Pad_A +jump; bind Pad_B +crouch; bind Pad_X +use; bind Pad_Y weapnext; bind LShoulder +user1; bind RShoulder +user2; bind LThumb +speed; bind RThumb cca_dual; bind DPadUp cca_flashlight; bind DPadDown cca_iris; bind DPadLeft weapprev; bind DPadRight cca_gtype; bind Pad_Back togglemap; bind Pad_Start menu_main; echo $CCA_PADAPPLIED"
+alias cca_kbmlayout "bind mouse1 +attack; bind mouse2 +altattack; bind r +reload; bind e +use; bind g +user1; bind q +user2; bind f cca_flashlight; bind v cca_dual; bind t cca_gtype; bind h cca_iris; bind c +crouch; bind space +jump; bind tab togglemap; bind f6 quicksave; bind f9 quickload; echo $CCA_KBMAPPLIED"

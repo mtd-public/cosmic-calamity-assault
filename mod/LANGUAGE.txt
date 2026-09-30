@@ -1,0 +1,240 @@
+// Case File 51 text. Subtitle lines are "SPEAKER|text" (IRIS, MARSH, KADE,
+// CUSTODIAN, GUARD, SCIENTIST, HUM); CCAEvents.Say() colours them.
+[enu default]
+
+// ------------------------------------------------------------ episode / maps / skills
+C51_EP_CASEFILE = "Case File 51";
+C51_MAP01_NAME = "Groom Lake";
+C51_MAP02_NAME = "Night of the Harvest";
+C51_MAP03_NAME = "Crash Site";
+C51_MAP04_NAME = "Mothership";
+C51_SKILL1 = "Probationary Agent";
+C51_SKILL2 = "Field Agent";
+C51_SKILL3 = "Special Agent";
+C51_SKILL4 = "Unexplained";
+C51_SKILL5 = "Closed Case";
+C51_SKILL5_CONFIRM = "They respawn. They're faster.\nThe Bureau denies you exist.\n\nPress Y to accept.";
+
+C51_QUITMSG1 = "The truth will still be out there\nwhen you get back. Quit?";
+C51_QUITMSG2 = "IRIS: \"Leaving? The Greys aren't.\"";
+C51_QUITMSG3 = "Your expense report is filed.\nThe dossier isn't. Quit anyway?";
+C51_QUITMSG4 = "Kade says it's a weather balloon.\nQuit?";
+
+// ------------------------------------------------------------ intermissions
+C51_CLUSTER1_EXIT =
+	"FIELD JOURNAL - S.A. ELI MARSH\n"
+	"0417 HOURS, NEVADA\n\n"
+	"Six years of basement filing. They let me see it\n"
+	"once, through the glass: a grey body under a sheet\n"
+	"and a man with a lighter who said I'd imagined it.\n\n"
+	"The Committee kept the dossier in a drawer marked\n"
+	"CLEANING SUPPLIES. The drive held something else.\n"
+	"It talks now. It calls itself IRIS.\n\n"
+	"Every screen in the base lit up with the same\n"
+	"coordinates before we climbed out: Washington.\n\n"
+	"They're not coming. They're here.";
+C51_CLUSTER2_EXIT =
+	"FIELD JOURNAL - S.A. ELI MARSH\n"
+	"2340 HOURS, WASHINGTON D.C.\n\n"
+	"The case file is uploaded. Kade finally saw one\n"
+	"with her own eyes and asked it for ID.\n\n"
+	"The Air Force shot something down in the Cascades\n"
+	"three nights ago. The Committee called it a\n"
+	"meteor. IRIS calls it a lifeboat.\n\n"
+	"If there's a lifeboat, there's a ship.";
+C51_CLUSTER3_EXIT =
+	"FIELD JOURNAL - S.A. ELI MARSH\n"
+	"0205 HOURS, CASCADE RANGE\n\n"
+	"The shard hums in my coat like a trapped wasp.\n"
+	"IRIS says it's a key, a map and a homing beacon,\n"
+	"and that it's been screaming for its mother.\n\n"
+	"Its mother answered.\n\n"
+	"When the beam comes, I'm going up with it.";
+C51_CLUSTER4_EXIT =
+	"FIELD JOURNAL - FINAL ENTRY\n\n"
+	"The hum stopped at 0351. Everywhere.\n\n"
+	"Forty cities woke up at once. The Thralls\n"
+	"wept oil and remembered their names.\n\n"
+	"The Custodian was found in his office, lighter\n"
+	"still unused, the Committee's last report open\n"
+	"on the desk. One line was underlined:\n"
+	"\"The asset has become unmanageable.\"\n\n"
+	"IRIS says that's the nicest thing anyone's\n"
+	"ever written about me.\n\n"
+	"CASE FILE 51 - CLOSED.\n"
+	"(For now.)";
+
+// ------------------------------------------------------------ objectives (per map)
+OBJ_MAP01_1 = "Find the Committee's dossier";
+OBJ_MAP01_2 = "Download the HDD cache (defend the terminal)";
+OBJ_MAP01_3 = "Reach the surface lift";
+OBJ_MAP02_1 = "Retrieve your case file from Bureau HQ";
+OBJ_MAP02_2 = "Upload the case file from the basement";
+OBJ_MAP02_3 = "Get to the rooftop";
+OBJ_MAP03_1 = "Take the navigation shard from the wreck";
+OBJ_MAP03_2 = "Signal the ship";
+OBJ_MAP04_1 = "Upload the virus to the core (defend it)";
+OBJ_MAP04_2 = "Kill the Hive Mind";
+OBJ_MAP04_3 = "Get off this ship";
+
+// ------------------------------------------------------------ IRIS: generic
+IRIS_MAP01_START = "IRIS|Power's down in the detention block. Your flashlight is F, or up on the pad. Something opened the containment wing.";
+IRIS_MAP02_START = "IRIS|Washington. Beams over every district. Kade is on the radio and she is not calm.";
+IRIS_MAP03_START = "IRIS|The Cascades. The Army cordon went quiet an hour ago. The wreck is past the ridge.";
+IRIS_MAP04_START = "IRIS|We're inside. It's bigger on the inside, which I resent. The core is at the centre.";
+IRIS_MAP01_OBJ1 = "IRIS|The dossier. Everything they promised them is in there. Everything they got.";
+IRIS_MAP01_OBJ2 = "IRIS|Download complete. Hello, Marsh. I'm awake now. Properly.";
+IRIS_MAP01_OBJ3 = "IRIS|Surface lift. Hold on to something.";
+IRIS_MAP02_OBJ1 = "KADE|Marsh, that's your case file? You still use paper clips?";
+IRIS_MAP02_OBJ2 = "IRIS|Uploaded to every newsroom east of the Mississippi. Deniability: revoked.";
+IRIS_MAP02_OBJ3 = "IRIS|Rooftop. Condor is inbound. Don't jump without me.";
+IRIS_MAP03_OBJ1 = "IRIS|The shard. It's singing. Hold it away from your fillings.";
+IRIS_MAP03_OBJ2 = "IRIS|They heard it. Look up.";
+IRIS_MAP04_OBJ1 = "IRIS|Virus uploaded. It's a Mac joke, Marsh. You wouldn't get it.";
+IRIS_MAP04_OBJ2 = "IRIS|The hum is gone. Listen to that.";
+IRIS_MAP04_OBJ3 = "IRIS|We're clear. Earth is right where we left it.";
+IRIS_SECRET1 = "IRIS|Wall's hollow here, Marsh.";
+IRIS_SECRET2 = "IRIS|The air current's wrong in this corner. Something's behind it.";
+IRIS_SECRET3 = "IRIS|I'm reading a void in the blueprints right about... here.";
+IRIS_SECRET4 = "IRIS|Somebody hid something nearby. People always do.";
+IRIS_HACK_START = "IRIS|Plugging in. Keep them off me until it's done.";
+IRIS_HACK_RANGE = "IRIS|Signal's dropping. Stay close to the terminal.";
+IRIS_HACK_DONE = "IRIS|Done. You can stop shooting now. Mostly.";
+IRIS_EXIT_OPEN = "IRIS|Exit's open. Waypoint's on the HUD.";
+IRIS_EXIT_LOCKED = "IRIS|Not yet. We still need what's on the list.";
+IRIS_HIVE_SHIELD = "IRIS|Shield's down! Everything you've got, now!";
+IRIS_HIVE_DEAD = "IRIS|It's dying. The whole ship can feel it. So can I.";
+IRIS_CONDUIT = "IRIS|Conduit down. It's weakening.";
+
+// ------------------------------------------------------------ NPCs
+NPC_SCI1 = "SCIENTIST|They were never supposed to wake up!";
+NPC_SCI2 = "SCIENTIST|I only did the paperwork! I only did the paperwork!";
+NPC_SCI3 = "SCIENTIST|The specimens in C-wing are... not in C-wing.";
+NPC_SCI4 = "SCIENTIST|You're the FBI man. They said you were crazy.";
+NPC_SCI5 = "SCIENTIST|Don't look at their eyes. Don't let them hum.";
+NPC_SCI6 = "SCIENTIST|The drive! Dr. Hale said the drive was alive!";
+NPC_SCI7 = "SCIENTIST|Security's gone. Security's... them now.";
+NPC_SCI8 = "SCIENTIST|Please. I have a family in Henderson.";
+NPC_GUARDHELP = "GUARD|Over here... I can still shoot. Get me up.";
+NPC_GUARDUP1 = "GUARD|Thanks, Agent. Let's go ruin their day.";
+NPC_GUARDUP2 = "GUARD|I'm with you. Where do you need me?";
+NPC_GUARDUP3 = "GUARD|Owe you one. Here, you'll want this.";
+NPC_GUARDUP4 = "GUARD|On your six. Try not to get me killed twice.";
+
+// ------------------------------------------------------------ messages
+C51_MSG_NEEDPAIR = "You need a second one of these to dual wield.";
+C51_MSG_GOTPAIR = "A matching pair: press R3 / V to dual wield.";
+C51_MSG_DUALON = "Dual wield";
+C51_MSG_DUALOFF = "Single";
+C51_PD_BLUECARD = "You need a blue security card.";
+C51_PD_REDCARD = "You need a red Level 5 card.";
+C51_PD_YELLOWCARD = "You need a yellow access card.";
+C51_PD_ANY = "You need any security card.";
+
+// ------------------------------------------------------------ weapons / items
+C51_TAG_KNIFE = "Combat Knife";
+C51_TAG_PISTOL = "9mm Pistol";
+C51_TAG_SHOTGUN = "Pump Shotgun";
+C51_TAG_SMG = "SMG";
+C51_TAG_RIFLE = "Assault Rifle";
+C51_TAG_BATTLE = "Battle Rifle";
+C51_TAG_BLADE = "Harvester Blade";
+C51_TAG_STINGER = "Stinger";
+C51_TAG_SCATTER = "Scatter";
+C51_TAG_PLASMA = "Plasma SMG";
+C51_TAG_SING = "The Singularity";
+C51_GOT_PISTOL = "Picked up a 9mm pistol.";
+C51_GOT_SHOTGUN = "Picked up a pump shotgun.";
+C51_GOT_SMG = "Picked up an SMG.";
+C51_GOT_RIFLE = "Picked up an assault rifle.";
+C51_GOT_BATTLE = "Picked up a battle rifle.";
+C51_GOT_BLADE = "Picked up a Harvester blade.";
+C51_GOT_STINGER = "Picked up an alien Stinger.";
+C51_GOT_SCATTER = "Picked up an alien Scatter gun.";
+C51_GOT_PLASMA = "Picked up an alien plasma SMG.";
+C51_GOT_SING = "You have the Singularity. IRIS: \"Point it away from us.\"";
+C51_AMMO_9MM = "9mm";
+C51_AMMO_12G = "12 gauge";
+C51_AMMO_556 = "5.56";
+C51_AMMO_762 = "7.62";
+C51_AMMO_ENERGY = "Alien energy";
+C51_AMMO_FRAG = "Frag grenades";
+C51_AMMO_DET = "Alien detonators";
+C51_GOT_9MM = "Picked up a 9mm magazine.";
+C51_GOT_9MMBOX = "Picked up a box of 9mm.";
+C51_GOT_SHELLS = "Picked up some shells.";
+C51_GOT_SHELLBOX = "Picked up a box of shells.";
+C51_GOT_556 = "Picked up a 5.56 magazine.";
+C51_GOT_556BOX = "Picked up a box of 5.56.";
+C51_GOT_762 = "Picked up a 7.62 magazine.";
+C51_GOT_CELL = "Picked up an alien energy cell.";
+C51_GOT_POD = "Picked up an alien energy pod.";
+C51_GOT_FRAG = "Picked up a frag grenade.";
+C51_GOT_DET = "Picked up an alien detonator.";
+C51_GOT_STIM = "Picked up a stim.";
+C51_GOT_MEDKIT = "Picked up a medkit.";
+C51_GOT_IMPLANT = "Alien implant! You feel... more.";
+C51_GOT_KEVLAR = "Picked up a Kevlar vest.";
+C51_GOT_TACTICAL = "Picked up tactical armor.";
+C51_GOT_BATTERY = "Picked up a flashlight battery.";
+C51_GOT_BLUECARD = "Picked up a blue security card.";
+C51_GOT_REDCARD = "Picked up a red Level 5 card.";
+C51_GOT_YELLOWCARD = "Picked up a yellow access card.";
+C51_GOT_DOSSIER = "The dossier: MAJESTIC LULLABY - EYES ONLY.";
+C51_GOT_HDD = "The HDD cache. It's warm.";
+C51_GOT_CASEFILE = "Your case file. Still has the coffee ring.";
+C51_GOT_SHARD = "The navigation shard.";
+
+// ------------------------------------------------------------ actors
+C51_TAG_THRALL = "Thrall";
+C51_TAG_TROOPER = "Thrall Trooper";
+C51_TAG_GREY = "Grey";
+C51_TAG_HYBRID = "Hybrid";
+C51_TAG_STALKER = "Stalker";
+C51_TAG_PROBE = "Probe";
+C51_TAG_OVERSEER = "Overseer";
+C51_TAG_HIVE = "Hive Mind";
+C51_TAG_SCIENTIST = "Scientist";
+C51_TAG_DOWNED = "Wounded guard";
+C51_TAG_GUARD = "Guard";
+C51_TAG_TERMINAL = "Terminal";
+C51_TAG_CONDUIT = "Hive conduit";
+C51_OB_THRALL = "%o was shot by a Thrall.";
+C51_OB_TROOPER = "%o caught a Thrall Trooper's buckshot.";
+C51_OB_GREY = "%o was burned by a Grey's bolt.";
+C51_OB_GREYHIT = "%o was clawed by a Grey.";
+C51_OB_HYBRID = "%o was cut down by a Hybrid.";
+C51_OB_STALKER = "%o was torn apart by a Stalker.";
+C51_OB_PROBE = "%o was probed. Thoroughly.";
+C51_OB_OVERSEER = "%o's mind was lanced by an Overseer.";
+C51_OB_HIVE = "%o was thought to death by the Hive Mind.";
+C51_OB_NPC = "%o was killed by a panicking scientist.";
+C51_OB_GUARD = "%o was shot by a friendly guard.";
+C51_OB_FRAG = "%o was fragged by %k.";
+C51_OB_FRAGSELF = "%o held on to the grenade too long.";
+C51_OB_DET = "%o wore %k's detonator.";
+C51_OB_DETSELF = "%o stuck an alien detonator to themselves.";
+C51_OB_STINGER = "%o was stung by %k.";
+C51_OB_SCATTER = "%o was scattered by %k.";
+C51_OB_PLASMA = "%o was melted by %k.";
+C51_OB_SING = "%o was folded into a Singularity.";
+C51_OB_DRUM = "%o went up with the fuel drum.";
+
+// ------------------------------------------------------------ menus / keys
+CCA_MENU_LAYOUT = "Controller Layout (Xbox)";
+CCA_MENU_KEYS = "Keyboard & Mouse Layout";
+CCA_PAD_HEAD = "CASE FILE 51 - XBOX CONTROLLER";
+CCA_PAD_NOTE = "Every menu works with the D-pad, A to select, B to go back.";
+CCA_APPLY_PAD = "Apply Xbox layout";
+CCA_APPLY_KBM = "Apply keyboard & mouse layout";
+CCA_STICKS = "Stick sensitivity, inversion, dead zones";
+CCA_CUSTOMIZE = "Customize controls";
+CCA_PADAPPLIED = "Xbox layout applied.";
+CCA_KBMAPPLIED = "Keyboard & mouse layout applied.";
+C51_KS_CCA = "Case File 51";
+C51_KB_GRENADE = "Grenade (hold to cook)";
+C51_KB_MELEE = "Quick melee";
+C51_KB_FLASH = "Flashlight";
+C51_KB_DUAL = "Dual wield";
+C51_KB_GTYPE = "Grenade type";
+C51_KB_IRIS = "IRIS: objective + waypoint";

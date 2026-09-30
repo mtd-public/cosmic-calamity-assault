@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Cosmic Calamity: Assault — Case File 51</title>
+<meta name="description" content="A GZDoom mod: an FBI agent, his AI and a hostile alien invasion. Pre-rendered custom characters, Call of Duty weapon handling, four maps.">
+<link rel="icon" href="data:,">
+<style>
+  :root { --bg:#0b0f12; --panel:#121a1f; --line:#243038; --ink:#d9e4e8; --dim:#8fa3ad; --green:#8cf7a0; --gold:#ffbe5a; --red:#ff463c; }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; background: var(--bg); color: var(--ink); font: 16px/1.55 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
+  a { color: var(--green); }
+  .wrap { max-width: 1040px; margin: 0 auto; padding: 0 16px; }
+  header { position: relative; min-height: 420px; display: flex; align-items: flex-end; background: #05070a url(img/title.png) center/cover no-repeat; border-bottom: 1px solid var(--line); }
+  header::after { content: ""; position: absolute; inset: 0; background: linear-gradient(transparent 40%, rgba(11,15,18,.95)); }
+  header .wrap { position: relative; z-index: 1; padding-bottom: 28px; }
+  h1 { font-size: clamp(30px, 6vw, 54px); line-height: 1; margin: 0; letter-spacing: .5px; text-shadow: 0 0 20px rgba(120,255,170,.35); }
+  h1 small { display: block; font-size: .42em; color: var(--red); letter-spacing: 10px; margin-top: 10px; }
+  .tag { font-family: "Courier New", monospace; color: var(--gold); letter-spacing: 2px; margin: 10px 0 18px; }
+  .cta { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; }
+  .btn { display: inline-block; padding: 12px 20px; border-radius: 6px; background: var(--green); color: #07130c; font-weight: 700; text-decoration: none; }
+  .btn.alt { background: transparent; color: var(--ink); border: 1px solid var(--line); font-weight: 600; }
+  section { padding: 34px 0; border-bottom: 1px solid var(--line); }
+  h2 { font-size: 22px; margin: 0 0 14px; color: var(--green); }
+  .grid { display: grid; gap: 14px; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); }
+  .card { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 16px; }
+  .card h3 { margin: 0 0 6px; font-size: 16px; color: var(--gold); }
+  .card p { margin: 0; color: var(--dim); }
+  .shots { display: grid; gap: 10px; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); }
+  .shots img { width: 100%; border-radius: 6px; border: 1px solid var(--line); display: block; }
+  ol li { margin: 6px 0; }
+  code { background: var(--panel); padding: 1px 6px; border-radius: 4px; border: 1px solid var(--line); font-size: 14px; }
+  table { width: 100%; border-collapse: collapse; font-size: 14px; }
+  th, td { text-align: left; padding: 7px 8px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  th { color: var(--gold); font-weight: 600; }
+  .scroll { overflow-x: auto; }
+  footer { padding: 26px 0 40px; color: var(--dim); font-size: 14px; }
+</style>
+</head>
+<body>
+<header>
+  <div class="wrap">
+    <h1>COSMIC CALAMITY<small>ASSAULT</small></h1>
+    <div class="tag">CASE FILE 51 · A GZDOOM MOD</div>
+    <div class="cta">
+      <a class="btn" href="cosmic-calamity-assault.pk3" download>Download the .pk3</a>
+      <a class="btn alt" href="#play">How to play</a>
+      <a class="btn alt" href="halo-like/">Play the old Halo-like prototype in your browser</a>
+    </div>
+  </div>
+</header>
+
+<section>
+  <div class="wrap">
+    <h2>1997. The Committee made a deal. The visitors broke it.</h2>
+    <p>Special Agent <b>Eli Marsh</b> spent six years in a basement office proving the government knew. He was right. Now he's escaping Area 51 with a stolen dossier and a hard drive that talks back: <b>IRIS</b>, an AI grown from alien hardware, who draws his waypoints, explains what's happening, and knows where the walls are hollow.</p>
+    <div class="grid" style="margin-top:18px">
+      <div class="card"><h3>Four maps</h3><p>Area 51 under siege, from its desert yard and warehouse down to the labs; a seedy late-90s Washington at night; a crash site in the Cascades; the mothership.</p></div>
+      <div class="card"><h3>Call of Duty handling</h3><p>Hip-fire from the right, aim down sights, dual-wield anything (shotguns too), cook grenades, stick Predator-style alien detonators.</p></div>
+      <div class="card"><h3>Move like it's 2007</h3><p>Dolphin-dive while you shoot, clamber up ledges and window sills, sprint. It's still Doom underneath.</p></div>
+      <div class="card"><h3>Custom characters</h3><p>Greys, possessed Thralls, Hybrids, Stalkers, Probes and Overseers. Every sprite is pre-rendered from 3D in 8 rotations.</p></div>
+      <div class="card"><h3>People worth saving</h3><p>Scientists flee and cower. Revive downed guards and they fight beside you.</p></div>
+      <div class="card"><h3>Hack and hold</h3><p>Download, upload, defend: terminals take a minute or more while the waves come.</p></div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2>Screenshots</h2>
+    <div class="shots">
+      <img src="img/shot1.png" alt="Area 51 interrogation block" loading="lazy">
+      <img src="img/shot2.png" alt="Lab corridor" loading="lazy">
+      <img src="img/shot3.png" alt="Fighting a Grey" loading="lazy">
+      <img src="img/shot4.png" alt="The desert yard at night" loading="lazy">
+    </div>
+  </div>
+</section>
+
+<section id="play">
+  <div class="wrap">
+    <h2>How to play</h2>
+    <ol>
+      <li>Install <b>GZDoom 4.14</b> or its community fork <b>UZDoom</b> (Windows, macOS, Linux).</li>
+      <li>Get a base game: <b>Freedoom: Phase 2</b> (<code>freedoom2.wad</code>, free) or your own <b>DOOM II</b> (<code>doom2.wad</code>).</li>
+      <li>Download <a href="cosmic-calamity-assault.pk3" download>cosmic-calamity-assault.pk3</a>.</li>
+      <li>Drag the <code>.pk3</code> onto GZDoom, or run:<br><code>gzdoom -iwad freedoom2.wad -file cosmic-calamity-assault.pk3</code></li>
+      <li>First run: open <b>Options → Controller Layout (Xbox)</b> or <b>Keyboard &amp; Mouse Layout</b> and choose <b>Apply</b>.</li>
+    </ol>
+    <p style="color:var(--dim)">A browser version isn't possible: GZDoom has no web build. The page links the previous three.js prototype, which does run in the browser.</p>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2>Controls</h2>
+    <div class="scroll">
+    <table>
+      <tr><th>Action</th><th>Xbox controller</th><th>Keyboard + mouse</th></tr>
+      <tr><td>Fire / aim down sights (left gun when dual)</td><td>RT / LT</td><td>Left / right click</td></tr>
+      <tr><td>Jump (again in the air at a ledge: clamber)</td><td>A</td><td>Space</td></tr>
+      <tr><td>Crouch (hold in the air: dolphin dive)</td><td>B</td><td>C</td></tr>
+      <tr><td>Reload / use, revive, hack</td><td>X</td><td>R / E</td></tr>
+      <tr><td>Next / previous weapon</td><td>Y / D-pad left</td><td>Wheel, 1-7</td></tr>
+      <tr><td>Grenade (hold to cook) / type</td><td>LB / D-pad right</td><td>G / T</td></tr>
+      <tr><td>Quick melee</td><td>RB</td><td>Q</td></tr>
+      <tr><td>Dual wield</td><td>R3</td><td>V</td></tr>
+      <tr><td>Flashlight</td><td>D-pad up</td><td>F</td></tr>
+      <tr><td>IRIS: objective + waypoint</td><td>D-pad down</td><td>H</td></tr>
+      <tr><td>Run</td><td>L3</td><td>Shift</td></tr>
+      <tr><td>Map / menu (save &amp; load)</td><td>View / Menu</td><td>Tab / Esc, F6 / F9</td></tr>
+    </table>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    Everything is generated by code in <a href="https://github.com/mtd-public/cosmic-calamity-assault">the repository</a>: sprites and textures are rendered from procedural three.js models, sounds are synthesised, music is generated MIDI, and the maps are compiled from ASCII with a completability check. Marsh, IRIS, Kade and the Custodian are original characters. Requires GZDoom (GPL) with Freedoom (BSD) or DOOM II.
+  </div>
+</footer>
+</body>
+</html>

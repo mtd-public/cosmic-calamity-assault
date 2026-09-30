@@ -1,0 +1,674 @@
+; MAP01 "Groom Lake" - Area 51 / S-4 (GAME_DESIGN.md §9)
+; Flow: interrogation room -> detention block (lights die) -> security office (blue card from the
+; downed guard; fallback card in the armory with the shotgun) -> stairwell up -> the yard under
+; siege (fences, jeeps, tower, motor pool SMG) -> the warehouse (crate aisles, catwalks; booth
+; switch opens the freight gate) -> freight lift down to S-4 -> lab corridor (containment opens
+; behind you) -> records (dossier, obj 1) -> alien-tech lab (75 s download, obj 2; vault: red card,
+; HDD cache, Stinger) -> red door -> hangar (saucer, Stalker) -> ExitGate (obj 1+2) -> surface lift.
+; Secrets: stash behind cell 3; crate-top ledge in the warehouse (clamber); server-room closet.
+; Heights: detention/S-4/hangar z 0; the surface (yard, warehouse floor) z 160.
+map MAP01 "Groom Lake"
+sky SKYA51
+defaults floor=0 ceil=128 ff=LABTILE cf=LABCEIL wall=LABWALL1 light=144 track=SUPPORT frame=WINFRAME
+
+legend
+; ---- solid walls
+#  solid                      ; face = the adjoining room's wall=
+%  solid tex=LABCOMP          ; computer banks
+&  solid tex=ALNHULL1         ; alien hull grown through the walls
+$  solid tex=ALNVEIN
+!  solid tex=EXITSIGN
+?  solid tex=LABSIGN1
+P  solid tex=POSTER1
+W  solid tex=WHSEWALL
+; ---- detention block (tag @det: the lights die when you leave the interrogation room)
+:  room ff=CONCFLR cf=LABCEIL wall=CONCWALL ceil=112 light=136 tag=@det
+J  room ff=CONCFLR cf=LABLITE wall=CONCWALL ceil=112 light=176
+K  room ff=CONCFLR cf=LABCEIL wall=CONCWALL ceil=112 light=96
+Z  room ff=CONCFLR cf=LABCEIL wall=CONCWALL ceil=112 light=136 tag=@det enter=Light_ChangeToValue(@det,56)
+s  room ff=CONCFLR cf=LABCEIL wall=CONCWALL ceil=112 light=80 secret
+G  window floor=24 ceil=88 glass=GLASS1 frame=WINFRAME       ; one-way mirror
+O  room ff=LABTIL2 wall=LABWALL2 light=152
+l  room ff=METLFLR wall=CONCWALL light=112
+<  stairs dir=N floor=0 top=80 headroom=128 ff=STEPTOP riser=METLPANL wall=CONCWALL light=120
+M  room floor=80 ceil=208 ff=METLFLR wall=CONCWALL light=120
+>  stairs dir=N floor=80 top=160 headroom=128 ff=STEPTOP riser=METLPANL wall=CONCWALL light=128
+N  room floor=160 ceil=288 ff=METLFLR wall=CONCWALL light=128
+A  room floor=160 ceil=288 ff=CONCFLR cf=METLFLR wall=CONCWALL light=150
+; ---- doors
+D  door tex=LABDOOR
+B  door tex=BLSTDOOR track=HAZSTRIP lock=blue blast
+R  door tex=BLSTDOOR track=HAZSTRIP lock=red blast
+S  door tex=CONCWALL secret
+Q  door tex=VENTWALL secret
+h  door tex=LABDOOR floor=0                                  ; into the theatre gallery (a 3D floor at z 0)
+X  door tex=BLSTDOOR track=HAZSTRIP remote tag=@s4gate blast ; freight gate (booth switch)
+V  door tex=BLSTDOOR track=HAZSTRIP remote tag=@contain blast; containment cell
+U  door tex=ELEVDOOR track=HAZSTRIP remote tag=@vault         ; vault (HackTerminal)
+E  door tex=ELEVDOOR track=HAZSTRIP remote tag=@exitdoor blast; exit (ExitGate)
+; ---- the yard (surface z 160, sky)
+-  room floor=160 ceil=480 sky ff=DESERT wall=CONCWALL light=128
+2  room floor=144 ceil=480 sky ff=DESERT wall=ROCKWAL1 lower=ROCKWAL1 lowerself=ROCKWAL1 light=120   ; crater rim
+3  room floor=128 ceil=480 sky ff=DESERT wall=ROCKWAL1 lower=ROCKWAL1 lowerself=ROCKWAL1 light=112   ; crater bowl
+4  room floor=184 ceil=480 sky ff=DESERT wall=ROCKWAL1 lower=ROCKWAL1 light=128                      ; dune / berm
+5  solid tex=ROCKWAL1
+6  room floor=168 ceil=480 sky ff=CONCFLR wall=CONCWALL lower=FENCEPOL light=144                     ; helipad
+_  room floor=160 ceil=480 sky ff=TARMAC wall=CONCWALL light=136
++  room floor=160 ceil=480 sky ff=CONCFLR wall=CONCWALL light=144
+*  room floor=160 ceil=480 sky ff=DESERT wall=ROCKWAL1 light=112 scenery
+F  window floor=168 ceil=480 sky glass=FENCEMID frame=FENCEPOL broken nowrap pegbottom pane=S
+I  window floor=168 ceil=480 sky glass=FENCEMID frame=FENCEPOL broken nowrap pegbottom pane=E
+H  room floor=160 ceil=272 ff=CONCFLR cf=METLFLR wall=CONCWALL light=120
+t  room floor=256 ceil=480 sky ff=METLFLR wall=CONCWALL lower=SUPPORT light=136
+T  stairs dir=N floor=160 top=256 ceil=480 sky ff=STEPTOP riser=METLPANL wall=CONCWALL light=136
+b  room floor=184 ceil=480 sky ff=CONCFLR lower=CONCWALL wall=CONCWALL light=128   ; low barrier
+n  room floor=160 ceil=288 ff=METLFLR cf=METLFLR wall=WHSEWALL light=120
+; ---- the warehouse (floor 160, roof 512)
+w  room floor=160 ceil=512 ff=CONCFLR cf=METLFLR wall=WHSEWALL light=112
+=  room floor=160 ceil=512 ff=CONCFLR cf=METLFLR wall=WHSEWALL light=112 slab=336..352 slabtop=GRATEFLR slabbot=METLFLR slabside=SUPPORT slablight=96
+)  room floor=160 ceil=384 ff=CONCFLR cf=METLFLR wall=WHSEWALL upper=WHSEWALL light=120
+r  room floor=160 ceil=256 ff=CONCFLR cf=METLFLR wall=WHSEWALL upper=WHSEDOOR light=120
+^  stairs dir=N floor=160 top=352 ceil=512 ff=STEPTOP riser=METLPANL wall=WHSEWALL light=112
+[  room floor=208 ceil=512 ff=CRATETOP cf=METLFLR wall=WHSEWALL lower=CRATEWAL light=112
+]  room floor=256 ceil=512 ff=CRATETOP cf=METLFLR wall=WHSEWALL lower=CRATEWAL light=112
+{  room floor=304 ceil=512 ff=CRATETOP cf=METLFLR wall=WHSEWALL lower=CRATEWAL light=112
+}  room floor=400 ceil=512 ff=CRATETOP cf=METLFLR wall=WHSEWALL lower=CRATEWAL light=104 scenery
+k  room floor=352 ceil=512 ff=CRATETOP cf=METLFLR wall=WHSEWALL lower=CRATEWAL light=120 secret
+c  room floor=352 ceil=464 ff=LABTIL2 cf=LABCEIL wall=LABWALL2 lower=WHSEWALL light=160
+Y  window floor=376 ceil=440 glass=GLASS1 frame=WINFRAME lower=WHSEWALL upper=WHSEWALL
+L  lift top=160 tex=METLPANL wall=PIPEWALL ceil=288 ff=METLFLR cf=METLFLR light=128
+; ---- S-4 labs (z 0)
+.  room
+,  room ff=LABTIL2 wall=LABWALL2 light=136
+q  room ff=CONCFLR cf=METLFLR wall=CONCWALL light=128
+z  room ff=LABTIL2 wall=LABWALL2 light=136 enter=Door_Open(@contain,16)
+v  room ff=CONCFLR cf=METLFLR wall=METLWALL light=96 color=#ffb0a0
+m  room ff=METLFLR cf=LABCEIL wall=VENTWALL light=112
+j  room ff=METLFLR cf=METLFLR wall=PIPEWALL light=96 secret
+~  window floor=24 ceil=96 glass=GLASSBRK broken pane=N
+"  window floor=24 ceil=96 glass=GLASS1 pane=N
+'  window floor=24 ceil=96 glass=GLASSBRK broken pane=N lower=LABWALL1
+9  room floor=-128 ceil=128 ff=LABTILE wall=LABWALL1 light=120 slab=-16..0 slabtop=LABTIL2 slabbot=METLFLR slabside=METLPANL slablight=104
+p  room floor=-128 ceil=160 ff=LABTILE cf=LABLITE wall=LABWALL1 light=168
+i  stairs dir=N floor=-128 top=0 ceil=160 ff=STEPTOP riser=METLPANL light=144
+e  room ff=ALNFLR1 cf=LABCEIL wall=ALNHULL1 light=136 color=#d8c0ff
+u  room ff=ALNFLR1 cf=METLFLR wall=ALNVEIN light=96 color=#c0a0ff
+; ---- hangar (z 0, roof 384)
+f  room ceil=384 ff=CONCFLR cf=METLFLR wall=METLWALL light=128
+a  room ceil=384 ff=CONCFLR cf=METLFLR wall=METLWALL light=112 slab=176..192 slabtop=GRATEFLR slabbot=METLFLR slabside=SUPPORT slablight=96
+C  stairs dir=N floor=0 top=192 ceil=384 ff=STEPTOP riser=METLPANL wall=METLWALL light=112
+(  room floor=192 ceil=320 ff=LABTIL2 wall=LABWALL2 lower=METLWALL light=144
+x  room ceil=384 ff=CONCFLR cf=METLFLR wall=METLWALL light=128 slab=64..112 slabtop=HULLFLR slabbot=HULLFLR slabside=HULLEXT slablight=168 color=#c8d0ff
+o  room ff=CONCFLR cf=METLFLR wall=METLWALL light=120
+y  room floor=160 ceil=480 sky ff=TARMAC wall=CONCWALL light=160 enter=Exit_Normal(0)
+end
+
+marks
+@  PlayerStart angle=N
+1  switch Door_Open(@s4gate,16) tex=SW1LAB on=W
+end
+
+grid
+;         1         2         3         4         5         6         7         8         9         0         1         2         3         4         5         6         7         8     
+;12345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345
+###############################################################################################################
+#*************************************************************************************************************WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW
+#*************************************************************************************************************WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW
+#*************************************************************************************************************WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW
+#*************************************************************************************************************WWw======================================================================WWW
+#*************************************************************************************************************WWw======================================================================WWW
+#****FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFWWw======================================================================WWW
+#****I------------------------I------------------------------------------------------------------------------#WWw^^^^wwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwWWWWWccWWWWWWWW===WWW
+#****I------------------------I--------------------____-------------------------44444444444--/55\------------#WWw^^^^wwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwWccccccccccccWW===WWW
+#****I------------------------I--------------------____-------------------------\444444444/--5555------------#WWw^^^^www}}}wwww}}}wwww}}}wwww}}}wwww}}}wwww}}}wwwwwwwWccccccccccccWW===WWW
+#****I------------------------I--------------------____---------------tttttt-----\4444444/-------------------#WWw^^^^www}}}wwww}}}wwww}}}wwww}}}wwwwkkkwwww}}}wwwwwwwWccccccccccccWW===WWW
+#****I------------------------I--------------------____---------------tttttt---------------------------------#WWw^^^^www}}}wwww}}}wwww}}}wwww}}}wwwwkkkwwww}}}wwwwwwwWcccccccccccc1W===WWW
+#****I-----------/222\--------I--------------------____---------------tttttt---------------------------------#WWw^^^^www}}}wwww}}}wwww}}}wwww}}}wwwwkkkwwww}}}wwwwwwwWccccccccccccWW===WWW
+#****I----------/22222\-------I--------------------____------/5\------tttttt---------------------------------#WWw^^^^www}}}wwww}}}wwww}}}wwww}}}wwwwkkkwwww}}}wwwwwwwWccccccccccccWW===WWW
+#****I----------2233322-------I--------------------____------555------tttttt---------------------------------#WWw^^^^www}}}w[[w}}}wwww}}}wwww}}}wwwwkkkwwww}}}wwwwwwwWccccccccccccWW===WWW
+#****I----------2233322-------I--------------------____------\5/------tttttt--------------+++++++++++++++++++#WWwwwwwwww}}}w[[w}}}wwww}}}wwww}}}wwwwkkkwwww}}}wwwwwwwWWWYYYYYYYYWWWW===WWW
+#****I----------2233322-------I--------------------____-----------------TT----------------+++++++++++++++++++#WWwwwwwwww}}}wwww}}}wwww}}}wwww}}}wwwwkkkwwww}}}wwwwwwwwwwwwwwwwwwwwww===WWW
+#****I----------\22222/-------I--------------------____-----------------TT----------------++++bbbb+++++++++++#WWwwwwwwww}}}wwww}}}wwww}}}wwww}}}wwwwkkkwwww}}}wwwwwwwwwwwwwwwwwwwwww===WWW
+#****I-----------\222/--------I--------------------____-----------------TT----------------+++++++++++++++++++#WWwwwwwwww}}}wwww}}}wwww}}}wwww}}}wwww{{{wwww}}}wwwwwwwwwwwwwwwwwwwwww===WWW
+#****I------------------------I--------------------____-----------------TT----------------+++++++++++++++++++#WWwwwwwwww}}}wwww}}}wwww}}}wwww}}}wwww{{{wwww}}}wwww}}}wwww}}}wwwwwwww===WWW
+#****I------------------------I--------------------____-----------------------------------+++++++++++++++++++#WWwwwwwwww}}}wwww}}}w]]w}}}wwww}}}wwww]]]wwww}}}wwww}}}wwww}}}wwwwwwww===WWW
+#****I------------------------_--------------------____-----------------------------------++++++++++++++++++++)r)wwwwwww}}}wwww}}}wwww}}}wwww}}}wwww]]]wwww}}}wwww}}}wwww}}}wwwwwwww===WWW
+#****I_______________________________________________________________________________________________________+)r)wwwwwww}}}wwww}}}wwww}}}wwww}}}wwww[[[wwww}}}wwww}}}wwww}}}wwwwwwww===WWW
+#****I_______________________________________________________________________________________________________+)r)wwwwwww}}}wwww}}}wwww}}}wwww}}}wwww[[[wwww}}}wwww}}}wwww}}}wwwwwwww===WWW
+#****I_______________________________________________________________________________________________________+)r)wwwwwww}}}wwww}}}wwww}}}wwww}}}wwww]]]wwww}}}wwww}}}wwww}}}wwwwwwww===WWW
+#****I_______________________________________________________________________________________________________+)r)wwwwwww}}}wwww}}}wwww}}}wwww}}}wwww]]]wwww}}}wwww}}}wwww}}}wwwwwwww===WWW
+#****I------------------------_--------------------____-----------------------------------++++++++++++++++++++)r)wwwwwww}}}wwww}}}wwww}}}wwww}}}wwww{{{wwww}}}wwww}}}wwww}}}wwwwwwww===WWW
+#****I------------------------I--------------------____-----------------------------------+++++++++++++++++++#WWwwwwwwww}}}wwww}}}wwww}}}wwww}}}wwww{{{wwww}}}wwww}}}wwww}}}wwwwwwww===WWW
+#****I------------------------I--------------------____-----------------------------------+++++++++++++++++++#WWwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww{{{wwwwwwwwwwwwwwwwwwwwwwwwwwwww===WWW
+#****I4\----------------------I--------------------____-----------------------------------+++++++++++++++++++#WWwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww{{{wwwwwwwwwwwwwwwwwwwwwwwwwwwww===WWW
+#****I44\---------------------I------/22222\-------____-----------------------------------++++bbbb+++++++++++#WWw======================================================================WWW
+#****I444---------------------I-----/2222222\------____-----------------------------------+++++++++++++++++++#WWw======================================================================WWW
+#****I444---------------------I-----22/333\22------____-----------------------------------+++++++++++++++++++#WWw======================================================================WWW
+#****I444---------------------I-----223333322------____------------------------------------------------------#WWwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww===WWW
+#****I444---------------------I-----223333322------____------------------------------------------------------#WWwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww===WWW
+#****I444---------------------I-----223333322------____------------------------------------------------------#WWwwwwwwww}}}wwww}}}wwww}}}wwww}}}wwww}}}wwww}}}wwww}}}wwww}}}wwwwwwww===WWW
+#****I444---------------------I-----22\333/22------____------------------------------------------------------#WWwwwwwwww}}}wwww}}}wwww}}}wwww}}}wwww}}}wwww}}}wwww}}}wwww}}}wwwwwwww===WWW
+#****I444---------------------I-----\2222222/------____------------------------------------------------------#WWwwwwwwww}}}wwww}}}wwww}}}wwww}}}wwww}}}wwww}}}wwww}}}wwww}}}wwwwwwww===WWW
+#****I444---------------------I------\22222/-------____------/6666\---------------AAAA-----------------------#WWwwwwwwww}}}wwww}}}wwww}}}wwww}}}wwww}}}wwww}}}w]]w}}}wwww}}}wwwwwwww===WWW
+#****I444---------------------I--------------------____-----/666666\--------------AAAA-----------------------#WWwwwwwwww}}}wwww}}}wwww}}}wwww}}}wwww}}}wwww}}}w]]w}}}wwww}}}wwwwwwww===WWW
+#****I44/------------------------------------------____-----66666666-----------####DD#####-------------------#WWwwwww]]w}}}wwww}}}wwww}}}w[[w}}}wwww}}}wwww}}}wwww}}}wwww}}}wwwwwwww===WWW
+#****I4/-------------------------------------------____-----66666666-----------#HHHHHHHHH#----/222\----------#WWwwwww]]w}}}wwww}}}wwww}}}w[[w}}}wwww}}}wwww}}}wwww}}}wwww}}}wwwwwwww===WWW
+#****I---------------------------------------------____-----66666666-----------#HHHHHHHHH#---/22222\---------#WWwwwww]]w}}}wwww}}}wwww}}}wwww}}}wwww}}}wwww}}}wwww}}}wwww}}}wwwwwwww===WWW
+#****I------------------------------------------##AAAAAA##--66666666-----------#HHHHHHHHH#---2233322---------#WWwwwwwwww}}}wwww}}}wwww}}}wwww}}}wwww}}}wwww}}}wwww}}}wwww}}}wwwwwwww===WWW
+#****I-###HHHHHHHHHH###-------I-------------/5--##AAAAAA##--\666666/-----------#HHHHHHHHH#---2233322---------#WWwwwwwwww}}}wwww}}}wwww}}}wwww}}}wwww}}}wwww}}}wwww}}}wwww}}}wwwwwwww===WWW
+#****I-#HHHHHHHHHHHHHH#-------I-------------55--####DD####---\6666/------/22222\-HHHHHHHH#---2233322---------#WWwwwwwwww}}}wwww}}}wwww}}}wwww}}}w[[w}}}wwww}}}wwww}}}wwww}}}wwwwwwww===WWW
+#****I-#HHHHHHHHHHHHHH#-------I-----------------#NNNNNNNN#--------------/2222222\HHHHHHHH#---\22222/---------#WWwwwwwwww}}}wwww}}}wwww}}}wwww}}}w[[w}}}wwww}}}wwww}}}wwww}}}wwwwwwww===WWW
+#****I-#HHHHHHHHHHHHHH#-------I-----------------#NNNNNNNN#--------------22/333\22HHHHHHHH#----\222/----------#WWwwwwwwww}}}wwww}}}wwww}}}wwww}}}wwww}}}wwww}}}wwwwwwwwwwwwwwwwwwwwww===WWW
+#****I-#HHHHHHHHHHHHHH#-------I-----------------#NNNNNNNN#--------------223333322HHHHHHHH#-------------------#WWwwwwwwww}}}wwww}}}wwww}}}wwww}}}wwww}}}wwww}}}wwwwwwwwwwwwwwwwwwwwww===WWW
+#****I-#HHHHHHHHHHHHHH#-------I-----------------#NNNNNNNN#--------------223333322#########-------------------#WWwwwwwwww}}}wwww}}}wwww}}}wwww}}}wwww}}}wwww}}}wwwwwwwwwwwwwwwwwwwwww===WWW
+#****I-#HHHHHHHHHHHHHH#-------I----/4444444\----###>>>>###--------------223333322----------------------------#WWwwwwwwww}}}wwww}}}wwww}}}wwww}}}wwww}}}wwww}}}wwwwwwwwwwwwwwwwwwwwww===WWW
+#****I-#HHHHHHHHHHHHHH#-------I---/444444444\---# #>>>># #--------------22\333/22----------------------------#WWwwwwwwww}}}wwww}}}wwww}}}wwww}}}wwww}}}wwww}}}wwwwwwwwnnnnwwwwwwwwwwwwwWWW
+#****I-#HHHHHHHHHHHHHH#-------I---44444444444---# #>>>># #--------------\2222222/----------------------------#WWwwwwwwww}}}wwww}}}wwww}}}wwww}}}wwww}}}wwww}}}wwwwwwWWXXXXWWwwwwwwwwwwwWWW
+#****I-#HHHHHHHHHHHHHH#-------I---44444444444---###>>>>###---------------\22222/-----------------------------#WWwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwWnnnnnnWwwwwwwwwwwwWWW
+#****I-#HHHHHHHHHHHHHH#-------I---44444444444---#MMMMMMMM#---------------------------------------------------#WWwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwWnnnnnnWwwwwwwwwwwwWWW
+#****I-################-------I-----------------#MMMMMMMM#---------------------------------------------------#WWwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwWLLLLLLWwwwwwwwwwwwWWW
+#****I------------------------I-----------------#MMMMMMMM#---------------------------------------------------#WWwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwWLLLLLLWwwwwwwwwwwwWWW
+#################################################MMMMMMMM#####################################################WWwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwWLLLLLLWwwwwwwwwwwwWWW
+                                                ###<<<<###                                                    WWwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwWLLLLLLWwwwwwwwwwwwWWW
+                                                  #<<<<#                                                      WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWLLLLLLWWWWWWWWWWWWWWW
+                                                  #<<<<#                                                      WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWLLLLLLWWWWWWWWWWWWWWW
+                                         ##########<<<<###      ##################   #####################  ###################   ########################## #qqqqqqqqqqqqqqqqqqqqqqqqq#
+                                         #OOOOOO#llllllll#      #................#   #vvvvvvvvvvvvvvvvvvv# ##/...............\#####mmmmmmmmmmmmmmmmmmmmmmmm# #qqqqqqqqqqqqqqqqqqqqqqqqq#
+                                         #OOOOOO#llllllll#      #................#   #vvvvvvvvvvvvvvvvvvv# #/.................\#jj#mmmmmmmmmmmmmmmmmmmmmmmm# #qqqqqqqqqqqqqqqqqqqqqqqqq#
+                                         #OOOOOO#llllllll#      #................#   #vvvvvvvvvvvvvvvvvvv# #...................#jj#mmmmmmmmmmmmmmmmmmmmmmmm# #qqqqqqqqqqqqqqqqqqqqqqqqq#
+                                         #OOOOOO#llllllll#      #................#   #vvvvvvvvvvvvvvvvvvv# #...................#jj#mmmmmmmmmmmmmmmmmmmmmmmm# #qqqqqqqqqqqqqqqqqqqqqqqqq#
+                                         #OOOOOO#llllllll#      #................#   #vvvvvvvvvvvvvvvvvvv# #...................#jjQmmmmmmmmmmmmmmmmmmmmmmmm# #qqqqqqqqqqqqqqqqqqqqqqqqq#
+                                         ###DD######BB#####     #................#   #vvvvvvvvvvvvvvvvvvv# #...................#jjQmmmmmmmmmmmmmmmmmmmmmmmm# #qqqqqqqqqqqqqqqqqqqqqqqqq#
+                                         #OOOOOOOOOOOOOOOO#     #................#   #vvvvvvvvvvvvvvvvvvv# #...................#jj#mmmmmmmmmmmmmmmmmmmmmmmm# #qqqqqqqqqqqqqqqqqqqqqqqqq#
+                                         #OOOOOOOOOOOOOOOO#     #................#   #vvvvvvvvvvvvvvvvvvv# #...................#jj#mmmmmmmmmmmmmmmmmmmmmmmm# #qqqqqqqqqqqqqqqqqqqqqqqqq#
+                        ######           #OOOOOOOOOOOOOOOO%     #................#   #vvvvvvvvvvvvvvvvvvv# #...................#jj#mmmmmmmmmmmmmmmmmmmmmmmm# #qqqqqqqqqqqqqqqqqqqqqqqqq#
+                        #ssss#           #OOOOOOOOOOOOOOOO%     #................#   #vvvvvvvvvvvvvvvvvvv# #...................####mmmmmmmmmmmmmmmmmmmmmmmm# #qqqqqqqqqqqqqqqqqqqqqqqqq#
+                        #ssss#           %OOOOOOOOOOOOOOOO%     #................#   #vvvvvvvvvvvvvvvvvvv# #...................#  #mmmmmmmmmmmmmmmmmmmmmmmm# #qqqqqqqqqqqqqqqqqqqqqqqqq#
+                        #ssss#           %OOOOOOOOOOOOOOOO%     #................#   #vvvvvvvvvvvvvvvvvvv# #...................#  #mmmmmmmmmmmmmmmmmmmmmmmm# #qqqqqqqqqqqqqqqqqqqqqqqqq#
+                        #ssss#           #OOOOOOOOOOOOOOOO#     #................#   #vvvvvvvvvvvvvvvvvvv# #...................#  #mmmmmmmmmmmmmmmmmmmmmmmm# #qqqqqqqqqqqqqqqqqqqqqqqqq#
+     ######## ######## ###SS### ######## #OOOOOOOOOOOOOOOO%##?#########DD###############""""##VVVV##""""############DD######P################DD##############?###########DD#############
+     #::::::# #::::::# #::::::# #::::::# #OOOOOOOOOOOOOOOO##,,,,,,,,,,,,,,,,,,,,,,zz,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,#
+     #::::::# #::::::# #::::::# #::::::# #OOOOOOOOOOOOOOOO##,,,,,,,,,,,,,,,,,,,,,,zz,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,#
+     #::::::# #::::::# #::::::# #::::::# POOOOOOOOOOOOOOOO##,,,,,,,,,,,,,,,,,,,,,,zz,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,#
+     #::::::# #::::::# #::::::# #::::::# #OOOOOOOOOOOOOOOO##,,,,,,,,,,,,,,,,,,,,,,zz,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,#
+     #::::::# #::::::# #::::::# #::::::# #OOOOOOOOOOOOOOOO%#,,,,#&&&&&&&&&&&~~~~~~~~~&&&&&&&DD&&&&&&&&&&~~~~~~~~~~~~&&&&&&&&##''''''''''''##hh##'''''''''#######~~~~~~~##DD##~~~~~~~~###
+     #::::::# #::::::# #::::::# #::::::# #OOOOOOOOOOOOOOOO##,,,,#&&&&&&&&&&&&/eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee\&&&&&&#99999999999999999999999999999#  #.........................#
+     #::::::# #::::::# #::::::# #::::::# #OOOOOOOOOOOOOOOO##,,,,#&&&&&&&&&&&/eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee\&&&&&#99999999999999999999999999999#  #.........................#
+     #::::::# #::::::# #::::::# #::::::# #\OOOOOOOOOOOOOOO##,,,,#&&&&&&&&&&/eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee\&&&&#99999999999999999999999999999#  #.........................#
+     #::::::# #::::::# #::::::# #::::::# ##\OOOOOOOOOOOOOO##,,,,$&&&&&&&&&&eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee\$&&#99999999999999999999999999999#  #.........................#
+   #####DD#######DD#######DD#######DD############DD#########,,,,#&&&&&&&&&&eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee&&&#99999999999999999999999999999#  #.........................#
+   #::::::::::::::::::::::::::::::::::::::::::::::::::::::##,,,,#&&&&&&&&&&eeeeeee/&\eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee&&&#piiiipppppppppppppppppppppppp#  #.........................#
+   ?::::::::::::::::::::::::::::::::::::::::::::::::::::::##,,,,#&&&&&&&&&&eeeeeee&&&eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee&&&#piiiipppppppppppppppppppppppp#  #.........................#
+   ?::::::::::::::::::::::::::::::::::::::::::::::::::::::##,,,,$&&&&&&&&&&eeeeeee\$/eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee&&&#piiiipppppppppppppppppppppppp#  #.........................#
+   #::::::::::::::::::::::::::::::::::::::::::::::::::::::##,,,,#&&&&&&&&&&eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee&&&#piiiipppppppppppppppppppppppp#  #.........................#
+   #########ZZ###########DD#################################,,,,#&uuuuuuuu&eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee&&$#piiiipppppppppppppppppppppppp#  #.........................#
+           #::#   #::::::::::::::#                         #,,,,#&uuuuuuuu&eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee&&&#piiiipppppppppppppppppppppppp#  #.........................#
+       #####DD#####::::::::::::::#                         #,,,,#&uuuuuuuu&eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee&&&#ppppppppppppppppppppppppppppp#  #.........................#
+       #JJJJJJJJJJ#::::::::::::::#                         #,,,,#&uuuuuuuu&eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee&&&#ppppppppppppppppppppppppppppp#  #.........................#
+       #JJJJJJJJJJ#::::::::::::::#                         #,,,,#&uuuuuuuuUeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee&&&#ppppppppppppppppppppppppppppp#  #.........................#
+       #JJJJJJJJJJ#::::::::::::::#                         #,,,,#&uuuuuuuuUeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee&&$#ppppppppppppppppppppppppppppp#  #.........................#
+       #JJJJJJJJJJ#::::::::::::::#                         #RRRR#&uuuuuuuuUeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee&&&#ppppppppppppppppppppppppppppp#  #.........................#
+       #JJJJ@JJJJJ#::::::::::::::#                         #,,,,#&uuuuuuuuUeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee/&&\eeeeeeeee&&&#ppppppppppppppppppppppppppppp#  #.........................#
+       #JJJJJJJJJJ#::::::::::::::#                         #,,,,#&uuuuuuuu&eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee&$&&eeeeeeeee&&&#ppppppppppppppppppppppppppppp#  #\......................./#
+       #JJJJJJJJJJ#::::::::::::::#                         #,,,,#&uuuuuuuu&eeeeeeeeee/&\eeeeeeeeeeeeeeeeeeee\&&/eeeeeeeee&&&#ppppppppppppppppppppppppppppp#  ##\...................../##
+       #JJJJJJJJJJ#::::::::::::::#                         #,,,,#&uuuuuuuu&eeeeeeeeee\&/eeeeeeeeee/\eeeeeeeeeeeeeeeeeeeee&&&#ppppppppppppppppppppppppppppp#   ##\.................../##
+       ###GGGGGG###::::::::::::::#                         #,,,,#&uuuuuuuu&eeeeeeeeeeeeeeeeeeeeeee\/eeeeeeeeeeeeeeeeeeeee&&&#ppppppppppppppppppppppppppppp#    #######################
+       #KKKKKKKKKK#::::::::::::::#                         #,,,,#&&&&&&&&&&eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee&&&#ppppppppppppppppppppppppppppp#
+       #KKKKKKKKKKD::::::::::::::#                         #,,,,#&&&&&&&&&&eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee/&&&#\ppppppppppppppppppppppppppp/#
+       #KKKKKKKKKKD::::::::::::::#                         #,,,,#&&&&&&&&&&\eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee/&&&&##\ppppppppppppppppppppppppp/##
+       #KKKKKKKKKK#:::::::::::::/#                         #,,,,#&&&&&&&&&&&\eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee/&&&&& ##\ppppppppppppppppppppppp/##
+       #KKKKKKKKKK#::::::::::::/##                         #,,,,#&&&&&&&&&&&&\eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee/&&&&&&  ###########################
+       ##########################                          #,,,,#&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+                                                           #,,,,#&&&&&&&&&&&&&&&$&&&&&&&&&&&&&&$&&&&&&&&&&&&&&$&&&&&&&&&&&&&
+                                                           #,,,,#
+                                                           #,,,,#
+                     #######################################,,,,##################################################################
+                     #faaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaf#
+                     #faaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaf#
+                     #faaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaf#
+ #########           #ffffffffffffffffffaaafffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffCCCCfff#
+ #+++++++#           #ffffffffffffffffffaaafffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffCCCCfff#
+ #+++++++#           #ffffffffffffffffffaaafffffffffffffffffffffffffffffffffff/xxxxxxxxxxx\fffffffffffffffffffffffffffffffCCCCfff#
+ #+++++++#           #ffffffffffffffffffaaaffffffffffffffffffffffffffffffffff/xxxxxxxxxxxxx\ffffffffffffffffffffffffffffffCCCCfff#
+ #+++++++#           #ffffffffffffffffffaaafffffffffffffffffffffffffffffffff/xxxxxxxxxxxxxxx\fffffffffffffffffffffffffffffCCCCfff#
+ #+++++++########!####ffffffffffffffffffaaaffffffffffffffffffffffffffffffff/xxxxxxxxxxxxxxxxx\ffffffffffffffffffffffffffffCCCCfff#
+ #+yyy+++LLLLLLooooo##ffffffffffffffffffaaafffffffffffffffffffffffffffffff/xxxxxxxxxxxxxxxxxxx\fffffffffffffffffffffffffffCCCCfff#
+ #+yyy+++LLLLLLoooooEoffffffffffffffffffaaafffffffffffffffffffffffffffffffxxxxxxxxxxxxxxxxxxxxxfffffffffffffffffffffffffffCCCCfff#
+ #+yyy+++LLLLLLoooooEoffffffffffffffffffaaafffffffffffffffffffffffffffffffxxxxxxxxxxxxxxxxxxxxxffffffffffffffffffffffffffffffffff#
+ #+yyy+++LLLLLLoooooEoffffffffffffffffffaaafffffffffffffffffffffffffffffffxxxxxxxxxxxxxxxxxxxxxffffffffffffffffffffffffffffffffff#
+ #+yyy+++LLLLLLoooooEoffffffffffffffffffaaafffffffffffffffffffffffffffffffxxxxxxxxxxxxxxxxxxxxxffffffffffffffffffffffffffffffffff#
+ #+yyy+++LLLLLLooooo##ffffffffffffffffffaaafffffffffffffffffffffffffffffffxxxxxxxxxxxxxxxxxxxxxffffffffffffffffffffffffffffffffff#
+ #+++++++#############ffffffffffffffffffaaafffffffffffffffffffffffffffffffxxxxxxxxxxxxxxxxxxxxxffffffffffffffffffffffffffffffffff#
+ #+++++++#           #ffffffffffffffffffaaafffffffffffffffffffffffffffffffxxxxxxxxxxxxxxxxxxxxxffffffffffffffffffffffffffffffffff#
+ #+++++++#           #ffffffffffffffffffaaafffffffffffffffffffffffffffffff\xxxxxxxxxxxxxxxxxxx/ffffffffffffffffffffffffffffffffff#
+ #+++++++#           #ffffffffffffffffffaaaffffffffffffffffffffffffffffffff\xxxxxxxxxxxxxxxxx/fffffffffffffffffffffffffffffffffff#
+ #+++++++#           #ffffffffffffffffffaaafffffffffffffffffffffffffffffffff\xxxxxxxxxxxxxxx/ffffffffffffffffffffffffffffffffffff#
+ #########           #ffffffffffffffffffaaaffffffffffffffffffffffffffffffffff\xxxxxxxxxxxxx/fffffffffffffffffffffffffffffffffffff#
+                     #ffffffffffffff(((((((((((fffffffffffffffffffffffffffffff\xxxxxxxxxxx/ffffffffffffffffffffffffffffffffffffff#
+                     #ffffffffffffff(((((((((((ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff#
+                     #ffffffffffffff(((((((((((fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff/#
+                     #ffffffffffffff(((((((((((ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff/##
+                     #ffffffffffffff(((((((((((fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff/##
+                     #ffffffffffffff(((((((((((ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff/##
+                     ##########################################################################################################
+
+end
+
+things
+; --- detention block (start) ---
+PropDesk 12.5,96
+PropChair 12.5,98
+PropChair 12.5,94.5
+IrisTrigger 12.5,99 args=IRIS_101,96
+PropLabLamp 16,94
+PropMonitor 9,103
+PropChair 11,104
+DeadScientist 14,104
+PropPapers 15,105
+Ammo9mmMag 9,106
+FlashlightBattery 16,106
+IrisTrigger 12.5,88 args=IRIS_102,128
+LightAlarm 4,87.5 args=160
+LightAlarm 57,87.5 args=160
+DeadGuard 8,79
+Ammo9mmMag 9,82
+PropBloodPool 8,80
+Thrall 17.5,79 angle=S ambush
+Scientist 26.5,80 angle=S
+Stim 27,77
+Medkit 35,78
+PropPapers 36,81
+KevlarVest 26,72
+Ammo9mmBox 27.5,73
+FlashlightBattery 25.5,74
+Thrall 30,88 angle=W
+Thrall 44,87 angle=W skill=345
+GlassShards 12,101.5
+PropDesk 22,95
+PropChair 22,97
+PropDesk 29,95
+PropCabinet 31,92
+DeadGuard 28,102
+PropBloodPool 27,102
+Stim 20,105
+Ammo9mmMag 21,105
+LabTech 24,100 angle=N
+Thrall 30,104 angle=N skill=2345
+RandomFire 23,104 args=0
+DownedGuard 55,81 angle=W args=1
+IrisTrigger 52,80 args=IRIS_103,160
+PropDesk 46,72
+PropMonitor 46,71
+PropChair 46,74
+PropDesk 52,72
+PropMonitor 52,71
+PropChair 52,74
+PropCabinet 43,82
+PropCabinet 44,82
+DeadGuard 48,78
+PropBloodPool 48,79
+Thrall 50,76 angle=S
+Thrall 55,70 angle=SW skill=345
+Ammo9mmMag 56,83
+PickupShotgun 44.5,63.5
+AmmoShells 46,63
+AmmoShells 46,65 skill=123
+CCABlueCard 43,65
+DeadGuard 45,65.5
+LightAlarm 49,64 args=128
+Stim 55,55
+Ammo9mmMag 50,55
+Thrall 52.5,47 angle=S
+FlashlightBattery 55,48
+; --- the yard (surface) ---
+IrisTrigger 52.5,40 args=IRIS_104,192
+PropFloodlight 47,41
+PropFloodlight 58,41
+PropFloodlight 31,20
+PropFloodlight 89,14
+PropFloodlight 89,33
+PropFloodlight 60,9
+PropFloodlight 8,9
+PropFloodlight 28,54
+LightAlarm 30,20 args=192
+LightAlarm 30,27 args=192
+LightAlarm 108,20 args=192
+PropJeep 13,30 angle=30
+RandomFire 13,30 args=1
+PropJeep 25,37 angle=200
+RandomFire 25.5,37.5 args=1
+PropJeep 31,41.5 angle=160
+RandomFire 31,42 args=2
+PropJeep 66,30 angle=90
+RandomFire 66,30 args=1
+RandomFire 40,14 args=1
+RandomFire 77,36 args=0
+RandomFire 99,44 args=2
+RandomFire 19,12 args=0
+RandomFire 63,41 args=2
+RandomFire 65,43 args=1
+Medkit 61,44
+AmmoShells 66,39
+PropSandbags 28,20
+PropSandbags 28,27
+PropSandbags 33,19
+PropSandbags 33,28
+PropSandbags 71,10
+PropSandbags 74,10
+PropSandbags 70,12
+PropSandbags 92,20
+PropSandbags 92,27
+PropSandbags 104,17
+PropSandbags 104,30
+PropCrate 60,50
+PropCrate 61,51
+PropCrate 62,50
+ExplosiveDrum 64,52
+ExplosiveDrum 65,50
+PropCrate 100,50
+PropCrate 101,52
+ExplosiveDrum 36,48
+ExplosiveDrum 37,50
+DeadSoldier 35,33
+PropBloodPool 35,34
+DeadGuard 58,18
+DeadSoldier 96,38
+DeadGuard 12,36
+DownedGuard 26,50 angle=N args=0,1
+PickupSMG 14.5,50
+Ammo9mmBox 16,52
+Ammo9mmMag 11,52
+PropGenerator 20,46
+PropCylinders 9,46
+Stim 18,53
+FlashlightBattery 9,53
+ThrallTrooper 72,12 angle=S
+AmmoShells 74,14
+Medkit 71,14
+PropDesk 85,45
+PropChair 85,47
+DeadGuard 81,47
+KevlarVest 87,47 skill=123
+Ammo9mmMag 82,43
+FragPickup 87,42
+Grey 40,30 angle=S
+Grey 45,18 angle=S
+Grey 62,26 angle=W
+Grey 76,24 angle=W
+Grey 84,30 angle=W skill=345
+Grey 20,26 angle=E
+Grey 16,40 angle=E skill=345
+Thrall 57,34 angle=S
+Thrall 98,22 angle=W
+Thrall 98,26 angle=W
+Thrall 12,22 angle=E
+ThrallTrooper 102,36 angle=W skill=345
+Probe 70,35 angle=S skill=2345
+Probe 40,45 angle=E skill=345
+Ammo9mmMag 50,30
+AmmoShells 57,12
+Stim 62,44
+Ammo9mmMag 80,28
+AmmoShells 95,41
+Medkit 44,53
+; --- the warehouse (Raiders) ---
+IrisTrigger 115,23.5 args=IRIS_105,192
+Grey 125,30 angle=W
+Grey 138,18 angle=S
+Grey 152,34 angle=W
+Grey 131,44 angle=N skill=345
+Grey 160,25 angle=W
+Thrall 144,5 angle=S z=top
+Thrall 181,20 angle=W z=top
+Thrall 160,31 angle=W z=top
+ThrallTrooper 120,55 angle=N
+Probe 140,30 angle=W skill=2345
+Probe 170,40 angle=W skill=345
+PropCrate 118,18
+PropCrate 119,19
+PropCrate 133,33
+PropCrate 176,54
+PropCrate 177,55
+ExplosiveDrum 152,55
+ExplosiveDrum 153,56
+PropCylinders 114,56
+PropGenerator 125,56
+LightLamp 130,30 args=320,255,210,150
+LightLamp 160,30 args=320,255,210,150
+LightLamp 125,10 args=256,255,210,150,1
+LightLamp 150,50 args=256,255,210,150
+LightAlarm 167,50 args=160
+Ammo9mmBox 126,55
+AmmoShells 159,55
+Stim 118,33
+Medkit 161,8
+AmmoShellBox 145,5 z=top
+KevlarVest 181,45 z=top skill=12
+FragPickup 133,5 z=top
+Ammo9mmMag 114,16
+PropConsole 172,10
+PropMonitor 168,9
+PropChair 168,11
+DeadGuard 175,13
+Ammo9mmBox 176,9
+IrisTrigger 171,11 args=IRIS_106,128
+AlienImplant 149,12
+AmmoShellBox 149,15
+FragPickup 149,17
+Stim 166,53
+Ammo9mmMag 169,54
+; --- S-4 labs ---
+IrisTrigger 170,70 args=IRIS_107,192
+PropCrate 160,63
+PropCrate 161,64
+PropCrate 180,63
+PropCrate 181,64
+PropCrate 180,72
+ExplosiveDrum 175,72
+PropCylinders 160,72
+DeadGuard 164,70
+PropBloodPool 164,71
+Thrall 176,66 angle=N
+Thrall 162,67 angle=N
+Ammo9mmMag 178,70
+AmmoShells 159,69
+LightAlarm 170,77 args=160
+LightAlarm 120,77 args=160
+LightAlarm 62,77 args=160
+Scientist 150,78 angle=E
+Scientist 110,77 angle=E
+LabTech 132,78 angle=E
+DeadScientist 95,78
+PropBloodPool 96,78
+DeadGuard 128,77
+GlassShards 163,79
+GlassShards 176,79
+GlassShards 80,79
+GlassShards 110,79
+GlassShards 130,79
+GlassShards 148,79
+Curtain 162,80 angle=N args=0
+Curtain 177,80 angle=N args=0
+Curtain 79,80 angle=N args=0
+Curtain 112,80 angle=N args=0
+Grey 140,77 angle=E
+Thrall 100,78 angle=E skill=345
+IrisTrigger 84,77.5 args=IRIS_108,96
+Dossier 67,64
+ObjectiveMarker 67,64 args=1
+IrisTrigger 72,72 args=IRIS_109,128,1
+PropCabinet 66,62
+PropCabinet 68,62
+PropCabinet 70,62
+PropCabinet 72,62
+PropCabinet 74,62
+PropCabinet 76,62
+PropCabinet 78,62
+PropDesk 70,67
+PropMonitor 70,66
+PropChair 70,69
+PropDesk 76,67
+PropPapers 75,70
+PropPapers 68,72
+DeadScientist 78,72
+Grey 74,64 angle=S
+Ammo9mmMag 66,73
+Stim 79,73
+Grey 90,66 angle=S
+Grey 95,64 angle=S
+Grey 100,67 angle=S
+Grey 93,70 angle=S
+ThrallTrooper 97,68 angle=S skill=345
+PropBloodPool 88,64
+DeadScientist 102,71
+DownedGuard 110,70 angle=E args=0
+Scientist 123,64 angle=S
+LabTech 120,72 angle=N
+PropDesk 115,66
+PropChair 115,68
+PropCabinet 125,72
+Medkit 112,64
+AmmoShells 124,66
+Ammo9mmBox 118,73
+PropServer 133,64
+PropServer 133,70
+PropServer 136,64
+PropServer 136,70
+PropServer 139,64
+PropServer 139,70
+PropServer 142,64
+PropServer 142,70
+PropServer 145,64
+PropServer 145,70
+PropServer 148,64
+PropServer 148,70
+PropServer 151,64
+PropServer 151,70
+SparkSpot 140,67
+SteamVent 150,73
+Thrall 145,67 angle=S
+Grey 136,72 angle=E skill=345
+AlienEnergyCell 128.5,64
+Medkit 128.5,67
+FragPickup 128.5,69
+PropTank 161,85
+PropTank 161,95
+PropTank 164,85
+PropTankBroken 164,95
+PropTankBroken 167,85
+PropTank 167,95
+PropTank 170,85
+PropTank 170,95
+PropTank 173,85
+PropTank 173,95
+PropTankBroken 176,85
+PropTank 176,95
+PropTank 179,85
+PropTank 179,95
+GlassShards 167,87
+GlassShards 176,87
+GlassShards 164,93
+PropBloodPool 170,90
+Grey 170,91 angle=N
+Grey 180,90 angle=W skill=345
+LabTech 160,98 angle=N
+IrisTrigger 170,83 args=IRIS_114,128
+LightLamp 170,90 args=256,90,255,160
+AmmoShells 181,98
+Stim 159,83
+IrisTrigger 140,83 args=IRIS_113,128
+PropAutopsy 139,97
+PropLabLamp 136,95
+PropLabLamp 142,99
+DeadScientist 144,96
+PropBloodPool 139,99
+Grey 137,100 angle=N
+Grey 146,101 angle=N skill=2345
+Scientist 150,83 angle=W z=top
+Medkit 150,103
+AmmoShellBox 127,104
+LightLamp 139,97 args=192,255,255,230
+IrisTrigger 93,83 args=IRIS_110,160,2
+HackTerminal 97,93 angle=W args=75,1,Door_Open,@vault,2
+ObjectiveMarker 97,93 args=2
+WaveSpot 78,83 args=1,0
+WaveSpot 117,83 args=1,3
+WaveSpot 78,104 args=1,1
+WaveSpot 117,104 args=1,0
+WaveSpot 104,92 args=1,4
+PropAlienGrowth 80,90
+PropAlienGrowth 90,104
+PropAlienGrowth 105,84
+PropAlienGrowth 115,92
+PropAlienGrowth 100,97
+PropAlienGrowth 86,93
+SparkSpot 110,88
+SteamVent 80,100
+LightLamp 97,93 args=320,170,120,255,1
+Grey 88,90 angle=E
+Grey 112,86 angle=W
+Thrall 105,102 angle=N
+Grey 79,96 angle=E skill=345
+AlienEnergyCell 102,88
+Ammo9mmBox 118,100
+AmmoShells 77,88
+Medkit 90,84
+AmmoShells 113,104
+CCARedCard 69,95.5
+HDDCache 69,92
+PickupStinger 70,99
+AlienEnergyCell 67,99
+AlienEnergyCell 72,91
+Medkit 72,100
+LightAlarm 62,95 args=128
+Thrall 61.5,104 angle=N skill=345
+Ammo9mmMag 61,85
+; --- hangar with the back-engineered saucer ---
+IrisTrigger 61.5,116 args=IRIS_111,192
+Stalker 84,125 angle=N ambush
+Grey 50,125 angle=E
+Grey 105,120 angle=W
+Grey 100,132 angle=W skill=345
+Thrall 30,118 angle=E
+Thrall 115,135 angle=N
+ThrallTrooper 70,135 angle=N skill=345
+Probe 60,128 angle=N skill=2345
+Thrall 90,113 angle=S z=top
+Grey 41,125 angle=S z=top skill=345
+PropGenerator 96,125
+PropCylinders 72,125
+PropCylinders 72,127
+SparkSpot 84,125
+SparkSpot 90,120
+PropAlienGrowth 76,130
+PropAlienGrowth 92,118
+PropCrate 30,135
+PropCrate 31,136
+PropCrate 115,125
+ExplosiveDrum 110,130
+ExplosiveDrum 111,131
+RandomFire 100,128 args=1
+RandomFire 55,134 args=0
+LightLamp 84,125 args=384,150,170,255,1
+LightAlarm 22,120 args=192
+LightAlarm 22,127 args=192
+AmmoShellBox 124,136
+Ammo9mmBox 50,137
+Medkit 26,136
+Stim 66,113
+AlienEnergyCell 84,121
+FragPickup 84,129
+AmmoShells 104,114 z=top
+TacticalArmor 44,136
+Medkit 38,136
+Ammo9mmBox 41,137
+PropDesk 38,134
+PropMonitor 38,134
+DeadScientist 44,134
+ExitGate 24,123.5 angle=W args=3,@exitdoor
+ObjectiveMarker 23,123.5 args=3
+IrisTrigger 28,123.5 args=IRIS_112,160,3
+Stim 16,122
+Stim 16,125
+ObjectiveMarker 4,123.5 args=3
+end

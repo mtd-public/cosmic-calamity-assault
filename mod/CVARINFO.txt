@@ -1,0 +1,1 @@
+server int cca_selftest = 0;

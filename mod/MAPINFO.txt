@@ -1,0 +1,92 @@
+// Cosmic Calamity: Assault — Case File 51
+include "mapinfo/doomednums.gen.txt"
+
+gameinfo
+{
+	PlayerClasses = "CCAPlayer"
+	StatusBarClass = "CCAStatusBar"
+	AddEventHandlers = "CCAEvents", "CCAOverlay", "CCASelfTest"
+	TitleMusic = "music/title.mid"
+	TitleTime = 11
+	FinaleMusic = "music/title.mid"
+	QuitMessages = "$C51_QUITMSG1", "$C51_QUITMSG2", "$C51_QUITMSG3", "$C51_QUITMSG4"
+	PickupColor = "8c f7 a0"
+	DimColor = "0a 14 10"
+	DimAmount = 0.6
+	ForceTextInMenus = true
+	NoRandomPlayerclass = true
+	MenuFontColor_Title = "Green"
+	MenuFontColor_Label = "Untranslated"
+	MenuFontColor_Value = "Gold"
+	MenuFontColor_Action = "Untranslated"
+	MenuFontColor_Header = "Green"
+	MenuFontColor_Highlight = "Gold"
+	MenuFontColor_Selection = "Green"
+}
+
+clearskills
+skill baby   { AmmoFactor = 2 DamageFactor = 0.5 EasyBossBrain SpawnFilter = Baby Name = "$C51_SKILL1" Key = "p" }
+skill easy   { SpawnFilter = Easy Name = "$C51_SKILL2" Key = "s" }
+skill normal { SpawnFilter = Normal Name = "$C51_SKILL3" Key = "e" DefaultSkill }
+skill hard   { SpawnFilter = Hard Name = "$C51_SKILL4" Key = "u" }
+skill nightmare { AmmoFactor = 2 FastMonsters DisableCheats RespawnTime = 12 SpawnFilter = Nightmare Name = "$C51_SKILL5" MustConfirm = "$C51_SKILL5_CONFIRM" Key = "x" }
+
+clearepisodes
+episode MAP01
+{
+	Name = "$C51_EP_CASEFILE"
+	Key = "c"
+}
+
+defaultmap
+{
+	AllowFreelook
+	AllowJump
+	AllowCrouch
+	NoAutoSequences
+	AirSupply = 30
+	TeamDamage = 0.5
+}
+
+map MAP01 lookup "C51_MAP01_NAME"
+{
+	LevelNum = 1
+	Next = "MAP02"
+	Sky1 = "SKYA51", 0
+	Music = "music/map01.mid"
+	Cluster = 1
+	Par = 780
+	Author = "Cosmic Calamity team"
+}
+map MAP02 lookup "C51_MAP02_NAME"
+{
+	LevelNum = 2
+	Next = "MAP03"
+	Sky1 = "SKYCITY", 0
+	Music = "music/map02.mid"
+	Cluster = 2
+	Par = 900
+}
+map MAP03 lookup "C51_MAP03_NAME"
+{
+	LevelNum = 3
+	Next = "MAP04"
+	Sky1 = "SKYFRST", 0
+	Music = "music/map03.mid"
+	Cluster = 3
+	Par = 780
+}
+map MAP04 lookup "C51_MAP04_NAME"
+{
+	LevelNum = 4
+	Next = "EndGameC"
+	Sky1 = "SKYSPACE", 0
+	Music = "music/map04.mid"
+	Cluster = 4
+	Par = 900
+}
+
+cluster 1 { ExitText = lookup, "C51_CLUSTER1_EXIT" Music = "music/story.mid" Flat = "LABTILE" }
+cluster 2 { ExitText = lookup, "C51_CLUSTER2_EXIT" Music = "music/story.mid" Flat = "ASPHALT" }
+cluster 3 { ExitText = lookup, "C51_CLUSTER3_EXIT" Music = "music/story.mid" Flat = "HULLFLR" }
+cluster 4 { ExitText = lookup, "C51_CLUSTER4_EXIT" Music = "music/story.mid" Flat = "SHIPFLR1" }

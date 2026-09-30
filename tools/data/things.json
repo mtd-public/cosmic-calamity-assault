@@ -1,42 +1,379 @@
 {
-  "_doc": "class -> DoomEdNum and the args the actor reads. mapc.mjs places by class name; build.mjs writes MAPINFO DoomEdNums from this file.",
-  "PlayerStart": { "ed": 1 },
-  "Thrall": { "ed": 20001 }, "ThrallTrooper": { "ed": 20002 }, "Grey": { "ed": 20003 }, "Hybrid": { "ed": 20004 },
-  "Stalker": { "ed": 20005 }, "Probe": { "ed": 20006 }, "Overseer": { "ed": 20007 }, "HiveMind": { "ed": 20008 },
-  "Scientist": { "ed": 20101 }, "LabTech": { "ed": 20102 },
-  "DownedGuard": { "ed": 20103, "args": ["0 = nothing, 1 = hands over the blue card, 2 = red card, 3 = yellow card", "1 = rifle ally instead of pistol"] },
-  "DeadGuard": { "ed": 20104 }, "DeadScientist": { "ed": 20105 }, "DeadLabTech": { "ed": 20106 }, "DeadSoldier": { "ed": 20107 },
-  "Pickup9mmPistol": { "ed": 20201 }, "PickupShotgun": { "ed": 20202 }, "PickupSMG": { "ed": 20203 }, "PickupAssaultRifle": { "ed": 20204 },
-  "PickupBattleRifle": { "ed": 20205 }, "PickupStinger": { "ed": 20206 }, "PickupScatter": { "ed": 20207 }, "PickupPlasmaSMG": { "ed": 20208 },
-  "PickupHarvesterBlade": { "ed": 20209 }, "PickupSingularity": { "ed": 20210 },
-  "Ammo9mmMag": { "ed": 20301 }, "Ammo9mmBox": { "ed": 20302 }, "AmmoShells": { "ed": 20303 }, "AmmoShellBox": { "ed": 20304 },
-  "Ammo556Mag": { "ed": 20305 }, "Ammo556Box": { "ed": 20306 }, "Ammo762Mag": { "ed": 20307 }, "AlienEnergyCell": { "ed": 20308 },
-  "AlienEnergyPod": { "ed": 20309 }, "FragPickup": { "ed": 20310 }, "DetonatorPickup": { "ed": 20311 },
-  "Stim": { "ed": 20401 }, "Medkit": { "ed": 20402 }, "AlienImplant": { "ed": 20403 }, "KevlarVest": { "ed": 20404 },
-  "TacticalArmor": { "ed": 20405 }, "FlashlightBattery": { "ed": 20406 },
-  "CCABlueCard": { "ed": 20501 }, "CCARedCard": { "ed": 20502 }, "CCAYellowCard": { "ed": 20503 },
-  "Dossier": { "ed": 20510 }, "HDDCache": { "ed": 20511 }, "CaseFile": { "ed": 20512 }, "NavShard": { "ed": 20513 },
-  "HackTerminal": { "ed": 20601, "args": ["seconds (60-90)", "wave group (matches WaveSpot arg0)", "line special to run on completion (e.g. 12 Door_Raise / 20 Floor_LowerByValue ...)", "special arg0 (tag)", "objective id completed (see MAPINFO objectives)"] },
-  "WaveSpot": { "ed": 20602, "args": ["wave group", "enemy mix: 0 greys, 1 thralls, 2 hybrids, 3 mixed, 4 probes, 5 stalkers"] },
-  "ObjectiveMarker": { "ed": 20603, "args": ["objective id this waypoint points to"] },
-  "IrisTrigger": { "ed": 20604, "args": ["LANGUAGE line id (IRIS_<n>)", "radius in units (default 128)", "objective id to set as current (0 = none)"] },
-  "ExitGate": { "ed": 20605, "args": ["required objective bitmask (1 = obj 1, 2 = obj 2, 4 = obj 3 ...)", "sector tag of the exit door to open when satisfied"] },
-  "Curtain": { "ed": 20701, "args": ["0 = beige lab curtain, 1 = dirty motel curtain, 2 = red velvet"] },
-  "RandomFire": { "ed": 20702, "args": ["size 0 small, 1 medium, 2 large"] },
-  "GlassShards": { "ed": 20703 }, "SparkSpot": { "ed": 20704 }, "SteamVent": { "ed": 20705 },
-  "PropDesk": { "ed": 20801 }, "PropChair": { "ed": 20802 }, "PropMonitor": { "ed": 20803 }, "PropConsole": { "ed": 20804 },
-  "PropTank": { "ed": 20805 }, "PropTankBroken": { "ed": 20806 }, "PropAutopsy": { "ed": 20807 }, "PropCabinet": { "ed": 20808 },
-  "PropServer": { "ed": 20809 }, "PropLabLamp": { "ed": 20810 }, "PropCylinders": { "ed": 20811 }, "PropGenerator": { "ed": 20812 },
-  "PropCrate": { "ed": 20813 }, "ExplosiveDrum": { "ed": 20814 }, "PropPapers": { "ed": 20815 }, "PropBloodPool": { "ed": 20816 },
-  "PropGlassFloor": { "ed": 20817 }, "PropAlienGrowth": { "ed": 20818 },
-  "PropCarWreck": { "ed": 20831 }, "PropHydrant": { "ed": 20832 }, "PropStreetLamp": { "ed": 20833 }, "PropDumpster": { "ed": 20834 },
-  "PropTrash": { "ed": 20835 }, "PropBench": { "ed": 20836 }, "PropPhoneBooth": { "ed": 20837 }, "PropTrafficLight": { "ed": 20838 },
-  "PropNewsBox": { "ed": 20839 }, "PropBurningBarrel": { "ed": 20840 },
-  "PropPine": { "ed": 20851 }, "PropBush": { "ed": 20852 }, "PropTent": { "ed": 20853 }, "PropFloodlight": { "ed": 20854 },
-  "PropJeep": { "ed": 20855 }, "PropRocks": { "ed": 20856 }, "PropSandbags": { "ed": 20857 }, "PropHullDebris": { "ed": 20858 },
-  "PropAttackCraft": { "ed": 20871 }, "PropPod": { "ed": 20872 }, "PropAlienConsole": { "ed": 20873 }, "PropAlienPillar": { "ed": 20874 },
-  "PropHiveConduit": { "ed": 20875, "args": ["1 = shootable conduit (MAP04 shield generator), 0 = decoration"] },
-  "LightLamp": { "ed": 20901, "args": ["radius", "r", "g", "b", "1 = flicker"] },
-  "LightAlarm": { "ed": 20902, "args": ["radius"] },
-  "LightNeon": { "ed": 20903, "args": ["radius", "r", "g", "b", "1 = buzz flicker"] }
+ "_doc": "class -> DoomEdNum and the args the actor reads. mapc.mjs places by class name; build.mjs writes MAPINFO DoomEdNums from this file. Optional 'z' = the ZScript class when it differs from the map-facing name.",
+ "PlayerStart": {
+  "ed": 1
+ },
+ "Thrall": {
+  "ed": 20001
+ },
+ "ThrallTrooper": {
+  "ed": 20002
+ },
+ "Grey": {
+  "ed": 20003
+ },
+ "Hybrid": {
+  "ed": 20004
+ },
+ "Stalker": {
+  "ed": 20005,
+  "z": "CCAStalker"
+ },
+ "Probe": {
+  "ed": 20006
+ },
+ "Overseer": {
+  "ed": 20007
+ },
+ "HiveMind": {
+  "ed": 20008
+ },
+ "Scientist": {
+  "ed": 20101
+ },
+ "LabTech": {
+  "ed": 20102
+ },
+ "DownedGuard": {
+  "ed": 20103,
+  "args": [
+   "0 = nothing, 1 = hands over the blue card, 2 = red card, 3 = yellow card",
+   "1 = rifle ally instead of pistol"
+  ]
+ },
+ "DeadGuard": {
+  "ed": 20104
+ },
+ "DeadScientist": {
+  "ed": 20105
+ },
+ "DeadLabTech": {
+  "ed": 20106
+ },
+ "DeadSoldier": {
+  "ed": 20107
+ },
+ "Pickup9mmPistol": {
+  "ed": 20201,
+  "z": "CCA_Pistol"
+ },
+ "PickupShotgun": {
+  "ed": 20202,
+  "z": "CCA_Shotgun"
+ },
+ "PickupSMG": {
+  "ed": 20203,
+  "z": "CCA_SMG"
+ },
+ "PickupAssaultRifle": {
+  "ed": 20204,
+  "z": "CCA_AssaultRifle"
+ },
+ "PickupBattleRifle": {
+  "ed": 20205,
+  "z": "CCA_BattleRifle"
+ },
+ "PickupStinger": {
+  "ed": 20206,
+  "z": "CCA_Stinger"
+ },
+ "PickupScatter": {
+  "ed": 20207,
+  "z": "CCA_Scatter"
+ },
+ "PickupPlasmaSMG": {
+  "ed": 20208,
+  "z": "CCA_PlasmaSMG"
+ },
+ "PickupHarvesterBlade": {
+  "ed": 20209,
+  "z": "CCA_HarvesterBlade"
+ },
+ "PickupSingularity": {
+  "ed": 20210,
+  "z": "CCA_Singularity"
+ },
+ "Ammo9mmMag": {
+  "ed": 20301
+ },
+ "Ammo9mmBox": {
+  "ed": 20302
+ },
+ "AmmoShells": {
+  "ed": 20303
+ },
+ "AmmoShellBox": {
+  "ed": 20304
+ },
+ "Ammo556Mag": {
+  "ed": 20305
+ },
+ "Ammo556Box": {
+  "ed": 20306
+ },
+ "Ammo762Mag": {
+  "ed": 20307
+ },
+ "AlienEnergyCell": {
+  "ed": 20308
+ },
+ "AlienEnergyPod": {
+  "ed": 20309
+ },
+ "FragPickup": {
+  "ed": 20310
+ },
+ "DetonatorPickup": {
+  "ed": 20311
+ },
+ "Stim": {
+  "ed": 20401
+ },
+ "Medkit": {
+  "ed": 20402
+ },
+ "AlienImplant": {
+  "ed": 20403
+ },
+ "KevlarVest": {
+  "ed": 20404
+ },
+ "TacticalArmor": {
+  "ed": 20405
+ },
+ "FlashlightBattery": {
+  "ed": 20406
+ },
+ "CCABlueCard": {
+  "ed": 20501
+ },
+ "CCARedCard": {
+  "ed": 20502
+ },
+ "CCAYellowCard": {
+  "ed": 20503
+ },
+ "Dossier": {
+  "ed": 20510
+ },
+ "HDDCache": {
+  "ed": 20511
+ },
+ "CaseFile": {
+  "ed": 20512
+ },
+ "NavShard": {
+  "ed": 20513
+ },
+ "HackTerminal": {
+  "ed": 20601,
+  "args": [
+   "seconds (60-90)",
+   "wave group (matches WaveSpot arg0)",
+   "line special to run on completion (e.g. 12 Door_Raise / 20 Floor_LowerByValue ...)",
+   "special arg0 (tag)",
+   "objective id completed (see MAPINFO objectives)"
+  ]
+ },
+ "WaveSpot": {
+  "ed": 20602,
+  "args": [
+   "wave group",
+   "enemy mix: 0 greys, 1 thralls, 2 hybrids, 3 mixed, 4 probes, 5 stalkers"
+  ]
+ },
+ "ObjectiveMarker": {
+  "ed": 20603,
+  "args": [
+   "objective id this waypoint points to"
+  ]
+ },
+ "IrisTrigger": {
+  "ed": 20604,
+  "args": [
+   "LANGUAGE line id (IRIS_<n>)",
+   "radius in units (default 128)",
+   "objective id to set as current (0 = none)"
+  ]
+ },
+ "ExitGate": {
+  "ed": 20605,
+  "args": [
+   "required objective bitmask (1 = obj 1, 2 = obj 2, 4 = obj 3 ...)",
+   "sector tag of the exit door to open when satisfied"
+  ]
+ },
+ "Curtain": {
+  "ed": 20701,
+  "args": [
+   "0 = beige lab curtain, 1 = dirty motel curtain, 2 = red velvet"
+  ]
+ },
+ "RandomFire": {
+  "ed": 20702,
+  "args": [
+   "size 0 small, 1 medium, 2 large"
+  ]
+ },
+ "GlassShards": {
+  "ed": 20703
+ },
+ "SparkSpot": {
+  "ed": 20704
+ },
+ "SteamVent": {
+  "ed": 20705
+ },
+ "PropDesk": {
+  "ed": 20801
+ },
+ "PropChair": {
+  "ed": 20802
+ },
+ "PropMonitor": {
+  "ed": 20803
+ },
+ "PropConsole": {
+  "ed": 20804
+ },
+ "PropTank": {
+  "ed": 20805
+ },
+ "PropTankBroken": {
+  "ed": 20806
+ },
+ "PropAutopsy": {
+  "ed": 20807
+ },
+ "PropCabinet": {
+  "ed": 20808
+ },
+ "PropServer": {
+  "ed": 20809
+ },
+ "PropLabLamp": {
+  "ed": 20810
+ },
+ "PropCylinders": {
+  "ed": 20811
+ },
+ "PropGenerator": {
+  "ed": 20812
+ },
+ "PropCrate": {
+  "ed": 20813
+ },
+ "ExplosiveDrum": {
+  "ed": 20814
+ },
+ "PropPapers": {
+  "ed": 20815
+ },
+ "PropBloodPool": {
+  "ed": 20816
+ },
+ "PropGlassFloor": {
+  "ed": 20817
+ },
+ "PropAlienGrowth": {
+  "ed": 20818
+ },
+ "PropCarWreck": {
+  "ed": 20831
+ },
+ "PropHydrant": {
+  "ed": 20832
+ },
+ "PropStreetLamp": {
+  "ed": 20833
+ },
+ "PropDumpster": {
+  "ed": 20834
+ },
+ "PropTrash": {
+  "ed": 20835
+ },
+ "PropBench": {
+  "ed": 20836
+ },
+ "PropPhoneBooth": {
+  "ed": 20837
+ },
+ "PropTrafficLight": {
+  "ed": 20838
+ },
+ "PropNewsBox": {
+  "ed": 20839
+ },
+ "PropBurningBarrel": {
+  "ed": 20840
+ },
+ "PropPine": {
+  "ed": 20851
+ },
+ "PropBush": {
+  "ed": 20852
+ },
+ "PropTent": {
+  "ed": 20853
+ },
+ "PropFloodlight": {
+  "ed": 20854
+ },
+ "PropJeep": {
+  "ed": 20855
+ },
+ "PropRocks": {
+  "ed": 20856
+ },
+ "PropSandbags": {
+  "ed": 20857
+ },
+ "PropHullDebris": {
+  "ed": 20858
+ },
+ "PropAttackCraft": {
+  "ed": 20871
+ },
+ "PropPod": {
+  "ed": 20872
+ },
+ "PropAlienConsole": {
+  "ed": 20873
+ },
+ "PropAlienPillar": {
+  "ed": 20874
+ },
+ "PropHiveConduit": {
+  "ed": 20875,
+  "args": [
+   "1 = shootable conduit (MAP04 shield generator), 0 = decoration"
+  ]
+ },
+ "LightLamp": {
+  "ed": 20901,
+  "args": [
+   "radius",
+   "r",
+   "g",
+   "b",
+   "1 = flicker"
+  ]
+ },
+ "LightAlarm": {
+  "ed": 20902,
+  "args": [
+   "radius"
+  ]
+ },
+ "LightNeon": {
+  "ed": 20903,
+  "args": [
+   "radius",
+   "r",
+   "g",
+   "b",
+   "1 = buzz flicker"
+  ]
+ }
 }

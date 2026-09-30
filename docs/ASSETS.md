@@ -214,6 +214,10 @@ Per gun, the right-hand viewmodel. Hip is **off to the right, one-handed**. The 
   - `LABSIGN1` (a department sign), `POSTER1` (a "THEY'RE ALREADY HERE" style poster)
 - Flats: `LABTILE`, `LABTIL2`, `LABCEIL`, `LABLITE`, `CONCFLR`, `METLFLR`, `GRATEFLR`, `ALNFLR1`, `STEPTOP`.
 
+**Area 51 outdoors (desert night) and the government warehouse (Raiders of the Lost Ark):**
+- Walls: `WHSEWALL` (corrugated warehouse wall), `WHSEDOOR` (rolling warehouse door), `CRATEWAL` (stacked stencilled crates), `FENCEPOL` (fence post / concrete base). `FENCEMID` is chain-link with barbed wire.
+- Flats: `DESERT`, `TARMAC`, `CRATETOP`.
+
 **City (Duke-seedy):**
 - Walls:
   - `BRICKRED`, `BRICKDRK`, `STOREFR1`, `STOREFR2`, `OFFICEWN` (tower windows), `MARBLE`, `WOODPANL`

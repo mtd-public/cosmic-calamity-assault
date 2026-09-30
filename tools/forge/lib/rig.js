@@ -13,7 +13,7 @@
 //   makeHand(mats, scale, side)              palm + 4 curling fingers + thumb; hand.grip(k)
 //   K(k, stops)                              keyframe interpolation with smoothstep
 import * as THREE from 'three';
-import { mergeGeometries } from './vendor/addons/BufferGeometryUtils.js';
+import { mergeGeometries } from './addons/BufferGeometryUtils.js';
 
 const NEG_Y = new THREE.Vector3(0, -1, 0);
 const _a = new THREE.Vector3(), _b = new THREE.Vector3(), _c = new THREE.Vector3(), _d = new THREE.Vector3();

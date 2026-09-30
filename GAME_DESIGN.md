@@ -1,185 +1,262 @@
-# Cosmic Calamity: Assault — Game Design Document
+# Cosmic Calamity: Assault — Case File 51 (GZDoom mod) — Game Design Document
 
-> *Halo: Combat Evolved / Halo 2*, first person, set six months after *Metal Snake: Cosmic Calamity*. The stealth is over: the Vyrr are landing on Earth's cities, and the Earth Cyborg Squad goes in loud.
+> *DOOM II* with pre-rendered custom characters and modern weapon handling, played in **GZDoom**, the engine *Selaco* is built on. The tone is 1990s paranoid-conspiracy TV (a sardonic believer FBI agent, an AI in his ear, men in grey suits who knew all along) colliding with a full hostile alien invasion.
 
-Built from: `mstr-gme-dsgn-tmpt` house rules (sim / render / UI split, fixed step, Pointer-Events touch, touch-zoom-guard, synth audio, smoke tests), `mtd-public/dr-mow` (gamepad module, smoke test), and the story, cast and palette of `mtd-public/cosmic-calamity`.
+**Touchstones:**
+- *The X-Files*: tone and protagonist archetype.
+- *Half-Life*: Black Mesa-style labs with scientists and security.
+- *Duke Nukem 3D*: a seedy late-90s city.
+- *Independence Day* and *Perfect Dark*: the mothership.
+- *Call of Duty*: gun handling, aim-down-sights, dual wield, grenade cooking.
+- *Predator*: the alien detonator.
+- *Jumping Flash!*: the little avatar on the HUD.
+
+This branch (`doomlike`) replaces the custom three.js engine. That engine's final state is saved on the branch `final-halo-like` and snapshotted in `mstr-gme-dsgn-tmpt/reference/cosmic-calamity-assault`.
+
+Built from: GZDoom 4.14 (ZScript, UDMF), the `mstr-gme-dsgn-tmpt` house rules (design doc first, a TUNING table with reasons, procedural assets, headless verification), and the three.js model and rig toolkit from `final-halo-like`. That toolkit now runs offline to pre-render sprites (see §8).
 
 ## 1. Story
-- **Before:** in *Cosmic Calamity*, the cyborg operative **Snake**, bonded to the AI **IRIS**, broke the **Lullaby Array** aboard the Vyrr mothership *Hollow Choir*. It was a weapon that would have put Earth's cities to sleep. The captive ship-mind **Threnody** leaked the location of every other Vyrr ship's core.
-- **Now:** the truce is dead. Vyrr ships hang over forty cities and the landings have begun. Earth builds the **Earth Cyborg Squad (ECS)** on Snake's pattern. You are **ANVIL**, an ECS operative, with **IRIS-2**, a fork of IRIS ("all of her memories, none of her patience"). **Gen. Hale** commands and **Maj. Snake** leads the squad. **Condor-2** flies the dropship.
-- **Missions:**
-  1. **Fallen Hymn**, Tacoma. A downed assault carrier. Recover the Resonance Key, the map of the Vyrr fleet.
-  2. **Cold Storage**, Rotterdam. A Vyrr depot in a seized warehouse. Destroy three Lullaby seed emitters, then kill the Bulwark pair.
-  3. **Song of the Gorge**, Verdon Gorge. Cross the canyon, break the outpost, and destroy the Hymn Spire that powers every emitter in Europe.
+- **1997.** Special Agent **Eli Marsh** of the FBI's Unexplained Phenomena Unit has spent six years in a basement office proving that the government made a deal with visitors from elsewhere. He was right about the deal. He was wrong about the visitors keeping it.
+- **Cast:**
+  - **Eli Marsh** (player): a believer, sardonic, stubborn. Charcoal suit, loosened tie, a long dark trench coat, a 9 mm service pistol and a heavy steel flashlight.
+  - **IRIS** (the AI helper): a prototype intelligence grown at S-4 from recovered alien hardware, now living in Marsh's wrist unit. She *is* the HUD. She draws waypoints to the objective, explains the plot as it happens, and drops hints when a secret is near. Her little avatar sits in the HUD corner and reacts: it talks, glances toward threats and glitches when Marsh is hurt. It is Jumping Flash's portrait idea, not cute: a green CRT wireframe face behind scanlines, dry and slightly unsettling.
+  - **Dr. Nora Kade** (radio, MAP02 on): Marsh's partner, an FBI forensic pathologist and a skeptic. She argues with IRIS and with the evidence.
+  - **The Custodian** (antagonist): a quiet man in a grey suit with a lighter he never uses. He sits on the Committee that brokered the deal. He appears in radio intercepts and intermission texts.
+  - **The Greys:** the government codename is **EBE** (extraterrestrial biological entity). Their telepathic hum can "drown" a human mind, which is how the base guards turned.
+- **Missions** (one episode, *Case File 51*):
+  1. **Groom Lake** (MAP01): Marsh is being held in an interrogation room under Area 51 when the containment wing breaks open.
+     - To leave, he must retrieve two things: the **dossier** (the Committee's file on the deal) and the **HDD cache** (the alien experiment data, and IRIS's home).
+     - Scientists and lab personnel flee and cower. Downed security guards lie in the corridors, some dead, some dying and still talking.
+  2. **Night of the Harvest** (MAP02): Washington, D.C., during the invasion. He reaches Bureau HQ through the burning streets, the plaza and the subway. His case file holds the coordinates of the ship the Air Force shot down.
+  3. **Crash Site** (MAP03): the Army cordon around the downed saucer has been overrun. He takes the navigational shard from inside the wreck, which is the key to the ship that launched it.
+  4. **Mothership** (MAP04): abduction bays, organic corridors and the **Hive Mind**. Kill it and the hum stops.
 
 ## 2. Pillars
-1. **The 30 seconds of fun.** Meet a group of enemies, strip shields with plasma, finish with bullets or a melee, throw a grenade to flush them out, and reposition while your shield recharges.
-2. **Readable enemies.** Each Vyrr has a Halo role and a visible tell: Skitters panic, Troopers' shields flare, a Bulwark's glowing spine is its weak spot, and Drones hum.
-3. **Two guns, two grenade types.** Swap weapons from the dead; ammo is always a decision.
-4. **Early-Xbox look.** Smooth low-poly shapes, normal-mapped specular detail textures, emissive trims, fog and big skies. No raw boxes on screen.
-5. **Tablet first, controller native.** Every mechanic works with thumbs; the Xbox pad plays like Halo 2.
+1. **Doom's speed, modded-weapon feel.** Fast movement, big rooms, circle-strafing. Every weapon has real reload, pump and slide animations, the way high-effort Doom mods do them.
+2. **Custom characters that read at a glance.** Each alien has one silhouette, one colour cue and one sound. Their sprites are pre-rendered from 3D models in 8 rotations, like Doom's clay models and *Blood*'s renders.
+3. **The flashlight.** The game is darker than Doom. Marsh's flashlight (F) is a real GZDoom spotlight, and the Maglite (slot 1) is a club that is also a light.
+4. **Conspiracy flavour, invasion scale.** Files, intercepts and a skeptic on the radio for tone; beams over the city and a mothership for scale.
+5. **Everything generated, everything verified.** Sprites, textures, sounds and music are built by code in `tools/`. Maps are compiled from text. Headless GZDoom proves the mod loads and every map runs.
 
 ## 3. Core loop
 ```
- objective marker → contact (motion tracker pings, callouts) → fight (shield / plasma / grenades)
-   → loot (swap weapons, grenades, health packs) → "CHECKPOINT... DONE" → next set piece
- die → revert to the last checkpoint (Halo: no lives, no game over)
+ enter area → radio line / sight sound → fight (strafe, pick the weapon for the enemy)
+   → loot (ammo, armour, keycards) → door / lift / switch opens the next area → exit switch
+ death → reload the last save (GZDoom autosaves at each map start; quicksave anywhere)
 ```
 
-## 4. Controls
-| Verb | Keyboard + mouse | Xbox controller (Classic / Halo 2) | Touch (tablet) |
+## 4. Controls (full Xbox controller support; keyboard + mouse; every menu works with the pad)
+| Verb | Xbox controller | Keyboard + mouse |
+|---|---|---|
+| Move / look (free vertical and horizontal aim, no autoaim) | Left / right stick | WASD / mouse |
+| Fire (right-hand gun) | RT | Left click |
+| Aim down sights; with two guns, fire the left gun | LT | Right click |
+| Jump | A | Space |
+| Crouch; **hold in the air to dolphin-dive** | B | C / Ctrl |
+| Reload + use (doors, switches, NPCs) | X | R / E |
+| Next weapon (tap) / previous weapon | Y / D-pad left | wheel, 1-7 |
+| Grenade: hold to cook, release to throw | LB | G |
+| Melee (quick knife or alien blade) | RB | Q |
+| Run | L3 | Shift |
+| Dual wield toggle (with two of the gun) | R3 | V |
+| Flashlight | D-pad up | F |
+| Grenade type (frag / alien detonator) | D-pad right | T |
+| IRIS: repeat the objective and waypoint | D-pad down | H |
+| Map / menu | View / Menu | Tab / Esc |
+
+- The bindings ship as defaults (`KEYCONF` `defaultbind`).
+- **Options → Controller Layout** shows this table in the game and has an "Apply Xbox layout" command that rebinds everything.
+- GZDoom's own menus work with the D-pad and A/B.
+- Stick sensitivity and inversion live in GZDoom's controller options, which the layout page links to.
+
+## 5. Numbers (`mod/zscript/*.zs`, each with its reason in a comment)
+Damage uses Doom's `N*random(a,b)` form so balance can be compared directly with the original monster.
+
+### 5.1 Weapons: Call of Duty handling on Doom's arsenal
+**Handling:**
+- **Hip:** the gun is held one-handed, low and to the **right** of the screen. At night the left hand holds the flashlight.
+- **ADS (LT / right click):** the gun comes to the centre in a two-hand grip with the sights on the reticle. The view zooms ×1.35 (×2.3 on the battle rifle), spread tightens, and move speed drops to 60%.
+- **Dual wield:** pick up a second copy of a gun, then toggle (R3 / V). The left gun is the right one mirrored. RT fires right and LT fires left; each has its own magazine and reload. This works on every gun, **shotguns included** (one-hand pump flick).
+- **Reticle:** drawn by the HUD, shaped per weapon. It opens with spread and movement, turns red over a hostile, hides in ADS, and becomes two small carets when dual wielding.
+- **Aim:** true pitch and yaw; shots go exactly where the reticle is (no Doom autoaim).
+
+**Arsenal:**
+| Slot | Human | Alien | Doom analog | Why |
+|---|---|---|---|---|
+| 1 | Combat knife (fast slash, lunge) | Harvester blade (bone and energy, a heavy two-hit combo) | Fist / chainsaw | Melee is also on RB from any weapon |
+| 2 | 9 mm pistol (15-round magazine) | Stinger (alien pistol, charged shot) | Pistol | Accurate; dual 9 mm is the classic |
+| 3 | Pump shotgun (7 shells) | Scatter (alien shotgun, plasma pellets that stagger) | Shotgun / SSG | Close quarters; dual shotguns for the power fantasy |
+| 4 | SMG (32-round magazine) | Plasma SMG (heat instead of a magazine) | Chaingun | Spray |
+| 5 | Assault rifle (30 rounds, full auto) | — | Chaingun+ | All-rounder |
+| 6 | Battle rifle (20 rounds, **3-round burst**, marksman scope) | — | — | Precise mid/long range |
+| 7 | — | The Singularity (alien superweapon, MAP04) | BFG9000 | The finale |
+
+**Ammo:**
+- **Human guns** use real calibres: 9 mm (pistol, SMG), 12 gauge (shotgun), 5.56 (assault rifle), 7.62 (battle rifle).
+- **All alien weapons** share one universal ammo, **Alien Energy** (cells from dead Hybrids, energy pods).
+- Doors, switches, keycards, health (stim, medkit, implant) and armour (Kevlar, tactical) work as in Doom.
+
+**Grenades:**
+- **Frag:** hold to cook on a 4 s fuse; it explodes in your hand at 0.
+- **Alien detonator:** Predator-style. It sticks to whatever it hits, counts down in glowing red glyphs for 3 s, and has a bigger blast.
+
+Damage uses Doom's `N*random(a,b)` form so balance can be compared with the original weapon:
+| Weapon | Damage | Rate | Magazine / ammo |
 |---|---|---|---|
-| Move / look | WASD / mouse (pointer lock) | Left / right stick (curve + turn ramp) | Floating stick on the left 42% / drag anywhere else (or on FIRE) |
-| Fire | Left click | RT | FIRE (hold; drag to aim while firing) |
-| Grenade / type | G / T | LT / LB | NADE / G-TYPE |
-| Jump / crouch | Space / hold C | A / L3 (toggle) | JUMP / CROUCH (toggle) |
-| Melee | Q or V | B | MELEE |
-| Reload / pick up | R / hold E | X tap / X hold (RB in the Recon preset) | ACTION tap / hold |
-| Switch weapon | Tab, 1, wheel | Y | SWAP |
-| Zoom | Right click / Shift | R3 | ZOOM |
-| Pause / objective | Esc, P / O | Menu / View | ❚❚ |
+| Knife / blade | 3×random(4,10) / 5×random(4,10) | 12 / 20 tics | — |
+| 9 mm / Stinger | 5×random(2,3) / 6×random(2,4), charge ×3 | 7 / 10 tics | 15 / cell 1 |
+| Pump / Scatter | 8 × 5×random(1,3) / 10 × 4×random(1,3) + stagger | 28 / 24 tics | 7 shells / cell 4 |
+| SMG / Plasma SMG | 4×random(1,3) / 5×random(1,3) | 3 / 3 tics | 32 / heat |
+| Assault rifle | 5×random(2,3) | 4 tics | 30 |
+| Battle rifle | 3 × 6×random(2,4), burst 2 tics apart | 16 tics per burst | 20 |
+| Frag / detonator | 128 / 200 splash | — | carry 4 / 3 |
 
-- **Menus with a pad:** D-pad or left stick moves a focus ring, A presses, B goes back. This is dr-mow's `MenuNav`. Button names follow the controller family (Xbox, PlayStation or Switch).
-- **Aim assist** (pad and touch only; toggle in Settings):
-  - friction: look speed ×0.45 inside a cone around a target
-  - magnetism: the view drifts to follow a target while you move
-  - bullet magnetism: hitscan rounds bend onto a target within 0.035 rad of the ray
-- **Rumble:** on firing, taking damage, melee and nearby explosions (`vibrationActuator`).
+### 5.2 Enemies
+| Enemy | Doom analog | HP | Speed | Attack | Telegraph (what you see/hear) | Counter |
+|---|---|---|---|---|---|---|
+| **Thrall** (possessed guard, pistol) | Zombieman | 20 | 8 | hitscan 3×random(1,5) | black-oil eyes, a wet gurgle | pistol |
+| **Thrall Trooper** (possessed soldier, shotgun) | Shotgun guy | 30 | 8 | 3 pellets × 3×random(1,5) | the rack of a shotgun | shotgun; take its shells |
+| **Grey** (EBE) | Imp | 60 | 8 | psychic bolt 3×random(1,8), claw 3×random(1,8) | eyes flare white, click-chatter | anything; dodge the slow bolts |
+| **Hybrid** (human-alien soldier) | Chaingunner | 70 | 8 | 3-bolt plasma bursts, 3×random(1,5) each | pale face, black eyes, a rising carbine whine | shotgun up close; drops a carbine |
+| **Stalker** (clawed hunter) | Demon | 150 | 12 | claw 4×random(1,10) | low snarl, a fast lope | shotgun at the doorway; M79 in the open |
+| **Probe** (floating drone) | Cacodemon | 200 | 8, flies | pulse ball 5×random(1,8) | a humming sweep light | SMG or pulse carbine |
+| **Overseer** (Grey elder) | Arch-vile | 700 | 15 | psychic lance (Doom's vile attack); raises dead aliens | the cranium glows; a rising choir | break line of sight; kill it first |
+| **Hive Mind** (boss, MAP04) | Icon of Sin + Spider Mastermind | 4000 | stationary | beam salvos, spawns Greys and Probes | a pulsing core, a roar before spawns | four conduits expose the core; Singularity |
 
-## 5. Numbers (`js/tuning.js`, `js/weapons.js`, `js/enemies.js`)
+### 5.3 Terminal hacks (defend the point)
+- **Start:** use a hackable terminal (X / E). IRIS starts a download or upload, and a **gauge** appears on the HUD (percent plus time left).
+- **Duration:** 60-90 s, set per terminal (`args[0]` = seconds).
+- **Waves:** they spawn from the terminal's spawn spots (actors `CCAWaveSpot` with a matching group number). Every 12-15 s the next wave comes, and the waves escalate.
+- **Leaving the area:** progress **pauses** while Marsh is more than 8 m (256 units) from the terminal, and IRIS nags.
+- **Finish:** the terminal runs its line special (opens the exit, lowers a shield) and gives the objective item.
+- **Uses:**
+  - MAP01: download the HDD cache, 75 s (IRIS wakes up properly afterwards).
+  - MAP02: upload the case file from the Bureau basement, 60 s.
+  - MAP04: upload the virus to the mothership's core, 90 s. This is the *Independence Day* moment: IRIS: "*It's a Mac joke, Marsh. You wouldn't get it.*" The Hive Mind's shield drops when the upload finishes.
+
+**Non-hostile NPCs** (MAP01 mostly; aliens can kill them):
+| NPC | Behaviour |
+|---|---|
+| Scientist (lab coat) | flees from aliens, cowers when cornered, a line when used ("*They were never supposed to wake up!*") |
+| Lab tech (scrubs) | same, a different look |
+| Downed guard (wounded) | sits against the wall, calling for help. **Revive** him by holding use (X / E) for 3 s, with a gauge on the HUD; being hit cancels it. He stands up as a **Guard ally** (Half-Life's security guard): a +FRIENDLY fighter with a pistol or rifle who follows Marsh and shoots aliens. Some carry an item they hand over when revived (the blue card). A guard left alone for too long in a fight dies |
+| Guard ally (revived) | 60 HP, 9 mm hitscan 3×random(1,5), follows within ~5 m, takes cover behind the player's line of fire, and calls out ("*Behind you!*") through IRIS subtitles |
+| Dead guard / dead scientist | set dressing, with a blood pool |
+
+Difficulty follows Doom's skills (ITYTD to Nightmare), via MAPINFO `skill` defaults.
+
+### 5.4 Player
 | Parameter | Value | Why |
 |---|---|---|
-| Walk / crouch | 5.4 / 2.5 m/s | Halo's pace: strafing dodges plasma at 12 m |
-| Jump | 5.9 m/s, gravity 13 | apex 1.3 m: clears a crate, not a wall; the floaty arc |
-| Step height / max slope | 0.55 m / gradient 1.1 | stairs without jumping; canyon walls can't be climbed |
-| Shield / health | 75 / 45 (three segments) | Halo 1: the shield regenerates, health needs packs |
-| Shield delay / rate | 4.2 s / 42 per s | break contact for ~4 s and it refills in under 2 s |
-| Melee | 75, 2.1 m + 4.5 m lunge, 0.75 s | pops a Trooper's shield; from behind it's an instant kill |
-| Frag / plasma | 170 / 190 damage, 5.5 / 4.2 m, fuse 2.4 / 1.9 s | plasma sticks: a stuck Trooper is a dead Trooper |
-| Assault rifle | 32 rounds, 7.5 dmg, 0.085 s, bloom to 0.055 rad | bursts at range, spray up close |
-| Sidearm | 12, 22 dmg, ×3.2 head, 2× zoom | the Halo 1 magnum: head shots on unshielded targets kill |
-| Battle rifle | 3-round burst, 11 dmg, ×2.5 head, 2.3× zoom | four bursts kill a Trooper |
-| Shotgun | 9 × 14 dmg, falloff after 12 m, shell reload | close-quarters, interrupts its own reload |
-| Plasma caster | bolts ×2.2 vs shields; 0.9 s overcharge = 70 dmg ×3 vs shields, homing | the "noob combo": overcharge strips, the sidearm finishes |
-| Pulse carbine | auto plasma, heat 4.5% per shot, vent 2.6 s | watch the heat bar |
-| Shard needler | homing shards, 7 in 2 s = 130 dmg supercombine | the pink mist |
-| Fuel lance | arcing explosive, 120 splash | the Bulwark's gun, which you can take |
-| Skitter | 32 HP, 3.3 m/s, 8 dmg bolts, flees if its Trooper dies | fodder with a morale break |
-| Trooper | 60 shield + 58 HP, dodges when aimed at, berserks below 30% | the duel |
-| Bulwark | 440 HP, front ×0.1, back ×2.6, 120 melee | get behind it; its partner enrages |
-| Drone | 28 HP, flies 3–7 m up and circles | punishes standing still in the open |
-| Difficulty | Easy / Normal / Heroic / Legendary: enemy damage 0.55 / 0.82 / 1.55 / 2.4 | Halo's four |
+| Health / max from Implant | 100 / 200 | Doom's |
+| Armour | Kevlar Vest 100 (1/3 absorb), Tactical Armour 200 (1/2 absorb) | green and blue armour |
+| Flashlight | spotlight, radius 640, inner 12°, outer 28°, warm white | lights a corridor, not a room |
+| View height / jump | 41 / 8 | Doom defaults; jumping is optional |
+| **Dolphin dive** | hold crouch while airborne and moving: +9 forward impulse, prone view height 16, 0.5 s slide on landing, then stand | Max Payne / Black Ops dive; you can fire, aim and reload throughout |
 
-## 6. HUD (Halo 1/2)
-- **Top right:** a 20-segment shield bar (red flashing with an alarm beep when empty) and three health segments.
-- **Top left:** ammo readout.
-  - Ballistic weapons: magazine count, rounds as ticks, reserve.
-  - Plasma weapons: battery % and heat bar, plus the overcharge meter.
-  - Frag and plasma grenade counts, with the selected type outlined.
-- **Bottom left** (under the ammo panel on touch): a 25 m motion tracker.
-  - Shows only moving or firing hostiles, so crouching or still enemies are invisible (Halo's rule).
-  - Dots above or below you are dimmed.
-- **Centre:**
-  - A reticle per weapon that turns red over a hostile in range.
-  - Scope overlay with a range readout when zoomed.
-  - Red damage-direction arcs.
-- **World markers:** a Halo 2 nav diamond with distance; red diamonds on destructible objectives.
-- **Text:** "CHECKPOINT... DONE", objective line, pickup toasts, comms subtitles (speaker colours per the Cosmic Calamity cast), and the context prompt "HOLD X TO PICK UP BATTLE RIFLE".
-- **The first-person rifle** has a live ammo counter on the gun, as in Halo.
+## 6. HUD (IRIS)
+A ZScript `BaseStatusBar` (`CCAStatusBar`), drawn as IRIS's overlay: thin green-and-amber CRT lines, typewriter labels.
+- **Top left:** the IRIS avatar portrait (animated frames: idle, talk, look left/right, alarm, glitch) plus her subtitle line.
+- **Bottom left:** health, armour, flashlight battery and grenades (type + count).
+- **Bottom right:** magazine / reserve for the right gun, and the left gun's when dual wielding. It shows heat for plasma weapons, then keys.
+- **Centre:** the per-weapon reticle (§5.1) and a hit marker.
+- **World:** a waypoint diamond projected onto the current objective with a distance in metres. It clamps to the screen edge when the objective is off-screen.
+- **Objectives:** the current objective sits under the IRIS portrait, and completed ones tick off with a strike-through. The full list (current plus completed, with ✓) shows on the automap and in the pause overlay (Back / Tab).
+- **Map:** GZDoom's automap (View / Tab) in a textured overlay style, with 3D-floor levels drawn. Objectives and the waypoint are marked on it.
+- **Saving:** quicksave F6 / quickload F9 (GZDoom). On the controller, Menu → Save/Load. It **autosaves** at each map start and after each objective completes.
+- **Secrets:** when the player comes within 6 m of an undiscovered secret, IRIS pings: "*Wall's hollow here, Marsh.*" (at most once per secret).
 
-## 7. Art direction: early Xbox
-- **Characters** are jointed skeletons built from "bones": one mesh per limb segment with a sphere at each joint and a tapered shaft between, so a chain of them reads as one continuous limb at any bend (Halo 1's Elites were capsules on a skeleton). Legs plant their feet through two-bone IK, arms hold guns through IK onto the gun's grip and foregrip nodes, tails are bone chains that sway, jaws hinge. Silhouettes borrow from Titanfall pilots and Black Ops operators (chest rigs, pouches, knee pads, jump-kit packs, visor helmets) at original-Xbox polygon counts.
-- **The Vyrr** are humanoid fighter-pilots. Their atmosphere is not ours, so every one wears a hard-shell helmet with a lowered dark visor and a snouted breathing mask (filter canisters on the cheeks, a hose to the life-support pack on the chest) over a quilted flight suit with harness straps, pouches, knee pads and boots. The Trooper is tall with human proportions and plate armour; the Skitter is short, like a child in an oversized helmet with the tank on its back; the Bulwark is a hulking pressure suit with twin tanks, the glowing coolant spine down the pack as its weak spot, and the slab shield and cannon on its forearms. The reptile shows only in the muzzle shape under the mask, the scaled neck and the claws.
-- **The player's suit** is charcoal ripstop with dark composite plates (pauldrons, gauntlets, thigh and shin plates), harness straps and a wrist computer: grey and black, not olive.
-- **Guns and vehicles** are built from rounded cross-sections (`rrect` profiles extruded along the barrel), swept side profiles with arcs for stocks and receivers, ring trigger guards and many-segment cylinders; the MULE's hood, cab and bed are one curved profile with rounded wheel arches and torus tyres; the Sliver's wings are curved.
-- **Backdrops:** pines are a trunk with seven whorls of drooping branch cards (an alpha-tested needle texture) so they read as foliage from any angle; broadleaf trees fork into branches under leaf cards; distant mountains are a ridged annulus with a snow line; city skylines are towers with a lit-window facade texture, set-back upper floors, rooftop tanks and masts.
-- **The player's arms** run from shoulders at the bottom corners of the view to articulated hands; IK keeps them on the gun through every clip, so a reload is the left hand actually pulling the magazine, dropping it, seating a fresh one and racking the charging handle.
-- **Shapes:**
-  - Chamfered boxes, so the bevels catch specular.
-  - Lathes (pods, the spire, the reactor), extrusions (barriers, consoles, the bridge arch, car wrecks) and noise-displaced icosahedra for rocks.
-  - The downed carrier is a teardrop profile extruded along its length. Its nose is torn open and it is rolled 3° in the dirt.
-- **Materials:** Phong with procedural diffuse + normal (+ emissive) maps, painted at load (`js/textures.js`).
-  - Human: olive drab, gunmetal, concrete, containers.
-  - Vyrr: violet plating with soft iridescence and green bioluminescent seams (Cosmic Calamity's palette).
-- **Terrain:** one heightfield with a triplanar rock/ground blend by slope, sand below the waterline, and baked AO.
-- **Light:** hemisphere + sun (shadows on High only), a pool of 2–3 re-aimed point lights for the nearest lamps, and 2–3 flash lights for muzzle, plasma and explosions (no per-projectile lights).
-- **Sky:** a gradient dome with sun glow, stars at night, distant skylines, and Vyrr capital ships with beams hanging over the horizon.
-- **FX:** all particles are instances of two billboard meshes (additive glow and alpha smoke) from one atlas, so all FX cost two draw calls. There are also pooled decals for bullet holes and scorches.
+## 7. Art direction
+- **Palette:** night blues and sodium orange for the human maps; bruised violet, bone and bioluminescent teal for the alien ones. Aliens bleed luminous green; Thralls bleed black oil.
+- **Marsh:** in first person, dark wool trench-coat sleeves over charcoal suit cuffs, white shirt cuffs and a wristwatch. The pistol is held in a two-handed grip with the flashlight crossed underneath (the "Harries" hold) whenever the flashlight is on.
+- **Greys:** 1.2 m tall, grey-blue skin, huge head, black almond eyes, three long fingers, a thin neck and a pot belly. They move with a jittery gait.
+- **Hybrids:** human proportions, hairless and pale, black sclera, black BDUs with webbing, and an alien carbine (a curved bone-and-chrome body with a teal cell).
+- **Thralls:** Area 51 security in tan desert BDUs and black berets, or soldiers in woodland BDUs and helmets. Their eyes are black and oil veins show on their faces.
+- **Stalker:** a long-limbed grey-green hunter that runs half-crouched, with a ridged skull and blade claws.
+- **Probe:** a 1 m chrome-and-bone sphere with a single lens and three trailing antennae. It casts a sweeping light.
+- **Overseer:** a 2.4 m Grey elder in a ribbed carapace mantle, floating a hand's breadth above the floor. Its cranium glows when it attacks.
+- **Hive Mind:** a brain-coral mass in a ribbed cradle, fed by four glowing conduits, with teal veins pulsing.
+- **NPCs:** scientists in white lab coats, ties and glasses (Half-Life); lab techs in scrubs; Area 51 security in tan BDUs. Downed security lie against walls, some wounded and talking, some dead.
+- **Levels:**
+  - **Area 51** is Black Mesa gone wrong: beige and white lab panels, observation windows (many smashed), experiment rooms (specimen tanks, a dissection theatre, a containment cell, a lab rebuilding a saucer's drive), red emergency lights and blast doors. Alien technology has grown into parts of the lab (violet hull plates, teal conduits). Curtains blow in and out of broken windows, and fires burn at random.
+  - **D.C. at night** is seedy and late-90s, like Duke Nukem 3D: neon bars, a pawn shop, a liquor store, an adult cinema marquee (implied, PG-13), a sleazy motel, an arcade, graffiti alleys and a subway, with beams from the ships overhead and burning cars.
+  - **The crash site** is night forest and floodlights around a violet hull.
+  - **The mothership** has *Independence Day* scale (a vast ribbed organic-mechanical interior, hangar racks of attack craft, the central chamber) and *Perfect Dark* sleekness (dark alien panels with cyan light strips, alien consoles).
 
-| Colour | Use |
+## 8. Tech
+- **Engine:** GZDoom 4.14 (or UZDoom, its 2025 community fork). Both run the same ZScript and UDMF. The mod is one `.pk3` (a zip of `mod/`).
+- **Base IWAD:** **Freedoom: Phase 2** (BSD licence, free, used in CI) or *DOOM II*. The pk3 brings every monster, weapon, texture and sound its maps use. It borrows only menus, fonts and door and switch sounds from the IWAD. A standalone IPK3 (no IWAD, as *Selaco* ships) is a later milestone.
+- **Maps:** UDMF (`TEXTMAP`), compiled from text by `tools/mapc.mjs`. Multi-storey areas use `Sector_Set3DFloor` from auto-generated control sectors. Rooms are drawn as ASCII on a 32-unit grid, with a legend of sector types (heights, textures, light, specials). The compiler emits one sector per connected region, merges collinear walls, assigns door, lift and lock specials, and places things. It **refuses** a map whose exit, keys or monsters can't be reached from the start. Nodes are built by `zdbsp` at build time. The output is ordinary UDMF, so a human can open it in Ultimate Doom Builder.
+- **Sprites:** `tools/forge/` loads the three.js r160 kit (rig toolkit with bones and two-bone IK, chamfer/extrude/lathe geometry builder, procedural textures) in headless Chromium.
+  - It poses each character for every frame, renders **8 rotations** with a camera-fixed key light, and writes PNGs with Doom `grAb` offsets.
+  - Monsters render at 2× resolution and use `Scale 0.5`. HUD weapons render at 3× and are declared in `TEXTURES` with `XScale/YScale 3`.
+- **Textures, sounds, music:**
+  - Textures are painted procedurally in the same page.
+  - Sounds are synthesised offline into WAV (`tools/sfx.mjs`).
+  - Music is generated as MIDI, with original motifs (`tools/music.mjs`).
+- **Verification:** see §11.
+
+## 9. Levels
+Map sources are in `maps-src/*.txt`. A cell is 32×32 map units. The player is 32 wide and 56 tall, so corridors are at least 3 cells (96 units) and doors 2-4 cells.
+
+| # | Map | Space | Set pieces | Keys |
+|---|---|---|---|---|
+| MAP01 | Groom Lake (Area 51, S-4) | interrogation room → detention block → security office (blue card) → lab corridor with smashed observation windows → experiment rooms (specimen tanks, dissection theatre, containment cell) → records office (**dossier**) → alien-tech lab where the hull has grown into the walls (**HDD cache**, red card) → hangar with the back-engineered saucer → surface lift (exit opens only with the dossier and HDD) | lights die at the start, and the flashlight is the first lesson; scientists run past screaming; a dying guard hands over the blue card; the containment wing opens behind you; a Stalker in the hangar | blue card, red card; objectives: dossier + HDD cache |
+| MAP02 | Night of the Harvest (Washington, D.C.) | neon strip (bar, pawn shop, adult cinema marquee, motel) → back alleys → the plaza under the beams (a full-level version of the Firefight arena) → subway station and tunnel → Bureau HQ lobby → the basement office → rooftop | the plaza holdout; the first Overseer in the subway; the case file in the basement | blue card (subway), yellow card (HQ lobby) |
+| MAP03 | Crash Site | overrun Army cordon (tents, floodlights, trucks) → forest ridge → impact trench → inside the saucer | the wreck's interior is the first alien architecture; the Singularity is in its cockpit | red card (command tent), blue glyph (wreck) |
+| MAP04 | Mothership | docking bay with racks of attack craft (ID4) → abduction bays with pods → sleek cyan-lit corridors and consoles (Perfect Dark) → gravity lift → conduit ring → Hive Mind chamber | four conduits drop the Hive Mind's shield; the ship shakes after the kill | yellow glyph, red glyph |
+
+**Geometry goals** (what the map compiler must support, §8):
+- multi-storey spaces via GZDoom **3D floors**: bridges over drops, catwalks, balconies and room-over-room
+- windows (sills + lintels with glass or broken-glass mid-textures)
+- stairs, lifts, doors (plain, locked, blast)
+- pits and hazard floors (goo)
+- secret doors
+- sky openings
+- height variety everywhere
+
+The episode ends with intermission text (MAPINFO clusters). There are field-journal texts between maps.
+
+## 10. Audio
+- **Weapons:** layered synth transients with a noise body: the pistol crack, the shotgun boom and pump, the SMG rattle, the M79 thunk, the pulse carbine's rising chirp, the Singularity's charge swell.
+- **Monsters:** Greys click and chatter (FM); Thralls gurgle wetly; Hybrids breathe through filters; Stalkers snarl in low noise; Probes hum with a Doppler whine; the Overseer's choir rises.
+- **Music:** generated MIDI in the minor key with a whistled-synth lead over analog pads (original motifs). The tension tracks are slow; the combat tracks add a drum machine.
+
+## 11. Build and verification
+| Tool | What it proves |
 |---|---|
-| `#6ec3ff` | HUD (Halo blue) |
-| `#ffbe5a` | objectives, nav points, selected items |
-| `#ff463c` | danger: low shield, hostile reticle, damage |
-| `#3affc8` | Vyrr blood |
-| `#6effa0` / `#9b6bff` / `#d35bff` | Vyrr tech: seams, plasma, emitters / spire |
+| `node tools/mapc.mjs` | Every map compiles. Exit, keys and every monster are reachable from the start, considering doors, locks (keys picked up before their doors), lifts and step heights (≤ 24). No unclosed sectors. Every texture and thing type exists in the mod. |
+| `node tools/build.mjs` | Builds the maps (zdbsp nodes), checks every sprite frame and texture referenced by the ZScript/MAPINFO/maps exists in `mod/`, and zips `dist/cosmic-calamity-assault.pk3`. |
+| `tools/gz-smoke.sh` | Runs real GZDoom under Xvfb with Freedoom 2. It fails on any ZScript, MAPINFO, sprite or texture error in the log. It loads each map, runs the in-mod self-test (`cca_selftest`: spawns every monster, gives and fires every weapon, reports PASS/FAIL), and takes a screenshot per map. |
+| CI (`.github/workflows/pages.yml`) | Runs the map compiler and build on every push. It publishes the landing page (`site/`) and the `.pk3` to GitHub Pages **only from `main`**. |
 
-## 8. Levels
-| # | Map | Space | Set pieces |
-|---|---|---|---|
-| 1 | Fallen Hymn | dusk; broken overpass → debris field → crash trench → carrier interior (hall, bulkhead, side bays, reactor with catwalks) → starboard breach → LZ basin | drones out of the wreck; the key extraction triggers a Bulwark; defend the LZ |
-| 2 | Cold Storage | night rain; container yard → warehouse (catwalks, cargo-pod aisles) → emitter hall → rear dock | three destructible emitters; the Bulwark pair through the rear shutter |
-| 3 | Song of the Gorge | bright day; canyon with a deep river (armour sinks: 16 dmg/s), pines, waterfall | stone bridge crossing, west-bank outpost, needler snipers across the river, spire conduits then the core, Condor pickup on the sandbar |
-| T1 | Proving Grounds | tablet test map | all 8 weapons on respawning pedestals, holo-targets at 10 / 25 / 50 m, a movement course (stairs, crates, crouch tunnel, catwalk), spawn pads for each enemy type, unlimited ammo |
-| T2 | Firefight: Plaza | tablet test map | endless escalating waves, respawning supplies, score |
+## 12. Repo layout
+```
+mod/            the pk3 source tree (MAPINFO, LANGUAGE, SNDINFO, KEYCONF, TEXTURES, ANIMDEFS, GLDEFS, zscript/, sprites/, textures/, flats/, sounds/, music/, graphics/)
+maps-src/       ASCII map sources + legends
+tools/          mapc (maps), forge (sprites and textures via headless three.js), sfx, music, build, gz-smoke
+site/           the GitHub Pages landing page (download, screenshots, how to play)
+docs/ASSETS.md  the asset contract: every sprite, texture, sound and editor number the code expects
+```
 
-Layouts are axis-aligned colliders on a heightfield. The renderer dresses every collider in a shaped mesh. `tools/check-levels.mjs` proves on the nav grid that every objective, pickup and ground enemy is reachable.
+## 13. Open questions (defaults chosen)
+- **Doom or Quake?** GZDoom:
+  - ZScript is a real language.
+  - UDMF maps can be written by tools and opened in Ultimate Doom Builder.
+  - Sprites let the existing three.js models be reused through pre-rendering.
+  - It is *Selaco*'s engine.
+  - A Quake mod would need QuakeC, BSP compiling and MDL models for every character.
+- **Playable in a browser?** No. GZDoom has no web build, so Pages hosts the download, screenshots and instructions. The previous three.js game stays playable there under `/halo-like/`, built from `final-halo-like`.
+- **IWAD?** Freedoom 2 by default; *DOOM II* also works. Standalone later.
+- **Name and likeness:** Marsh, Kade and the Custodian are original characters. No show names, likenesses, logos or theme music are used; the influence is the era and the tone.
+- **Models instead of sprites (MD3/IQM)?** Not for v1. Pre-rendered sprites are the Doom look, and they cost nothing at runtime.
 
-## 9. Performance budget (tablet)
-- **Quality presets:**
-  - Low: DPR 1, no AA, no normal maps, 2+2 lights.
-  - Medium (the default on touch devices): DPR 1.5, AA, normal maps.
-  - High (the default on desktop): DPR 2 and sun shadows.
-- **Draw calls:** static level geometry is merged per material (≈15–25 meshes), pines are instanced, and FX are two instanced meshes.
-- **AI:** one shared flow field toward the player, rebuilt every 0.35 s (Dial's algorithm on a 1 m grid). LOS checks run every ~0.17 s per enemy.
-
-## 10. Open questions (defaults chosen)
-- **Vehicles (Warthog / Ghost)?** Added: the M12 MULE and the Vyrr SLIVER (section 11).
-- **Health model?** Halo 1: non-regenerating health plus packs. Halo 2's full regen would be a one-line change in `stepPlayer`.
-- **Dual wielding (Halo 2)?** Not yet: two weapons plus grenades already fill the touch layout.
-- **Co-op?** Out of scope.
-
-## 11. Vehicles
-| | M12 MULE | Vyrr SLIVER |
-|---|---|---|
-| Role | Warthog: two seats, driver + rotary chaingun turret | Ghost: one seat, twin plasma cannons, boost |
-| Speed | 17 m/s (7 reverse), accel 9, brake 14 | 20 m/s, 31 boosting (2.8 s of boost, 5 s to refill), accel 13 |
-| Steering | toward the look direction (Halo), + stick; turns only while rolling | same, wider drift (grip 3.2 vs 6), banks into turns |
-| Ground | four sampled wheel points give pitch and roll; jumps and lands; climbs slopes up to 1.25× the walk limit | hovers 0.75 m on a spring; no terrain pitch |
-| HP | 900 | 420 |
-| Ram | 70 × speed/10 (kills a Skitter at 5 m/s, a Trooper at 12) | 50 × speed/10 |
-| Guns | chaingun: hitscan, 9 dmg at 15 rounds/s from the seat's eye | bolts: 12 dmg ×1.7 vs shields, 58 m/s, alternate wings, up to 25° off the nose |
-| Camera | third person: 8.5 m back, 3.2 m up, orbits with the look, pulled in by walls | 8 m / 3.4 m |
-| AI | none | riders strafe past, orbit at ~1.25 rad off, break away under 9 m, fire when the nose is within 0.35 rad |
-
-Riders are ordinary Troopers whose position is bound to the seat; shooting the rider frees the bike. Vehicle damage comes from bolts (×1.6 from the Vyrr), bullets, explosions and hard collisions (2.5 × speed). A destroyed vehicle explodes (110 splash), ejects the player with 40 raw damage, kills its rider and stays as a wreck.
+## 14. Lineage
+- **`final-halo-like` (this repo):** the rig toolkit (`rig.js`, connected bones, analytic two-bone IK, fingers), the geometry builder (`models.js`: chamfers, extrusions, lathes), `gunmodels.js` assemblies with animatable parts, procedural texture painters (`textures.js`) and the synth (`sfx-synth.js`). All of these now run offline in `tools/forge` and `tools/sfx.mjs`.
+- **`mstr-gme-dsgn-tmpt`:** house rules (design doc first, reasons next to numbers, generated assets, headless verification before every push, deploy only from `main`); the ASCII level builder with a provability check (labyrinth-larry); three.js r160 vendor.
 
 ---
 
 ## Delta log
-### art pass 2 (branch `claude/loving-hypatia-y0lqd9`)
-- Vyrr as humanoid fighter-pilots in atmosphere masks (helmet + visor + snouted mask, flight suits, harnesses, life-support packs); tails dropped.
-- Player suit recoloured to charcoal and dark grey composite; guns in gunmetal instead of olive.
-- Human weapons rebuilt with rounded cross-sections and curved profiles; MULE and Sliver smoothed.
-- Pines as branch-card trees, branching broadleaf trees, ridged mountain range, lit-window skylines.
-- Verification: check-levels OK; sim-check 49/49; smoke: 5 profiles PASS.
-
-### graphics / art rework (branch `claude/loving-hypatia-y0lqd9`)
-- Rig toolkit (`js/rig.js`): connected bones, analytic two-bone IK, hands with curling fingers.
-- Player: full IK arms in first person; procedural clips for magazine reloads, shell loading, slide/bolt/pump cycling, melee, grenade throw (with the grenade in hand), weapon switch, plasma vent; brass ejection; a full-body cyborg seen when looking down and in vehicles.
-- Enemies rebuilt on the toolkit with walk cycles that plant feet, aim twist, head tracking, roars, flee/berserk/melee/dodge/flinch/death poses; the Trooper made partially humanoid.
-- All 8 weapons remodelled as assemblies with named parts; the turret chaingun added.
-- Vehicles: MULE + SLIVER, seats, turret, Halo steering, splatters, vehicle HP and wrecks, Vyrr riders with AI, third-person camera, engine audio, HUD panel, placements in Fallen Hymn, the Gorge, Proving Grounds and the Plaza.
-- Environments: prop catalog + dressing pass on every map, sun disc, grass, flags, birds, sun shafts, puddles, mist, dust.
-- Scope: the surround is a translucent blue-grey with a lens edge and corner brackets instead of 92 % black.
-- Verification: `check-levels` OK (vehicles and riders reachable); `sim-check` 49/49 (17 new vehicle checks); smoke: all 5 profiles PASS with 0 errors and 0 scroll; tap-spam PASS.
-### initial prototype (branch `claude/cool-carson-fgvmn2`)
-- 3 missions and 2 tablet test maps.
-- 8 weapons and 4 enemy types (plus holo-targets).
-- Frag and plasma grenades, melee with back-smack, checkpoints, 4 difficulties.
-- Halo HUD, Xbox controller support, a tablet touch scheme, and keyboard/mouse.
-- Verification:
-  - `check-levels` OK.
-  - `sim-check`: 32/32 PASS.
-  - `smoke`: desktop, iPad landscape, iPad portrait, iPhone landscape and an emulated Xbox pad all PASS, with 0 errors and 0 scroll.
-  - tap-spam: PASS on iPad and iPhone.
+### doomlike (branch `doomlike`, from `main` @ 43538cd)
+- Pivot from the custom three.js engine to a GZDoom mod. The Halo-like game is preserved on `final-halo-like`.

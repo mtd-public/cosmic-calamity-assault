@@ -2,12 +2,12 @@
   "name": "cosmic-calamity-assault",
   "private": true,
   "type": "module",
-  "description": "Halo 1/2-style FPS prototype in the Metal Snake: Cosmic Calamity universe. No build step.",
+  "description": "Cosmic Calamity: Assault — Case File 51. A GZDoom mod: pre-rendered custom characters, CoD-style weapons, UDMF maps compiled from text.",
   "scripts": {
-    "serve": "python3 -m http.server 4180",
-    "levels": "node tools/check-levels.mjs",
-    "sim": "node tools/sim-check.mjs",
-    "smoke": "BASE=http://localhost:4180/ CHROMIUM=/opt/pw-browsers/chromium node tools/smoke.mjs",
-    "tapspam": "CHROMIUM=/opt/pw-browsers/chromium node tools/tap-spam.mjs 'http://localhost:4180/?quality=low&level=proving' --buttons '[data-btn=fire],[data-btn=jump],[data-btn=action]'"
+    "forge": "node tools/forge/run.mjs",
+    "maps": "node tools/mapc.mjs",
+    "sfx": "node tools/sfx.mjs",
+    "build": "node tools/build.mjs",
+    "smoke": "bash tools/gz-smoke.sh"
   }
 }

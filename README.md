@@ -89,4 +89,4 @@ CHROMIUM=/opt/pw-browsers/chromium node tools/tap-spam.mjs 'http://localhost:418
   - The `sw.js` / manifest / Pages workflow shape.
 
 ## Deploy
-`.github/workflows/pages.yml` runs the level and sim checks on every push. It publishes to GitHub Pages only from `main`. On a new repo, set **Settings → Pages → Source: GitHub Actions** if it isn't enabled automatically.
+`.github/workflows/pages.yml` runs the level and sim checks on every push. It publishes to GitHub Pages only from the repo's default branch. On a new repo, set **Settings → Pages → Source: GitHub Actions** if it isn't enabled automatically.

@@ -1,0 +1,13 @@
+{
+  "name": "cosmic-calamity-assault",
+  "private": true,
+  "type": "module",
+  "description": "Halo 1/2-style FPS prototype in the Metal Snake: Cosmic Calamity universe. No build step.",
+  "scripts": {
+    "serve": "python3 -m http.server 4180",
+    "levels": "node tools/check-levels.mjs",
+    "sim": "node tools/sim-check.mjs",
+    "smoke": "BASE=http://localhost:4180/ CHROMIUM=/opt/pw-browsers/chromium node tools/smoke.mjs",
+    "tapspam": "CHROMIUM=/opt/pw-browsers/chromium node tools/tap-spam.mjs 'http://localhost:4180/?quality=low&level=proving' --buttons '[data-btn=fire],[data-btn=jump],[data-btn=action]'"
+  }
+}

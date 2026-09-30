@@ -153,12 +153,13 @@ export function makeBR() {
   const sY = 0.105;
   const sc = group(root, [0, sY, 0]);
   put(sc, new THREE.Mesh(latheZ([[0.021, 0.05], [0.0215, 0.044], [0.0215, 0.012], [0.019, 0.004], [0.0152, -0.012], [0.0152, -0.17], [0.019, -0.19], [0.026, -0.22], [0.027, -0.255], [0.0255, -0.262]], 48), m.upper));
-  const cup1 = put(sc, new THREE.Mesh(latheZ([[0.021, 0.05], [0.0175, 0.05], [0.0175, 0.02]], 48), mat('rubber', { side: 'double' })));
+  put(sc, new THREE.Mesh(latheZ([[0.0175, 0.047], [0.0175, 0.02]], 48), mat('rubber', { side: 'double' })));
+  const cup1 = put(sc, new THREE.Mesh(latheZ([[0.0215, 0.047], [0.0215, 0.05], [0.0195, 0.0515], [0.0175, 0.05], [0.0175, 0.047]], 64), mat('polymer', { c: 0x141416, rough: 0.5, side: 'double' })));
   const glass = [put(sc, new THREE.Mesh(latheZ([[0.024, -0.262], [0.024, -0.2]], 48), mat('black', { side: 'double' }))),
     put(sc, new THREE.Mesh(new THREE.CircleGeometry(0.024, 40), mat('lensBlue')), [0, 0, -0.258], [0, Math.PI, 0]),
     put(sc, new THREE.Mesh(new THREE.CircleGeometry(0.0172, 40), mat('lensBlue')), [0, 0, 0.045])];
   const cup2 = put(sc, new THREE.Mesh(cylZ(0.0215, 0.0215, 0.018, 0.04, 48, true), mat('rubber', { side: 'double' })));
-  cup1.userData.eyecup = cup2.userData.eyecup = true;
+  cup1.userData.eyecup = true;
   for (const [x, y, rz] of [[0, 0.02, 0], [0.02, 0, -Math.PI / 2]]) {
     const t = group(sc, [x, y, -0.085], [0, 0, rz]);
     put(t, new THREE.Mesh(new THREE.CylinderGeometry(0.009, 0.009, 0.012, 20), m.upper), [0, 0.0, 0]);

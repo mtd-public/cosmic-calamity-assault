@@ -60,9 +60,54 @@ jobs:
         with:
           path: _site
 
+  # Real-engine tests: GZDoom 4.14.2 built from source (cached), run headless
+  # under Xvfb with Freedoom 2: every map loads with no script/actor errors,
+  # and every map's objective chain plays through to the exit.
+  engine-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22 }
+      - name: Dependencies
+        run: sudo apt-get update -q && sudo apt-get install -y -q cmake ninja-build libsdl2-dev libvpx-dev libwebp-dev libgl-dev libopenal-dev libfluidsynth-dev freedoom zdbsp xvfb mesa-utils libgl1-mesa-dri
+      - name: Cache GZDoom build
+        id: gzcache
+        uses: actions/cache@v4
+        with:
+          path: ~/gz
+          key: gzdoom-g4.14.2-zmusic-1.1.14-${{ runner.os }}
+      - name: Build ZMusic + GZDoom
+        if: steps.gzcache.outputs.cache-hit != 'true'
+        run: |
+          mkdir -p ~/gz && cd ~/gz
+          git clone -q --depth 1 --branch 1.1.14 https://github.com/ZDoom/ZMusic
+          git clone -q --depth 1 --branch g4.14.2 https://github.com/ZDoom/gzdoom
+          cmake -S ZMusic -B ZMusic/build -G Ninja -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=$HOME/gz/zmusic-install
+          cmake --build ZMusic/build && cmake --install ZMusic/build
+          cmake -S gzdoom -B gzdoom/build -G Ninja -DCMAKE_BUILD_TYPE=Release -DNO_GTK=ON -DCMAKE_PREFIX_PATH=$HOME/gz/zmusic-install
+          cmake --build gzdoom/build
+          rm -rf gzdoom/build/CMakeFiles ZMusic/build
+      - name: Smoke (every map loads clean)
+        env:
+          LD_LIBRARY_PATH: /home/runner/gz/zmusic-install/lib
+          GZDOOM: /home/runner/gz/gzdoom/build/gzdoom
+        run: tools/gz-smoke.sh
+      - name: Walkthrough (every map completes in-engine)
+        env:
+          LD_LIBRARY_PATH: /home/runner/gz/zmusic-install/lib
+          GZDOOM: /home/runner/gz/gzdoom/build/gzdoom
+          SKIPBUILD: 1
+        run: tools/gz-walk.sh $(ls mod/maps | sed 's/\.wad$//' | tr a-z A-Z)
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: engine-shots
+          path: shots/
+
   deploy:
     if: github.ref == 'refs/heads/main'
-    needs: build
+    needs: [build, engine-tests]
     runs-on: ubuntu-latest
     environment:
       name: github-pages

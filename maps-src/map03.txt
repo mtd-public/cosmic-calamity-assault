@@ -9,7 +9,7 @@
 ; Secrets: the west-woods cave, the cabin store room, a hull panel in the saucer's ring.
 map MAP03 "Crash Site"
 sky SKYFRST
-defaults floor=0 ceil=512 sky ff=DIRTFLR wall=ROCKWAL1 light=112 track=SUPPORT frame=WINFRAME
+defaults floor=0 ceil=384 sky ff=DIRTFLR wall=ROCKWAL1 light=128 track=SUPPORT frame=WINFRAME
 
 legend
 #  solid
@@ -19,37 +19,36 @@ H  solid tex=HULLEXT
 G  solid tex=HULLBRN
 h  solid tex=HULLIN1
 ; ---- cordon (z 0)
--  room ff=DIRTFLR light=120
-_  room ff=MUDFLR light=128
-*  room ff=GRASSFLR wall=ROCKWAL1 light=96 scenery
+-  room ff=DIRTFLR light=136
+_  room ff=MUDFLR light=144
+*  room ff=GRASSFLR wall=ROCKWAL1 light=104 scenery
 F  window floor=8 ceil=512 sky glass=FENCEMID frame=FENCEPOL broken nowrap pegbottom pane=S
 E  window floor=8 ceil=512 sky glass=FENCEMID frame=FENCEPOL broken nowrap pegbottom pane=E
-T  room ceil=104 ff=DIRTFLR cf=TENTCANV wall=TENTCANV upper=TENTCANV light=136 color=#fff0d0
-t  room floor=128 ff=METLFLR wall=CONCWALL lower=SUPPORT light=128
+T  room ff=DIRTFLR wall=TENTCANV light=144 color=#fff0d0 slab=104..112 slabtop=TENTCANV slabbot=TENTCANV slabside=TENTCANV slablight=136
+c  room floor=112 ff=TENTCANV wall=TENTCANV lower=TENTCANV light=136 scenery                                ; canvas walls (low blocks)
+t  room floor=128 ff=METLFLR wall=CONCWALL lower=SUPPORT light=136
 s  stairs dir=N floor=0 top=128 ff=STEPTOP riser=METLPANL wall=CONCWALL light=128
 g  room ceil=128 ff=CONCFLR cf=METLFLR wall=CONCWALL upper=CONCWALL light=128
 r  door tex=METLPANL track=HAZSTRIP lock=red blast
 ; ---- forest ridge
-,  room ff=GRASSFLR light=104
-1  room floor=64 ff=GRASSFLR lower=ROCKWAL1 light=104
-a  room floor=64 ff=DIRTFLR lower=ROCKWAL1 light=112
-2  room floor=128 ff=GRASSFLR lower=ROCKWAL1 light=104
-b  room floor=128 ff=DIRTFLR lower=ROCKWAL1 light=112
-3  room floor=192 ff=ROCKFLR lower=ROCKWAL1 light=112
-u  stairs dir=E floor=0 top=64 ff=DIRTFLR riser=ROCKWAL1 light=112
-v  stairs dir=N floor=64 top=128 ff=DIRTFLR riser=ROCKWAL1 light=112
-w  stairs dir=N floor=128 top=192 ff=DIRTFLR riser=ROCKWAL1 light=112
-k  room floor=128 ceil=240 ff=CARPETR cf=LABCEIL wall=WOODPANL light=112
-W  door tex=WOODPANL track=WOODPANL
-P  room floor=128 ceil=236 ff=CARPETR cf=WOODPANL wall=WOODPANL upper=WOODPANL light=112   ; cabin porch
-z  room floor=128 ceil=224 ff=CONCFLR cf=LABCEIL wall=WOODPANL light=88 secret
-S  door tex=WOODPANL secret
+,  room ff=GRASSFLR light=120
+1  room floor=64 ceil=448 ff=GRASSFLR lower=ROCKWAL1 light=120
+a  room floor=64 ceil=448 ff=DIRTFLR lower=ROCKWAL1 light=128
+2  room floor=128 ceil=512 ff=GRASSFLR lower=ROCKWAL1 light=124
+b  room floor=128 ceil=512 ff=DIRTFLR lower=ROCKWAL1 light=128
+3  room floor=192 ceil=576 ff=ROCKFLR lower=ROCKWAL1 light=136
+u  stairs dir=E floor=0 top=64 ceil=448 ff=DIRTFLR riser=ROCKWAL1 light=128
+v  stairs dir=N floor=64 top=128 ceil=512 ff=DIRTFLR riser=ROCKWAL1 light=128
+w  stairs dir=N floor=128 top=192 ceil=576 ff=DIRTFLR riser=ROCKWAL1 light=128
+k  room floor=128 ceil=512 ff=CARPETR wall=WOODPANL light=120 slab=240..256 slabtop=ROOFTAR slabbot=WOODPANL slabside=WOODPANL slablight=104
+l  room floor=256 ceil=512 ff=ROOFTAR wall=WOODPANL lower=WOODPANL light=120 scenery                   ; cabin wall blocks
+z  room floor=128 ceil=512 ff=CONCFLR wall=WOODPANL light=96 secret slab=240..256 slabtop=ROOFTAR slabbot=WOODPANL slabside=WOODPANL slablight=88
 y  room ceil=112 ff=ROCKFLR cf=ROCKFLR wall=ROCKWAL1 light=80 secret
 Y  door tex=ROCKWAL1 secret
 ; ---- trench
-m  room floor=-32 ff=MUDFLR wall=DIRTWALL lowerself=DIRTWALL light=112 color=#ffd8c0
-n  room floor=-48 ff=MUDFLR wall=DIRTWALL lowerself=DIRTWALL light=104 color=#ffc8b0
-^  stairs dir=S floor=-32 top=192 ff=ROCKFLR riser=DIRTWALL wall=ROCKWAL1 light=112
+m  room floor=-32 ceil=576 ff=MUDFLR wall=DIRTWALL lowerself=DIRTWALL light=136 color=#ffd8c0
+n  room floor=-48 ceil=576 ff=MUDFLR wall=DIRTWALL lowerself=DIRTWALL light=128 color=#ffc8b0
+^  stairs dir=S floor=-32 top=192 ceil=576 ff=ROCKFLR riser=DIRTWALL wall=ROCKWAL1 light=112
 ; ---- the saucer
 e  room floor=-32 ceil=64 ff=HULLFLR cf=HULLFLR wall=HULLBRN upper=HULLBRN light=120 color=#ffb080
 o  room floor=-32 ceil=112 ff=HULLFLR cf=HULLFLR wall=HULLIN1 upper=HULLIN1 light=112 color=#90ffe8
@@ -63,8 +62,8 @@ Q  door tex=HULLIN1 secret
 Z  room floor=-32 ceil=96 ff=HULLFLR cf=HULLFLR wall=HULLIN1 light=96 color=#ff90c0 secret
 K  door tex=HULLIN1 track=HULLIN1 remote tag=@hatch
 L  lift top=192 tex=HULLIN1 wall=HULLIN1 ceil=320 ff=HULLFLR cf=HULLFLR light=144 color=#a0fff0
-+  room floor=192 ff=ROCKFLR lower=ROCKWAL1 light=120
-X  room floor=192 ff=ROCKFLR lower=ROCKWAL1 light=160 enter=Exit_Normal(0)
++  room floor=192 ceil=576 ff=ROCKFLR lower=ROCKWAL1 light=136
+X  room floor=192 ceil=576 ff=ROCKFLR lower=ROCKWAL1 light=176 enter=Exit_Normal(0)
 end
 
 marks
@@ -146,20 +145,20 @@ grid
    #,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,uuuuaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa22222222222222222222222222222222222222222222222222#
    #,,,,,,,,,,,,,,,,,,,,,,,,,,/%%\,,,,,,,,,,,,---------------uuuuaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa22222222222222222222222222222222222222222222222222#
    #,,,,,,,,,,,,,,,,,,,,,,,,,,%%%%,,,,,,,,,,,,---------------uuuuaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa22222222222222222222222222222222222222222222222222#
-   #,,,,,,,,,,,,,,,,,,,,,,,,,,\%%/,,,,,,,,,,,,---------------uuuu111111111111111111111111111111111111222222222222222222222222###############22222222222#
-   #,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,---------------uuuu111111111111111111111111111111111111222222222222222222222222#kkkkkkk#zzzz##22222222222#
-   #,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,---------------uuuu111111111111111111111111111111111111222222222222222222222222#kkkkkkk#zzzz##22222222222#
-   #,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,---------------uuuu111111111111111111111111111111111111222222222222222222222222#kkkkkkk#zzzz##22222222222#
-   #,,,,,,,,/%\,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,----,,,,,,,,,,,####111111111111111111111111111111111111222222222222222222222222#kkkkkkk##SS###/%%\2222222#
-   #,,,,,,,,\%/,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,----,,,,,,,,,,,#  #111111111111111111111111111111111111222222222222222222222222#kkkkkkkkkkkkk#%%%%2222222#
-   #,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,----,,,,,,,,,,,#  #111111111111111111111111111111111111222222222222222222222222#kkkkkkkkkkkkk#\%%/2222222#
-   #,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,----,,,,,,,,,,,#  #111111111111111111111111111111111111222222222222222222222222#kkkkkkkkkkkkk#22222222222#
-   #,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,----,,,,,,,,,,,#  #11111111111111111111111/%\1111111111222222222222222222222222#kkkkkkkkkkkkk#22222222222#
-   #,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,----,,,,,,,,,,,#  #11111111111111111111111\%/1111111111222222222222222222222222#kkkkkkkkkkkkk#22222222222#
-   #,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,----,,,,,,,,,,,#  #111111111111111111111111111111111111222222222222222222222222#kkkkkkkkkkkkk#2222222222/#
-   #,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,----,,,,,,,,,,,#  #11111111111111111111111111111111111/222222222222222222222222#kkkkkkkkkkkkk#222222222/##
-   #,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,----,,,,,,,,,,,#  #1111111111111111111111111111111111/#222222222222222222222222######WW#######22222222/##
-   #,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,----,,,,,,,,,,,#  #111111111111111111111111111111111/##222222222222222222222222222222PP22222222222222/##
+   #,,,,,,,,,,,,,,,,,,,,,,,,,,\%%/,,,,,,,,,,,,---------------uuuu111111111111111111111111111111111111222222222222222222222222lllllllllllllll22222222222#
+   #,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,---------------uuuu111111111111111111111111111111111111222222222222222222222222lkkkkkkklzzzzll22222222222#
+   #,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,---------------uuuu111111111111111111111111111111111111222222222222222222222222lkkkkkkklzzzzzz22222222222#
+   #,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,---------------uuuu111111111111111111111111111111111111222222222222222222222222lkkkkkkklzzzzzz22222222222#
+   #,,,,,,,,/%\,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,----,,,,,,,,,,,####111111111111111111111111111111111111222222222222222222222222lkkkkkkklllllll/%%\2222222#
+   #,,,,,,,,\%/,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,----,,,,,,,,,,,#  #111111111111111111111111111111111111222222222222222222222222lkkkkkkkkkkkkkl%%%%2222222#
+   #,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,----,,,,,,,,,,,#  #111111111111111111111111111111111111222222222222222222222222lkkkkkkkkkkkkkl\%%/2222222#
+   #,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,----,,,,,,,,,,,#  #111111111111111111111111111111111111222222222222222222222222lkkkkkkkkkkkkkl22222222222#
+   #,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,----,,,,,,,,,,,#  #11111111111111111111111/%\1111111111222222222222222222222222lkkkkkkkkkkkkkl22222222222#
+   #,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,----,,,,,,,,,,,#  #11111111111111111111111\%/1111111111222222222222222222222222lkkkkkkkkkkkkkl22222222222#
+   #,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,----,,,,,,,,,,,#  #111111111111111111111111111111111111222222222222222222222222lkkkkkkkkkkkkkl2222222222/#
+   #,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,----,,,,,,,,,,,#  #11111111111111111111111111111111111/222222222222222222222222lkkkkkkkkkkkkkl222222222/##
+   #,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,----,,,,,,,,,,,#  #1111111111111111111111111111111111/#222222222222222222222222llllllkklllllll22222222/##
+   #,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,----,,,,,,,,,,,#  #111111111111111111111111111111111/##2222222222222222222222222222222222222222222222/##
    #,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,----,,,,,,,,,,,#  #11111111111111111111111111111111/###222222222222222222222222222222222222222222222/##
    #,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,----,,,,,,,,,,,#  #1111111111111111111111111111111/## #22222222222222222222222222222222222222222222/##
    ###########################################gggg############  ##################################  ###############################################
@@ -170,32 +169,32 @@ grid
      #E------------------------------------###gggg###---------------------------------------------E#
      #E------------------------------------###gggg###---------------------------------------------E#
      #E-------------------------------------________----------------------------------------------E#
-     #E-----CCCCCCCCCCCCCCC---CCCCCCCCCCC---________--------------------CCCCCCCCCCCCCCC-----------E#
-     #E-----CTTTTTTTTTTTTTC---CTTTTTTTTTC---________--------------------CTTTTTTTTTTTTTC-----------E#
-     #E-----CTTTTTTTTTTTTTC---CTTTTTTTTTC---________--------------------CTTTTTTTTTTTTTC-----------E#
-     #E-----CTTTTTTTTTTTTTC---CTTTTTTTTTC---________--------------------CTTTTTTTTTTTTTC-----------E#
-     #E-----CTTTTTTTTTTTTTC---CTTTTTTTTTC---________--------------------CTTTTTTTTTTTTTC-----------E#
-     #E-----CTTTTTTTTTTTTTC---CTTTTTTTTTC---________--------------------CTTTTTTTTTTTTTC-----------E#
-     #E-----CTTTTTTTTTTTTTC---CTTTTTTTTTC---________--------------------CTTTTTTTTTTTTTC-----------E#
-     #E-----CTTTTTTTTTTTTTC---CTTTTTTTTTC---________--------------------CTTTTTTTTTTTTTC-----------E#
-     #E-----CTTTTTTTTTTTTTC---CCCCTTCCCCC---________--------------------CTTTTTTTTTTTTTC-----------E#
-     #E-----CTTTTTTTTTTTTTC-----------------________--------------------CCCCCCTTCCCCCCC-----------E#
-     #E-----CCCCCCTTCCCCCCC-----------------________----------------------------------------------E#
+     #E-----ccccccccccccccc---ccccccccccc---________--------------------ccccccccccccccc-----------E#
+     #E-----cTTTTTTTTTTTTTc---cTTTTTTTTTc---________--------------------cTTTTTTTTTTTTTc-----------E#
+     #E-----cTTTTTTTTTTTTTc---cTTTTTTTTTc---________--------------------cTTTTTTTTTTTTTc-----------E#
+     #E-----cTTTTTTTTTTTTTc---cTTTTTTTTTc---________--------------------cTTTTTTTTTTTTTc-----------E#
+     #E-----cTTTTTTTTTTTTTc---cTTTTTTTTTc---________--------------------cTTTTTTTTTTTTTc-----------E#
+     #E-----cTTTTTTTTTTTTTc---cTTTTTTTTTc---________--------------------cTTTTTTTTTTTTTc-----------E#
+     #E-----cTTTTTTTTTTTTTc---cTTTTTTTTTc---________--------------------cTTTTTTTTTTTTTc-----------E#
+     #E-----cTTTTTTTTTTTTTc---cTTTTTTTTTc---________--------------------cTTTTTTTTTTTTTc-----------E#
+     #E-----cTTTTTTTTTTTTTc---ccccTTccccc---________--------------------cTTTTTTTTTTTTTc-----------E#
+     #E-----cTTTTTTTTTTTTTc-----------------________--------------------ccccccTTccccccc-----------E#
+     #E-----ccccccTTccccccc-----------------________----------------------------------------------E#
      #E-------------------------------------________----------------------------------------------E#
      #E-------------------------------------________----------------------------------------------E#
      #E-------------------------------------________----------------------------------------------E#
-     #E-------------------------------------________------CCCCCCCCCCC-----------------------------E#
-     #E-------------------------------------________------CTTTTTTTTTC-----------------------------E#
-     #E-----CCCCCCCCCCC---------------------________------CTTTTTTTTTC-------------------tttttt----E#
-     #E-----CTTTTTTTTTC---------------------________------CTTTTTTTTTC-------------------tttttt----E#
-     #E-----CTTTTTTTTTC---------------------________------CTTTTTTTTTC-------------------tttttt----E#
-     #E-----CTTTTTTTTTC---------------------________------CTTTTTTTTTC-------------------tttttt----E#
-     #E-----CTTTTTTTTTC---------------------________------CTTTTTTTTTC-------------------tttttt----E#
-     #E-----CTTTTTTTTTC---------------------________------CTTTTTTTTTC-------------------tttttt----E#
-     #E-----CTTTTTTTTTC---------------------________------CTTTTTTTTTC---------------------ss------E#
-     #E-----CTTTTTTTTTC---------------------________------CCCCTTCCCCC---------------------ss------E#
-     #E-----CTTTTTTTTTC---------------------________--------------------------------------ss------E#
-     #E-----CCCCTTCCCCC---------------------________--------------------------------------ss------E#
+     #E-------------------------------------________------ccccccccccc-----------------------------E#
+     #E-------------------------------------________------cTTTTTTTTTc-----------------------------E#
+     #E-----ccccccccccc---------------------________------cTTTTTTTTTc-------------------tttttt----E#
+     #E-----cTTTTTTTTTc---------------------________------cTTTTTTTTTc-------------------tttttt----E#
+     #E-----cTTTTTTTTTc---------------------________------cTTTTTTTTTc-------------------tttttt----E#
+     #E-----cTTTTTTTTTc---------------------________------cTTTTTTTTTc-------------------tttttt----E#
+     #E-----cTTTTTTTTTc---------------------________------cTTTTTTTTTc-------------------tttttt----E#
+     #E-----cTTTTTTTTTc---------------------________------cTTTTTTTTTc-------------------tttttt----E#
+     #E-----cTTTTTTTTTc---------------------________------cTTTTTTTTTc---------------------ss------E#
+     #E-----cTTTTTTTTTc---------------------________------ccccTTccccc---------------------ss------E#
+     #E-----cTTTTTTTTTc---------------------________--------------------------------------ss------E#
+     #E-----ccccTTccccc---------------------________--------------------------------------ss------E#
      #E-------------------------------------________--------------------------------------ss------E#
      #E-------------------------------------________--------------------------------------ss------E#
      #E-------------------------------------________----------------------------------------------E#
@@ -727,64 +726,66 @@ PropRocks 54.21282463097611,86.13011474629404
 PropPine 65.73046613709558,86.22557123029864
 PropPine 93.04450671688863,85.81448018556203
 PropPine 123.26771628883095,86.16805398485998
-PropRocks 141.01655802741487,85.71676688195056
-PropRocks 6.893416667074625,128.75455148222602
-PropPine 16.76344776156519,128.81571180229807
-PropRocks 24.290753531731085,128.89927940377933
-PropPine 29.149510979861724,128.94131691467078
-PropRocks 33.01265308871523,129.13293764611376
-PropRocks 38.08775143641408,129.05433869378376
-PropPine 39.76310966017801,129.1807752551887
-PropPine 63.23459926868537,129.18545336745933
-PropPine 65.73933291437073,128.91817490468648
-PropPine 69.05529474036548,128.9790648938525
-PropPine 75.09771140832348,129.2910070898901
-PropPine 79.22430312657929,129.2119958641529
-PropPine 90.12009147425186,129.21559052491355
-PropPine 95.88737740525389,129.06991696374953
-PropBush 9.767872422965183,129.92229493866782
-PropPine 12.886509513941832,130.1765130998923
-PropPine 30.88120939740036,129.97544834626626
-PropPine 42.0886475088022,130.19478402160797
-PropRocks 55.072276020223406,130.1731579782782
-PropPine 59.24891786600878,130.01149415984355
-PropRocks 71.0580852748631,129.93743851195902
-PropRocks 77.28605208424202,129.92394328127799
-PropPine 83.8171958685467,130.03208016768662
-PropPine 87.25146811034134,130.1096246006012
-PropBush 15.03693652168705,130.8057961941258
-PropBush 22.832679081024917,130.83541194802868
-PropPine 33.85714493997262,130.75364929440136
-PropRocks 36.18179426215673,130.89590024957243
-PropPine 66.22136528516252,130.82270376687995
-PropPine 79.22729804540393,131.19098107837652
-PropPine 89.03035541788226,130.83166270262174
-PropPine 90.78045824173859,131.00309083475875
-PropRocks 93.06104478852872,130.98371934903957
-PropPine 95.14131100198315,130.7478611231073
-PropPine 7.822146296558039,132.00932330503562
-PropPine 17.28716080216093,132.04929800049834
-PropPine 19.292882881589644,132.12904515286397
-PropPine 26.891443705647927,131.7434049368107
-PropPine 29.919501900775128,131.79903824333988
-PropPine 32.15514302870964,131.70268034935123
-PropRocks 55.27128970649619,131.8365604162852
-PropPine 60.818757629449834,132.19692880534424
-PropPine 63.151614654274475,132.12522554417384
-PropPine 71.98011639131238,132.14366419335997
-PropPine 74.21430542492973,131.83188993936957
-PropRocks 75.75082921984179,131.86074973948334
-PropPine 84.08436148184555,131.70984585285646
-PropPine 21.071796190911808,133.0130624295739
-PropPine 22.791812872929412,132.81767739659068
-PropPine 24.737356376665346,133.22897741223173
-PropPine 35.70180151462639,132.95338758642478
-PropPine 42.13338539620553,133.15047400018688
-PropPine 66.13651185056032,133.19217305206328
-PropPine 78.19486091159976,132.9506459952568
-PropPine 81.00709133162493,132.79766559605378
-PropBush 86.23735205332625,133.00145039572448
-PropPine 90.72991954089605,132.98681324137692
-PropPine 94.97732889665167,133.09163391608357
-; 341 trees/bushes/rocks scattered on the grass
+PropRocks 137.01655802741487,85.71676688195056
+PropRocks 139.89341666707463,85.75455148222602
+PropPine 12.763447761565189,128.81571180229807
+PropRocks 20.290753531731085,128.89927940377933
+PropPine 25.149510979861724,128.94131691467078
+PropRocks 29.012653088715233,129.13293764611376
+PropRocks 34.08775143641408,129.05433869378376
+PropPine 35.76310966017801,129.1807752551887
+PropPine 59.23459926868537,129.18545336745933
+PropPine 61.739332914370735,128.91817490468648
+PropPine 65.05529474036548,128.9790648938525
+PropPine 71.09771140832348,129.2910070898901
+PropPine 75.22430312657929,129.2119958641529
+PropPine 86.12009147425186,129.21559052491355
+PropPine 91.88737740525389,129.06991696374953
+PropBush 94.76787242296518,128.92229493866782
+PropPine 6.886509513941831,130.1765130998923
+PropPine 21.88120939740036,129.97544834626626
+PropPine 32.0886475088022,130.19478402160797
+PropRocks 40.072276020223406,130.1731579782782
+PropPine 54.24891786600878,130.01149415984355
+PropRocks 57.058085274863096,129.93743851195902
+PropRocks 68.28605208424202,129.92394328127799
+PropPine 78.8171958685467,130.03208016768662
+PropPine 82.25146811034134,130.1096246006012
+PropBush 9.03693652168705,130.8057961941258
+PropBush 16.832679081024917,130.83541194802868
+PropPine 27.85714493997262,130.75364929440136
+PropRocks 30.181794262156725,130.89590024957243
+PropPine 61.22136528516252,130.82270376687995
+PropPine 71.22729804540393,131.19098107837652
+PropPine 75.03035541788226,130.83166270262174
+PropPine 76.78045824173859,131.00309083475875
+PropRocks 84.06104478852872,130.98371934903957
+PropPine 86.14131100198315,130.7478611231073
+PropPine 89.82214629655803,131.00932330503562
+PropPine 96.28716080216093,131.04929800049834
+PropPine 7.292882881589645,132.12904515286397
+PropPine 13.891443705647925,131.7434049368107
+PropPine 19.919501900775128,131.79903824333988
+PropPine 22.155143028709638,131.70268034935123
+PropRocks 33.27128970649619,131.8365604162852
+PropPine 41.818757629449834,132.19692880534424
+PropPine 53.151614654274475,132.12522554417384
+PropPine 58.980116391312386,132.14366419335997
+PropPine 63.21430542492974,131.83188993936957
+PropRocks 64.75082921984179,131.86074973948334
+PropPine 73.08436148184555,131.70984585285646
+PropPine 10.07179619091181,133.0130624295739
+PropPine 11.79181287292941,132.81767739659068
+PropPine 15.737356376665344,133.22897741223173
+PropPine 24.70180151462639,132.95338758642478
+PropPine 28.133385396205533,133.15047400018688
+PropPine 38.136511850560325,133.19217305206328
+PropPine 61.19486091159976,132.9506459952568
+PropPine 68.00709133162493,132.79766559605378
+PropBush 70.23735205332625,133.00145039572448
+PropPine 77.72991954089605,132.98681324137692
+PropPine 81.97732889665167,133.09163391608357
+PropPine 85.84588917500614,132.92478118549323
+PropRocks 95.97172429574267,132.74931151869208
+; 343 trees/bushes/rocks scattered on the grass
 end

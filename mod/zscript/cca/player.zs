@@ -34,8 +34,8 @@ class CCAPlayer : PlayerPawn
 	{
 		Player.DisplayName "Marsh";
 		Player.SoundClass "marsh";
+		Player.StartItem "CCA_Pistol";   // the first weapon listed is the one you start holding
 		Player.StartItem "CCA_Knife";
-		Player.StartItem "CCA_Pistol";
 		Player.StartItem "Ammo9mm", 45;
 		Player.StartItem "FragGrenades", 2;
 		Player.WeaponSlot 1, "CCA_Knife", "CCA_HarvesterBlade";

@@ -136,6 +136,20 @@ IRIS_210 = "IRIS|Your case file. Six years of 'crackpot' in one folder.";
 IRIS_211 = "IRIS|Plug me in. Every newsroom, every wire service. Hold them off for a minute.";
 IRIS_212 = "IRIS|Rooftop access. Condor's inbound. Don't make me wait.";
 
+// ------------------------------------------------------------ IRIS: MAP03 beats
+IRIS_301 = "IRIS|The cordon. Somebody set up a perimeter and forgot to tell the perimeter what it was keeping in.";
+IRIS_302 = "IRIS|Command tent. The red card should be with whoever was in charge. Check the bodies.";
+IRIS_303 = "IRIS|They were digging in when it hit. You can see where the sandbags stopped.";
+IRIS_304 = "IRIS|The ridge trail. The trees are scorched in a straight line. Follow the scar.";
+IRIS_305 = "IRIS|Listen. The forest's gone quiet. Something big is walking out there.";
+IRIS_306 = "IRIS|There it is. Air Force said meteor. Meteors don't have landing lights.";
+IRIS_307 = "IRIS|The impact trench. Watch your feet. Some of that glow is fuel, some of it is them.";
+IRIS_308 = "IRIS|We're inside. Warm walls, no corners. It was built from the inside out.";
+IRIS_309 = "IRIS|Their script is on every surface. It's not writing. It's a nervous system.";
+IRIS_310 = "IRIS|The crew compartment. Seats for six. Four of them are still occupied.";
+IRIS_311 = "IRIS|The navigation shard's in the cockpit. Take it and the whole ship will hear.";
+IRIS_312 = "IRIS|The cockpit. And something they didn't want to leave behind. Take that too.";
+
 // ------------------------------------------------------------ NPCs
 NPC_SCI1 = "SCIENTIST|They were never supposed to wake up!";
 NPC_SCI2 = "SCIENTIST|I only did the paperwork! I only did the paperwork!";

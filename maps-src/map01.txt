@@ -47,26 +47,27 @@ V  door tex=BLSTDOOR track=HAZSTRIP remote tag=@contain blast; containment cell
 U  door tex=ELEVDOOR track=HAZSTRIP remote tag=@vault         ; vault (HackTerminal)
 E  door tex=ELEVDOOR track=HAZSTRIP remote tag=@exitdoor blast; exit (ExitGate)
 ; ---- the yard (surface z 160, sky)
--  room floor=160 ceil=480 sky ff=DESERT wall=CONCWALL light=128
-2  room floor=144 ceil=480 sky ff=DESERT wall=ROCKWAL1 lower=ROCKWAL1 lowerself=ROCKWAL1 light=120   ; crater rim
-3  room floor=128 ceil=480 sky ff=DESERT wall=ROCKWAL1 lower=ROCKWAL1 lowerself=ROCKWAL1 light=112   ; crater bowl
-4  room floor=184 ceil=480 sky ff=DESERT wall=ROCKWAL1 lower=ROCKWAL1 light=128                      ; dune / berm
+-  room floor=160 ceil=352 sky ff=DESERT wall=CONCWALL light=128
+2  room floor=144 ceil=352 sky ff=DESERT wall=ROCKWAL1 lower=ROCKWAL1 lowerself=ROCKWAL1 light=120   ; crater rim
+3  room floor=128 ceil=352 sky ff=DESERT wall=ROCKWAL1 lower=ROCKWAL1 lowerself=ROCKWAL1 light=112   ; crater bowl
+4  room floor=184 ceil=352 sky ff=DESERT wall=ROCKWAL1 lower=ROCKWAL1 light=128                      ; dune / berm
 5  solid tex=ROCKWAL1
-6  room floor=168 ceil=480 sky ff=CONCFLR wall=CONCWALL lower=FENCEPOL light=144                     ; helipad
-_  room floor=160 ceil=480 sky ff=TARMAC wall=CONCWALL light=136
-+  room floor=160 ceil=480 sky ff=CONCFLR wall=CONCWALL light=144
-*  room floor=160 ceil=480 sky ff=DESERT wall=ROCKWAL1 light=112 scenery
-F  window floor=168 ceil=480 sky glass=FENCEMID frame=FENCEPOL broken nowrap pegbottom pane=S
-I  window floor=168 ceil=480 sky glass=FENCEMID frame=FENCEPOL broken nowrap pegbottom pane=E
-H  room floor=160 ceil=272 ff=CONCFLR cf=METLFLR wall=CONCWALL light=120
-t  room floor=256 ceil=480 sky ff=METLFLR wall=CONCWALL lower=SUPPORT light=136
-T  stairs dir=N floor=160 top=256 ceil=480 sky ff=STEPTOP riser=METLPANL wall=CONCWALL light=136
-b  room floor=184 ceil=480 sky ff=CONCFLR lower=CONCWALL wall=CONCWALL light=128   ; low barrier
+6  room floor=168 ceil=352 sky ff=CONCFLR wall=CONCWALL lower=FENCEPOL light=144                     ; helipad
+_  room floor=160 ceil=352 sky ff=TARMAC wall=CONCWALL light=136
++  room floor=160 ceil=352 sky ff=CONCFLR wall=CONCWALL light=144
+*  room floor=160 ceil=352 sky ff=DESERT wall=ROCKWAL1 light=112 scenery
+F  window floor=168 ceil=352 sky glass=FENCEMID frame=FENCEPOL broken nowrap pegbottom pane=S
+I  window floor=168 ceil=352 sky glass=FENCEMID frame=FENCEPOL broken nowrap pegbottom pane=E
+H  room floor=160 ceil=352 sky ff=CONCFLR wall=CONCWALL light=128 slab=272..288 slabtop=ROOFTAR slabbot=METLFLR slabside=CONCWALL slablight=112
+7  room floor=288 ceil=352 sky ff=ROOFTAR wall=CONCWALL lower=CONCWALL light=128 scenery     ; low building walls (roof blocks)
+t  room floor=256 ceil=352 sky ff=METLFLR wall=CONCWALL lower=SUPPORT light=136
+T  stairs dir=N floor=160 top=256 ceil=352 sky ff=STEPTOP riser=METLPANL wall=CONCWALL light=136
+b  room floor=184 ceil=352 sky ff=CONCFLR lower=CONCWALL wall=CONCWALL light=128   ; low barrier
 n  room floor=160 ceil=288 ff=METLFLR cf=METLFLR wall=WHSEWALL light=120
 ; ---- the warehouse (floor 160, roof 512)
 w  room floor=160 ceil=512 ff=CONCFLR cf=METLFLR wall=WHSEWALL light=112
 =  room floor=160 ceil=512 ff=CONCFLR cf=METLFLR wall=WHSEWALL light=112 slab=336..352 slabtop=GRATEFLR slabbot=METLFLR slabside=SUPPORT slablight=96
-)  room floor=160 ceil=384 ff=CONCFLR cf=METLFLR wall=WHSEWALL upper=WHSEWALL light=120
+)  room floor=160 ceil=344 ff=CONCFLR cf=METLFLR wall=WHSEWALL upper=WHSEWALL light=120
 r  room floor=160 ceil=256 ff=CONCFLR cf=METLFLR wall=WHSEWALL upper=WHSEDOOR light=120
 ^  stairs dir=N floor=160 top=352 ceil=512 ff=STEPTOP riser=METLPANL wall=WHSEWALL light=112
 [  room floor=208 ceil=512 ff=CRATETOP cf=METLFLR wall=WHSEWALL lower=CRATEWAL light=112
@@ -100,7 +101,7 @@ C  stairs dir=N floor=0 top=192 ceil=384 ff=STEPTOP riser=METLPANL wall=METLWALL
 (  room floor=192 ceil=320 ff=LABTIL2 wall=LABWALL2 lower=METLWALL light=144
 x  room ceil=384 ff=CONCFLR cf=METLFLR wall=METLWALL light=128 slab=64..112 slabtop=HULLFLR slabbot=HULLFLR slabside=HULLEXT slablight=168 color=#c8d0ff
 o  room ff=CONCFLR cf=METLFLR wall=METLWALL light=120
-y  room floor=160 ceil=480 sky ff=TARMAC wall=CONCWALL light=160 enter=Exit_Normal(0)
+y  room floor=160 ceil=352 sky ff=TARMAC wall=CONCWALL light=160 enter=Exit_Normal(0)
 end
 
 marks
@@ -149,25 +150,25 @@ grid
 #****I444---------------------I-----223333322------____------------------------------------------------------#WWwwwwwwww}}}wwww}}}wwww}}}wwww}}}wwww}}}wwww}}}wwww}}}wwww}}}wwwwwwww===WWW
 #****I444---------------------I-----22\333/22------____------------------------------------------------------#WWwwwwwwww}}}wwww}}}wwww}}}wwww}}}wwww}}}wwww}}}wwww}}}wwww}}}wwwwwwww===WWW
 #****I444---------------------I-----\2222222/------____------------------------------------------------------#WWwwwwwwww}}}wwww}}}wwww}}}wwww}}}wwww}}}wwww}}}wwww}}}wwww}}}wwwwwwww===WWW
-#****I444---------------------I------\22222/-------____------/6666\---------------AAAA-----------------------#WWwwwwwwww}}}wwww}}}wwww}}}wwww}}}wwww}}}wwww}}}]www}}}wwww}}}wwwwwwww===WWW
-#****I444---------------------I--------------------____-----/666666\--------------AAAA-----------------------#WWwwwwwwww}}}wwww}}}wwww}}}wwww}}}wwww}}}wwww}}}]www}}}wwww}}}wwwwwwww===WWW
-#****I44/------------------------------------------____-----66666666-----------####DD#####-------------------#WWwwww]]ww}}}wwww}}}wwww}}}[www}}}wwww}}}wwww}}}wwww}}}wwww}}}wwwwwwww===WWW
-#****I4/-------------------------------------------____-----66666666-----------#HHHHHHHHH#----/222\----------#WWwwww]]ww}}}wwww}}}wwww}}}[www}}}wwww}}}wwww}}}wwww}}}wwww}}}wwwwwwww===WWW
-#****I---------------------------------------------____-----66666666-----------#HHHHHHHHH#---/22222\---------#WWwwww]]ww}}}wwww}}}wwww}}}wwww}}}wwww}}}wwww}}}wwww}}}wwww}}}wwwwwwww===WWW
-#****I------------------------------------------##AAAAAA##--66666666-----------#HHHHHHHHH#---2233322---------#WWwwwwwwww}}}wwww}}}wwww}}}wwww}}}wwww}}}wwww}}}wwww}}}wwww}}}wwwwwwww===WWW
-#****I###HHHHHHHHHH###--------I-------------/5--##AAAAAA##--\666666/-----------#HHHHHHHHH#---2233322---------#WWwwwwwwww}}}wwww}}}wwww}}}wwww}}}wwww}}}wwww}}}wwww}}}wwww}}}wwwwwwww===WWW
-#****I#HHHHHHHHHHHHHH#--------I-------------55--####DD####---\6666/------/22222\-HHHHHHHH#---2233322---------#WWwwwwwwww}}}wwww}}}wwww}}}wwww}}}[www}}}wwww}}}wwww}}}wwww}}}wwwwwwww===WWW
-#****I#HHHHHHHHHHHHHH#--------I-----------------#NNNNNNNN#--------------/2222222\HHHHHHHH#---\22222/---------#WWwwwwwwww}}}wwww}}}wwww}}}wwww}}}[www}}}wwww}}}wwww}}}wwww}}}wwwwwwww===WWW
-#****I#HHHHHHHHHHHHHH#--------I-----------------#NNNNNNNN#--------------22/333\22HHHHHHHH#----\222/----------#WWwwwwwwww}}}wwww}}}wwww}}}wwww}}}wwww}}}wwww}}}wwwwwwwwwwwwwwwwwwwwww===WWW
-#****I#HHHHHHHHHHHHHH#--------I-----------------#NNNNNNNN#--------------223333322HHHHHHHH#-------------------#WWwwwwwwww}}}wwww}}}wwww}}}wwww}}}wwww}}}wwww}}}wwwwwwwwwwwwwwwwwwwwww===WWW
-#****I#HHHHHHHHHHHHHH#--------I-----------------#NNNNNNNN#--------------223333322#########-------------------#WWwwwwwwww}}}wwww}}}wwww}}}wwww}}}wwww}}}wwww}}}wwwwwwwwwwwwwwwwwwwwww===WWW
-#****I#HHHHHHHHHHHHHH#--------I----/4444444\----###>>>>###--------------223333322----------------------------#WWwwwwwwww}}}wwww}}}wwww}}}wwww}}}wwww}}}wwww}}}wwwwwwwwwwwwwwwwwwwwww===WWW
-#****I#HHHHHHHHHHHHHH#--------I---/444444444\---# #>>>># #--------------22\333/22----------------------------#WWwwwwwwww}}}wwww}}}wwww}}}wwww}}}wwww}}}wwww}}}wwwwwwwwnnnnwwwwwwwwwwwwwWWW
-#****I#HHHHHHHHHHHHHH#--------I---44444444444---# #>>>># #--------------\2222222/----------------------------#WWwwwwwwww}}}wwww}}}wwww}}}wwww}}}wwww}}}wwww}}}wwwwwwWWXXXXWWwwwwwwwwwwwWWW
-#****I#HHHHHHHHHHHHHH#--------I---44444444444---###>>>>###---------------\22222/-----------------------------#WWwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwWnnnnnnWwwwwwwwwwwwWWW
-#****I#HHHHHHHHHHHHHH#--------I---44444444444---#MMMMMMMM#---------------------------------------------------#WWwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwWnnnnnnWwwwwwwwwwwwWWW
-#****I#HHHHHHHHHHHHHH#--------I-----------------#MMMMMMMM#---------------------------------------------------#WWwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwWLLLLLLWwwwwwwwwwwwWWW
-#****I################--------I-----------------#MMMMMMMM#---------------------------------------------------#WWwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwWLLLLLLWwwwwwwwwwwwWWW
+#****I444---------------------I------\22222/-------____------/6666\------------------------------------------#WWwwwwwwww}}}wwww}}}wwww}}}wwww}}}wwww}}}wwww}}}]www}}}wwww}}}wwwwwwww===WWW
+#****I444---------------------I--------------------____-----/666666\-----------------------------------------#WWwwwwwwww}}}wwww}}}wwww}}}wwww}}}wwww}}}wwww}}}]www}}}wwww}}}wwwwwwww===WWW
+#****I44/------------------------------------------____-----66666666-----------7777HH77777-------------------#WWwwww]]ww}}}wwww}}}wwww}}}[www}}}wwww}}}wwww}}}wwww}}}wwww}}}wwwwwwww===WWW
+#****I4/-------------------------------------------____-----66666666-----------7HHHHHHHHH7----/222\----------#WWwwww]]ww}}}wwww}}}wwww}}}[www}}}wwww}}}wwww}}}wwww}}}wwww}}}wwwwwwww===WWW
+#****I---------------------------------------------____-----66666666-----------7HHHHHHHHH7---/22222\---------#WWwwww]]ww}}}wwww}}}wwww}}}wwww}}}wwww}}}wwww}}}wwww}}}wwww}}}wwwwwwww===WWW
+#****I------------------------------------------##AAAAAA##--66666666-----------7HHHHHHHHH7---2233322---------#WWwwwwwwww}}}wwww}}}wwww}}}wwww}}}wwww}}}wwww}}}wwww}}}wwww}}}wwwwwwww===WWW
+#****I777HHHHHHHHHH777--------I-------------/5--##AAAAAA##--\666666/-----------7HHHHHHHHH7---2233322---------#WWwwwwwwww}}}wwww}}}wwww}}}wwww}}}wwww}}}wwww}}}wwww}}}wwww}}}wwwwwwww===WWW
+#****I7HHHHHHHHHHHHHH7--------I-------------55--####DD####---\6666/------/22222\-HHHHHHHH7---2233322---------#WWwwwwwwww}}}wwww}}}wwww}}}wwww}}}[www}}}wwww}}}wwww}}}wwww}}}wwwwwwww===WWW
+#****I7HHHHHHHHHHHHHH7--------I-----------------#NNNNNNNN#--------------/2222222\HHHHHHHH7---\22222/---------#WWwwwwwwww}}}wwww}}}wwww}}}wwww}}}[www}}}wwww}}}wwww}}}wwww}}}wwwwwwww===WWW
+#****I7HHHHHHHHHHHHHH7--------I-----------------#NNNNNNNN#--------------22/333\22HHHHHHHH7----\222/----------#WWwwwwwwww}}}wwww}}}wwww}}}wwww}}}wwww}}}wwww}}}wwwwwwwwwwwwwwwwwwwwww===WWW
+#****I7HHHHHHHHHHHHHH7--------I-----------------#NNNNNNNN#--------------223333322HHHHHHHH7-------------------#WWwwwwwwww}}}wwww}}}wwww}}}wwww}}}wwww}}}wwww}}}wwwwwwwwwwwwwwwwwwwwww===WWW
+#****I7HHHHHHHHHHHHHH7--------I-----------------#NNNNNNNN#--------------223333322777777777-------------------#WWwwwwwwww}}}wwww}}}wwww}}}wwww}}}wwww}}}wwww}}}wwwwwwwwwwwwwwwwwwwwww===WWW
+#****I7HHHHHHHHHHHHHH7--------I----/4444444\----###>>>>###--------------223333322----------------------------#WWwwwwwwww}}}wwww}}}wwww}}}wwww}}}wwww}}}wwww}}}wwwwwwwwwwwwwwwwwwwwww===WWW
+#****I7HHHHHHHHHHHHHH7--------I---/444444444\---# #>>>># #--------------22\333/22----------------------------#WWwwwwwwww}}}wwww}}}wwww}}}wwww}}}wwww}}}wwww}}}wwwwwwwwnnnnwwwwwwwwwwwwwWWW
+#****I7HHHHHHHHHHHHHH7--------I---44444444444---# #>>>># #--------------\2222222/----------------------------#WWwwwwwwww}}}wwww}}}wwww}}}wwww}}}wwww}}}wwww}}}wwwwwwWWXXXXWWwwwwwwwwwwwWWW
+#****I7HHHHHHHHHHHHHH7--------I---44444444444---###>>>>###---------------\22222/-----------------------------#WWwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwWnnnnnnWwwwwwwwwwwwWWW
+#****I7HHHHHHHHHHHHHH7--------I---44444444444---#MMMMMMMM#---------------------------------------------------#WWwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwWnnnnnnWwwwwwwwwwwwWWW
+#****I7HHHHHHHHHHHHHH7--------I-----------------#MMMMMMMM#---------------------------------------------------#WWwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwWLLLLLLWwwwwwwwwwwwWWW
+#****I7777777777777777--------I-----------------#MMMMMMMM#---------------------------------------------------#WWwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwWLLLLLLWwwwwwwwwwwwWWW
 #######              ############################MMMMMMMM#####################################################WWwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwWLLLLLLWwwwwwwwwwwwWWW
                                                 ###<<<<###                                                    WWwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwWLLLLLLWwwwwwwwwwwwWWW
                                                   #<<<<#                                                      WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWLLLLLLWWWWWWWWWWWWWWW

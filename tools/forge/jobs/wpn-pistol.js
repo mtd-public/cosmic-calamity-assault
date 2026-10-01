@@ -5,7 +5,6 @@ import { makePistol, makePistolMag } from '../lib/wpn/pistol.js';
 import { Viewmodel, Q, basisQ } from '../lib/wpn/vm.js';
 import { makeCasing, flashFrame, FOV } from '../lib/wpn/common.js';
 
-globalThis.WPN_ONLY = null;
 export default async function (F) {
   const gun = makePistol();
   const vm = new Viewmodel({ gun });
@@ -63,6 +62,5 @@ export default async function (F) {
   const frames = [...'ABCDEFGHIJKLMNOP'].map((f) => ({ name: `P9MM${f}0`, key: f }));
   frames.push(flashFrame('P9MMX0', () => pose('B'), gun, { len: 150, width: 70, seed: 3 }));
   frames.push(flashFrame('P9MMY0', () => pose('M'), gun, { len: 60, width: 90, endOn: 1, seed: 5 }));
-  const ONLY = globalThis.WPN_ONLY || null;
-  await hud(F, { model: { root: vm.root, pose }, frames: ONLY ? frames.filter((f) => ONLY.includes(f.name[4])) : frames, fov: FOV });
+  await hud(F, { model: { root: vm.root, pose }, frames, fov: FOV });
 }

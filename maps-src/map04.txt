@@ -1,0 +1,487 @@
+; MAP04 "The Loop" - downtown Chicago, 1997
+; Flow: State Street under the Chicago Theatre marquee (start) -> Lake Street under the L -> Daley
+; Plaza (the Picasso) -> stairs up to the State/Lake platform -> fight along the L (Lake, Wabash) ->
+; the skybridge from the Wabash L into the MERCHANT TOWER's 2nd floor (or walk in through the lobby
+; on Randolph) -> the stair core: lobby 0, floors at 192 / 384 / 576 (the 3rd floor is burning),
+; roof 768; the express elevator runs lobby <-> 4th floor. Reaching the 4th floor completes obj 1 ->
+; the roof: the harvest relay grown into the antenna, 60 s HackTerminal holdout (obj 2), which drops
+; the barrier to the window-washer platform -> ride it down the outside of the tower to the alley ->
+; the State/Lake station house on Lake Street -> the ExitGate (objectives 1+2) opens the door to the
+; exit platform -> walk into the waiting L train (exit, obj 3).
+; Civilians: 16 office workers across the floors, most of them near aliens; SafeZones at the lobby
+; doors, the stairwell exit in the lobby and the roof stair head.
+; Tower construction: one footprint with four stacked 3D floors (176..192, 368..384, 560..576,
+; 752..768). Walls that exist on one floor only are regions whose slabs merge through that floor
+; ('w' floor 2, 'x' floor 3, 'y' floor 4, 'd' a lobby desk). Core walls are blocks up to the roof.
+; Window bays are 2-cell-deep window sectors whose sill/lintel bracket one floor.
+; Secrets: the back room south of Randolph (assault rifle), the CTA substation.
+map MAP04 "The Loop"
+sky SKYCHI
+defaults floor=0 ceil=128 ff=OFFCCARP cf=OFFCCEIL wall=OFFCWALL light=144 track=SUPPORT frame=WINFRAME
+
+legend
+#  solid
+O  solid tex=TOWERWIN
+o  solid tex=OFFCWIN
+C  solid tex=CHITHEA
+D  solid tex=GRANITE
+G  solid tex=TERRACTA
+; ---- streets
+_  room floor=0 ceil=640 sky ff=ASPHALT wall=GRANITE light=136
+,  room floor=8 ceil=640 sky ff=SIDEWALK wall=GRANITE lower=SIDEWALK light=144
+L  room floor=0 ceil=640 sky ff=ASPHALT wall=GRANITE light=120 slab=176..192 slabtop=LTRKFLR slabbot=METLFLR slabside=LTRACK slablight=104
+c  room floor=192 ceil=640 sky ff=LTRKFLR wall=GRANITE lower=SUPPORT light=120
+n  room floor=0 ceil=640 sky ff=ASPHALT wall=GRANITE light=120 slab=176..320 slabtop=METLFLR slabbot=METLFLR slabside=LTRAIN slablight=96
+P  room floor=192 ceil=640 sky ff=PLAZAFLR wall=GRANITE lower=GRANITE light=152
+s  stairs dir=N floor=0 top=192 ceil=640 sky ff=STEPTOP riser=GRANITE wall=GRANITE light=144
+p  room floor=0 ceil=640 sky ff=PLAZAFLR wall=GRANITE light=144
+q  room floor=24 ceil=640 sky ff=PLAZAFLR wall=GRANITE lower=GRANITE light=160
+a  room floor=40 ceil=640 sky ff=GRASSFLR wall=GRANITE lower=GRANITE light=144 scenery
+f  room floor=0 ceil=640 sky ff=PLAZAFLR wall=GRANITE light=144
+-  room floor=0 ceil=640 sky ff=ASPHALT wall=BRICKDRK light=112
+k  room floor=0 ceil=640 sky ff=ASPHALT wall=BRICKDRK light=112 slab=176..192 slabtop=METLFLR slabbot=METLFLR slabside=SUPPORT slablight=96
+m  room floor=8 ceil=640 sky ff=SIDEWALK wall=GRANITE light=120 slab=176..192 slabtop=METLFLR slabbot=METLFLR slabside=SUPPORT slablight=96
+; ---- the station house and the exit
+H  room floor=0 ceil=144 ff=MARBFLR cf=OFFCLITE wall=GRANITE light=160
+E  door tex=ELEVLOBY track=SUPPORT remote tag=@exit blast
+I  stairs dir=W floor=0 top=192 headroom=128 ff=STEPTOP riser=GRANITE wall=GRANITE light=144
+J  room floor=192 ceil=640 sky ff=PLAZAFLR wall=GRANITE lower=GRANITE light=160
+z  room floor=328 ceil=640 sky ff=METLFLR wall=GRANITE lower=LTRAIN light=144 scenery
+Z  room floor=200 ceil=640 sky ff=METLFLR wall=LTRAIN light=176 slab=320..328 slabtop=METLFLR slabbot=OFFCLITE slabside=LTRAIN slablight=176 enter=Exit_Normal(0)
+; ---- the Merchant Tower (one footprint, stacked 3D floors)
+t  room floor=0 ceil=1024 sky ff=MARBFLR wall=OFFCWALL light=176 slab=176..192 slab2=368..384 slab3=560..576 slab4=752..768 slabtop=OFFCCARP slabbot=OFFCCEIL slabside=OFFCWALL slablight=168 slab2light=152 slab3light=120 slab4light=144
+K  room floor=768 ceil=1024 sky ff=ROOFGRVL wall=OFFCWALL lower=ELEVLOBY light=144
+1  stairs dir=N floor=0 top=192 ceil=1024 sky ff=STEPTOP riser=OFFCWALL wall=OFFCWALL light=160 slab=368..384 slab2=560..576 slab3=752..768 slabtop=OFFCCARP slabbot=OFFCCEIL slabside=OFFCWALL slablight=152 slab2light=120 slab3light=144
+2  stairs dir=S floor=192 top=384 ceil=1024 sky ff=STEPTOP riser=OFFCWALL wall=OFFCWALL light=152 slab=560..576 slab2=752..768 slabtop=OFFCCARP slabbot=OFFCCEIL slabside=OFFCWALL slablight=120 slab2light=144
+3  stairs dir=N floor=384 top=576 ceil=1024 sky ff=STEPTOP riser=SCORCH wall=OFFCWALL light=128 slab=752..768 slabtop=OFFCCARP slabbot=OFFCCEIL slabside=OFFCWALL slablight=144
+4  stairs dir=S floor=576 top=768 ceil=1024 sky ff=STEPTOP riser=OFFCWALL wall=OFFCWALL light=144
+X  lift top=576 tex=ELEVLOBY wall=ELEVLOBY ceil=1024 sky ff=OFFCLITE light=176 speed=64 slab=752..768 slabtop=OFFCCARP slabbot=OFFCCEIL slabside=OFFCWALL slablight=144
+h  room floor=576 ceil=1024 sky ff=OFFCCARP wall=OFFCWALL lower=ELEVLOBY light=144 slab=752..768 slabtop=OFFCCARP slabbot=OFFCCEIL slabside=OFFCWALL slablight=144
+g  room floor=0 ceil=1024 sky ff=MARBFLR wall=OFFCWALL light=176 slab=176..768 slabtop=OFFCCARP slabbot=OFFCCEIL slabside=OFFCWALL slablight=168
+d  room floor=40 ceil=1024 sky ff=MARBFLR wall=OFFCWALL lower=WOODPANL light=176 slab=176..192 slab2=368..384 slab3=560..576 slab4=752..768 slabtop=OFFCCARP slabbot=OFFCCEIL slabside=OFFCWALL slablight=168 slab2light=152 slab3light=120 slab4light=144
+w  room floor=0 ceil=1024 sky ff=MARBFLR wall=OFFCWALL light=176 slab=176..384 slab2=560..576 slab3=752..768 slabtop=OFFCCARP slabbot=OFFCCEIL slabside=OFFCWALL slablight=168 slab2light=120 slab3light=144
+x  room floor=0 ceil=1024 sky ff=MARBFLR wall=OFFCWALL light=176 slab=176..192 slab2=368..576 slab3=752..768 slabtop=OFFCCARP slabbot=OFFCCEIL slabside=OFFCWALL slabside=SCORCH slablight=168 slab2light=152 slab3light=144
+y  room floor=0 ceil=1024 sky ff=MARBFLR wall=OFFCWALL light=176 slab=176..192 slab2=368..384 slab3=560..768 slabtop=OFFCCARP slabbot=OFFCCEIL slabside=OFFCWALL slablight=168 slab2light=152 slab3light=120
+b  room floor=192 ceil=1024 sky ff=OFFCCARP wall=OFFCWALL lower=TOWERWIN light=152 slab=368..768 slabtop=ROOFGRVL slabbot=OFFCCEIL slabside=TOWERWIN slablight=152
+Q  window floor=16 ceil=160 glass=OFFCBRK broken pane=both upper=TOWERWIN lower=TOWERWIN
+W  window floor=208 ceil=352 glass=OFFCBRK broken pane=both upper=TOWERWIN lower=TOWERWIN
+V  window floor=400 ceil=544 glass=OFFCBRK broken pane=both upper=TOWERWIN lower=TOWERWIN
+U  window floor=592 ceil=736 glass=OFFCBRK broken pane=both upper=TOWERWIN lower=TOWERWIN
+R  room floor=832 ceil=1024 sky ff=ROOFGRVL wall=OFFCWALL lower=HAZSTRIP light=144 tag=@washer
+r  room floor=768 ceil=1024 sky ff=ROOFGRVL wall=OFFCWALL lower=TOWERWIN light=144
+Y  lift top=768 tex=TOWERWIN wall=TOWERWIN ceil=1024 sky ff=GRATEFLR light=144 speed=48
+; ---- secrets
+v  room floor=0 ceil=128 ff=CARPETR cf=LABCEIL wall=WOODPANL light=112 secret
+u  room floor=0 ceil=128 ff=METLFLR cf=METLFLR wall=PIPEWALL light=96 secret
+S  door tex=GRANITE secret
+end
+
+marks
+@  PlayerStart angle=N
+end
+
+grid
+;         1         2         3         4         5         6         7         8         9         0         1         2         3         4         5         6         7         
+;12345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789
+
+
+     ##########################
+     #zzzzzzzzzzzzzzzzzzzzzzzz#
+     #zZZZZZZZZZZZZZZZZZZZZZZz#
+     #zZZZZZZZZZZZZZZZZZZZZZZz#
+     #zZZZZZZZZZZZZZZZZZZZZZZz#
+     #zZZZZZZZZZZZZZZZZZZZZZZz#
+     #zZZZZZZZZZZZZZZZZZZZZZZz#        #########################
+     #zZZZZZZZZZZZZZZZZZZZZZZz#        #HHHHHHHHHHHHHHHHHHHHHHH#
+     #zzzzZZzzzzzZZzzzzzZZzzzz#        #HHHHHHHHHHHHHHHHHHHHHHH#
+     #JJJJJJJJJJJJJJJJJJJJJJJJ##########HHHHHHHHHHHHHHHHHHHHHHH#
+     #JJJJJJJJJJJJJJJJJJJJJJJJIIIIIIIIIEHHHHHHHHHHHHHHHHHHHHHHH#
+     #JJJJJJJJJJJJJJJJJJJJJJJJIIIIIIIIIEHHHHHHHHHHHHHHHHHHHHHHH#
+     #JJJJJJJJJJJJJJJJJJJJJJJJIIIIIIIIIEHHHHHHHHHHHHHHHHHHHHHHH#
+     #JJJJJJJJJJJJJJJJJJJJJJJJIIIIIIIIIEHHHHHHHHHHHHHHHHHHHHHHH#
+     #JJJJJJJJJJJJJJJJJJJJJJJJ##########HHHHHHHHHHHHHHHHHHHHHHH#
+     ##########################        #HHHHHHHHHHHHHHHHHHHHHHH#
+     ###########################################HHHHHH#################################################################################################################
+     #,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,____________,,,,,,#
+     #,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,____________,,,,,,#
+     #___________________________________________________________________________________________________________________________________________,,,____________,,,___#
+     #LLLLcLLLLLLLcLLLLLLLcLLLLLLLcLLLLLLLcLLLLLLLcLLLLLLLcLLLLLLLcLLLLLLLcLLLLLLLcLLLLLLLcLLLLLLLcLLLLLLLcLLLLLLLcLLLLLLLcLLLLLLLcLLLLLLLcLLLLLLLcLLLLLLLcLLLLL,,,___#
+     #LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL,,,___#
+     #LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLnnnnnnnnnnnnnnnnnnnnLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL,,,___#
+     #LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLnnnnnnnnnnnnnnnnnnnnLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL,,,___#
+     #LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLnnnnnnnnnnnnnnnnnnnnLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL,,,___#
+     #LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL,,,___#
+     #LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL,,,___#
+     #LLLLcLLLLLLLcLLLLLLLcLLLLLLLcLLLLLLLcLLLLLLLcLLLLLLLcLLLLLLLcLLLLLLLcLLLLLLLcLLLLLLLcLLLLLLLcLLLLLLLcLLLLLLLcLLLLLLLcLLLLLLLcLLLLLLLcLLLLLLLcLLLLLLLcLLLLL,,,___#
+     #____________________________________________________________PPPPPPPPPPPPPPPPPPPPPPPPPPP____________________________________________________,,,__LLLLLLLL__,,,___#
+     #____________________________________________________________PPPPPPPPPPPPPPPPPPPPPPPPPPP____________________________________________________,,,__LLLLLLLL__,,,___#
+     #____________________________________________________________PPPPPPPPPPPPPPPPPPPPPPPPPPP____________________________________________________,,,__LLLLLLLL__,,,___#
+     #,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,ssss,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,__LLLLLLLL__,,,,,,#
+     #,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,ssss,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,__LLLLLLLL__,,,,,,#
+     #,,,__________,,,########ppppppppppppppppppppppppppppppp#########################ssss#############################################----------,,,__LLLLLLLL__,,,####
+     C,,,__________,,,########ppppppppppppppppppppppppppppppp#########################ssss####                                        #----------,,,__LLLLLLLL__,,,#
+     C,,,__________,,,##ppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppssssppp#                                        #----------,,,__LLLLLLLL__,,,#
+     C,,,__________,,,##ppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppssssppp#                                        #----------,,,__cLLLLLLc__,,,#
+     C,,,__________,,,##ppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppssssppp#       ##########    ########   #########----------,,,__LLLLLLLL__,,,#
+     C,,,__________,,,ppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppssssppp#      OOWWWWWWWWOOOOOOWWWWWWOOOOOUUUUUUOO----------,,,__LLLLLLLL__,,,#
+     C,,,__________,,,ppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppp#      OoWWWWWWWWooooooWWWWWWoooooUUUUUUoO----------,,,__LLLLLLLL__,,,#
+     C,,,__________,,,ppppppppaaaappppppppppppppppppppppppppppppppppppppppppppppaaaappppppppp#      OotttttttttttttttttttttttttttttttoO----------,,,__LLLLLLLL__,,,#
+     C,,,__________,,,ppppppppaaaappppppppppppppppppppppppppppppppppppppppppppppaaaappppppppp#     #OotttttttttttttttttttttwwwwwwwwwwoO----------,,,__LLLLLLLL__,,,#
+     C,,@__________,,,ppppppppaaaappppppppppppppppppppppppppppppppppppppppppppppaaaappppppppp#     #VVtttttttttttttttttttttwttttttttwoO----------,,,__LLLLLLLL__,,,#
+     C,,,__________,,,ppppppppaaaappppppppppppppppppppppppppppppppppppppppppppppaaaappppppppp#     #VVtttttttttttttttttttttwttttttttwoO----------,,,__LLLLLLLL__,,,#
+     C,,,__________,,,ppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppp#     #VVtttttttttttttttttttttwttttttttwoO----------,,,__cLLLLLLc__,,,#
+     C,,,__________,,,ppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppp#     #VVtttttttttttttttttttttwttttttttwoO----------,,,__LLLLLLLL__,,,#
+     C,,,__________,,,ppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppp#     #VVttttttttdddddddddddttwttttttttwoO----------,,,__LLLLLLLL__,,,#
+     C,,,__________,,,ppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppp#     #VVttttttttdtttttttttdttwttttttttwoO----------,,,__LLLLLLLL__,,,#
+     C,,,__________,,,ppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppp#     #VVttttttttdtttttttttdttwttttttttwoO----------,,,__LLLLLLLL__,,,#
+     C,,,__________,,,ppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppp#     #OottttttttdtttttttttdttwttttttttwbbkkkkkkkkkkmmmkkLLLLLLLL__,,,#
+     C,,,__________,,,ppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppp#      OotttttttttttttttttttttwwwtttwwwwbbkkkkkkkkkkmmmkkLLLLLLLL__,,,#
+     #,,,__________,,,ppppppppppppppppppppppppppppppppp/qqqqq\ppppppppppppppppppppppppppppppp#      OotttttttttttttttttttttttttttttttbbkkkkkkkkkkmmmkkLLLLLLLL__,,,#
+     #,,,__________,,,pppppppppppppppppppppppppppppppp/qqqqqqq\pppppppppppppppppppppppppppppp#      OotttttttttttttttttttttttttttttttbbkkkkkkkkkkmmmkkcLLLLLLc__,,,#
+     #,,,__________,,,ppppppppppppppppppppppppppppppp/qqqqqqqqq\ppppppppppppppppppppppppppppp#      OotttttttttttttttttttttttttttttttbbkkkkkkkkkkmmmkkLLLLLLLL__,,,#
+     #,,,__________,,,pppppppppppppppppppppppppppppppqqqqqqqqqqqppppppppppppppppppppppppppppp#      OoK1111K2222K3333K4444KhhhhKtttttoO----------,,,__LLLLLLLL__,,,#
+     #,,,__________,,,pppppppppppppppppppppppppppppppqqqqqqqqqqqppppppppppppppppppppppppppppp#      OoK1111K2222K3333K4444KXXXXKtttttoO----------,,,__LLLLLLLL__,,,#
+     #,,,__________,,,pppppppppppppppppppppppppppppppqqqqqqqqqqqppppppppppppppppppppppppppppp#      OoK1111K2222K3333K4444KXXXXKtttttRrYYYY------,,,__LLLLLLLL__,,,#
+     #,,,__________,,,pppppppppppppppppppppppppppppppqqqqqqqqqqqppppppppppppppppppppppppppppp#      OoK1111K2222K3333K4444KXXXXKtttttRrYYYY------,,,__LLLLLLLL__,,,#
+     #,,,__________,,,pppppppppppppppppppppppppppppppqqqqqqqqqqqppppppppppppppppppppppppppppp#      OoK1111K2222K3333K4444KXXXXKtttttRrYYYY------,,,__LLLLLLLL__,,,#
+     #,,,__________,,,ppppppppppppppppppppppppppppppp\qqqqqqqqq/ppppppppppppppppppppppppppppp#      OoK1111K2222K3333K4444KXXXXKtttttRrYYYY------,,,__LLLLLLLL__,,,#
+     #,,,__________,,,pppppppppppppppppppppppppppppppp\qqqqqqq/pppppppppppppppppppppppppppppp#      OoK1111K2222K3333K4444KXXXXKtttttoO----------,,,__cLLLLLLc__,,,#
+     #,,,__________,,,ppppppppppppppppppppppppppppppppp\qqqqq/ppppppppppppppppppppppppppppppp#     #OoK1111K2222K3333K4444KggggKtttttoO----------,,,__LLLLLLLL__,,,#
+     #,,,__________,,,ppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppp#     #UUtttttttttttttttttttttttttttttttoO----------,,,__LLLLLLLL__,,,#
+     #,,,__________,,,ppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppp#     #UUxxxxttxxxxttttttttttyyyytttyyyyoO----------,,,__LLLLLLLL__,,,#
+     #,,,__________,,,ppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppp#     #UUxttttttttxttttttttttytttttttttyVV----------,,,__LLLLLLLL__,,,#
+     #,,,__________,,,ppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppp#     #UUxttttttttxttttttttttytttttttttyVV----------,,,__LLLLLLLL__,,,#
+     #,,,__________,,,ppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppp#     #UUxttttttttxttttttttttytttttttttyVV----------,,,__LLLLLLLL__,,,#
+     #,,,__________,,,ppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppp#     #UUxttttttttxttttttttttytttttttttyVV----------,,,__LLLLLLLL__,,,#
+     #,,,__________,,,ppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppp#     #UUxttttttttxttttttttttytttttttttyVV----------,,,__cLLLLLLc__,,,#
+     #,,,__________,,,ppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppp#     #OoxttttttttxttttttttttytttttttttyVV----------,,,__LLLLLLLL__,,,#
+     #,,,__________,,,ppppppppaaaappppppppppppppppppppppppppppppppppppppppppppppaaaappppppppp#      OoxxxxxxxxxxttttttttttyyyyyyyyyyyoO----------,,,__LLLLLLLL__,,,#
+     #,,,__________,,,ppppppppaaaappppppppppppppppppppppppppppppppppppppppppppppaaaappppppppp#      OoooQQQQQQoooggggggggoooQQQQQQQoooO----------,,,__LLLLLLLL__,,,#
+     #,,,__________,,,ppppppppaaaappppppppppppppppppppppppppppppppppppppppppppppaaaappppppppp#     #OOOOQQQQQQOOOggggggggOOOQQQQQQQOOOO----------,,,__LLLLLLLL__,,,#
+     #,,,__________,,,ppppppppaaaappppppppppppppppppppppppppppppppppppppppppppppaaaappppppppp#     #fffffffffffffffffffffffffffffffffff----------,,,__LLLLLLLL__,,,#
+     #,,,__________,,,ppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppp#     #fffffffffffffffffffffffffffffffffff----------,,,__LLLLLLLL__,,,#
+     #,,,__________,,,##ppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppp#     #fffffffffffffffffffffffffffffffffff----------,,,__LLLLLLLL__,,,#
+     #,,,__________,,,##ppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppp#     #fffffffffffffffffffffffffffffffffff----------,,,__cLLLLLLc__,,,#
+     #,,,__________,,,##ppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppp#     #fffffffffffffffffffffffffffffffffff----------,,,__LLLLLLLL__,,,#
+     #,,,__________,,,##ppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppp#     #fffffffffffffffffffffffffffffffffff----------,,,__LLLLLLLL__,,,#
+     #,,,__________,,,##DDDDDDDDDDDDDDDDpppppDDDDDDDDDDDDDDDDDDDDDDDDDpppppDDDDDDDDDDDDDDDDDD#######fffffffffffffffffffffffffffffffffff----------,,,__LLLLLLLL__,,,#
+     #,,,__________,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,__LLLLLLLL__,,,#
+     #,,,__________,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,__LLLLLLLL__,,,#
+     #,,,__________,,,________________________________________________________________________________________________________________________________LLLLLLLL__,,,#
+     #,,,__________,,,________________________________________________________________________________________________________________________________LLLLLLLL__,,,#
+     #,,,__________,,,________________________________________________________________________________________________________________________________cLLLLLLc__,,,#
+     #,,,__________,,,________________________________________________________________________________________________________________________________LLLLLLLL__,,,#
+     #,,,__________,,,________________________________________________________________________________________________________________________________LLLLLLLL__,,,#
+     #,,,__________,,,________________________________________________________________________________________________________________________________LLLLLLLL__,,,#
+     #,,,__________,,,________________________________________________________________________________________________________________________________LLLLLLLL__,,,#
+     #,,,__________,,,________________________________________________________________________________________________________________________________LLLLLLLL__,,,#
+     #,,,__________,,,________________________________________________________________________________________________________________________________LLLLLLLL__,,,#
+     #,,,__________,,,________________________________________________________________________________________________________________________________LLLLLLLL__,,,#
+     #,,,__________,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,__cLLLLLLc__,,,#
+     #,,,__________,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,__LLLLLLLL__,,,#
+     #,,,__________,,,################################SSS########################################################################SS##############,,,__LLLLLLLL__,,,#
+     #,,,__________,,,#                ###############vvv###############                                               ##########uu###########  #,,,__LLLLLLLL__,,,#
+     #,,,__________,,,#                #vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv#                                               #uuuuuuuuuuuuuuuuuuuuu#  #,,,__LLLLLLLL__,,,#
+     #,,,__________,,,#                #vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv#                                               #uuuuuuuuuuuuuuuuuuuuu#  #,,,__LLLLLLLL__,,,#
+     #,,,__________,,,#                #vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv#                                               #uuuuuuuuuuuuuuuuuuuuu#  #,,,__LLLLLLLL__,,,#
+     #,,,__________,,,#                #vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv#                                               #uuuuuuuuuuuuuuuuuuuuu#  #,,,__LLLLLLLL__,,,#
+     #,,,__________,,,#                #vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv#                                               #uuuuuuuuuuuuuuuuuuuuu#  #,,,__cLLLLLLc__,,,#
+     #,,,__________,,,#                #vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv#                                               #uuuuuuuuuuuuuuuuuuuuu#  #,,,__LLLLLLLL__,,,#
+     #,,,__________,,,#                #vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv#                                               #uuuuuuuuuuuuuuuuuuuuu#  #,,,__LLLLLLLL__,,,#
+     #,,,__________,,,#                #vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv#                                               #uuuuuuuuuuuuuuuuuuuuu#  #,,,__LLLLLLLL__,,,#
+     #,,,__________,,,#                #vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv#                                               #uuuuuuuuuuuuuuuuuuuuu#  #,,,__LLLLLLLL__,,,#
+     #,,,__________,,,#                #vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv#                                               #######################  #,,,__LLLLLLLL__,,,#
+     #,,,__________,,,#                #vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv#                                                                        #,,,__LLLLLLLL__,,,#
+     #,,,__________,,,#                #################################                                                                        #,,,__LLLLLLLL__,,,#
+     #,,,__________,,,#                                                                                                                         #,,,__cLLLLLLc__,,,#
+     #,,,__________,,,#                                                                                                                         #,,,__LLLLLLLL__,,,#
+     #,,,__________,,,#                                                                                                                         #,,,__LLLLLLLL__,,,#
+     #,,,__________,,,#                                                                                                                         #,,,____________,,,#
+     #,,,__________,,,#                                                                                                                         #,,,____________,,,#
+     #,,,__________,,,#                                                                                                                         #,,,____________,,,#
+     ##################                                                                                                                         ####################
+
+end
+
+things
+; --- State, Lake, Wabash, Randolph; the L over Lake and Wabash ---
+IrisTrigger 8,42 args=IRIS_601,192
+PropTaxi 14,60 angle=90
+RandomFire 14,60 args=1
+PropTaxi 12,30 angle=0
+RandomFire 12,30 args=1
+PropTaxi 60,26 angle=180
+PropTaxi 140,31 angle=0
+RandomFire 140,31 args=2
+PropTaxi 153,70 angle=270
+PropBus 40,26 angle=0
+RandomFire 44,27 args=1
+PropBus 80,89 angle=180
+RandomFire 76,89 args=2
+PropTaxi 110,88 angle=0
+PropTaxi 30,90 angle=200
+RandomFire 30,90 args=1
+PropStreetLamp 7,60
+PropStreetLamp 7,80
+PropStreetLamp 20,40
+PropStreetLamp 20,100
+PropStreetLamp 30,20
+PropStreetLamp 70,20
+PropStreetLamp 110,20
+PropStreetLamp 146,50
+PropStreetLamp 146,100
+PropStreetLamp 161,40
+PropStreetLamp 161,90
+PropStreetLamp 40,82
+PropStreetLamp 100,95
+PropStreetLamp 130,82
+PropHydrant 20,70
+PropHydrant 100,33
+PropHydrant 161,60
+PropNewsBox 20,35
+PropNewsBox 64,19
+PropNewsBox 146,34
+PropNewsBox 24,95
+PropTrash 21,50
+PropTrash 90,19
+PropTrash 146,80
+PropTrash 60,94
+PropTrash 120,94
+PropTrafficLight 21,33
+PropTrafficLight 146,33
+PropTrafficLight 21,82
+PropTrafficLight 146,95
+PropPhoneBooth 7,70
+PropBurningBarrel 7,100
+PropBurningBarrel 161,112
+Thrall 14,75 angle=N
+Grey 16,34 angle=S
+ManInBlack 40,31 angle=W
+Grey 70,24 angle=W
+Hybrid 100,30 angle=W
+Thrall 120,28 angle=W skill=345
+ManInBlack 152,40 angle=N
+Grey 154,80 angle=N
+ThrallTrooper 60,88 angle=E
+Hybrid 120,90 angle=W
+Stalker 154,104 angle=N skill=2345
+Grey 40,92 angle=E skill=345
+Probe 80,26 angle=W
+Probe 154,60 angle=N skill=345
+Ammo9mmMag 19,40
+AmmoShells 19,60
+Stim 7,90
+Ammo556Mag 40,33
+AmmoShells 146,70
+Medkit 161,30
+Ammo9mmBox 100,94
+IrisTrigger 87.5,34 args=IRIS_602,128
+Thrall 30,25 angle=E z=top
+ManInBlack 60,28 angle=W z=top
+Hybrid 100,28 angle=W z=top
+Grey 140,24 angle=W z=top
+ThrallTrooper 153,50 angle=N z=top
+Grey 155,90 angle=N z=top skill=345
+ManInBlack 75,31 angle=W
+PickupScatter 80,31
+AlienEnergyCell 82,31
+Ammo556Mag 120,28 z=top
+AmmoShells 154,64 z=top
+Medkit 152,100 z=top
+PropBench 70,31
+PropBench 76,31
+PropNewsBox 90,31
+IrisTrigger 51,16 args=IRIS_603,128
+ExitGate 42,13.5 angle=W args=3,@exit
+ObjectiveMarker 18,6.5 args=3
+IrisTrigger 44,13.5 args=IRIS_604,96,3
+PropBench 56,10
+PropBench 60,10
+OfficeWorker 58,12 angle=E
+OfficeWorkerF 59,14 angle=E
+Grey 47,12 angle=E
+PropVending 61,16
+PropTrash 41,10
+ManInBlack 55,13 angle=S
+IrisTrigger 20,13.5 args=IRIS_605,160
+; --- Daley Plaza ---
+IrisTrigger 30,50 args=IRIS_606,192
+PropPicasso 58,58
+IrisTrigger 58,66 args=IRIS_607,96
+PropBench 40,50
+PropBench 76,50
+PropBench 40,68
+PropBench 76,68
+PropStreetLamp 26,39
+PropStreetLamp 90,39
+PropStreetLamp 26,78
+PropStreetLamp 90,78
+PropCarWreck 45,62 angle=60
+RandomFire 45,62 args=2
+RandomFire 70,46 args=1
+Grey 50,45 angle=S
+Grey 68,70 angle=N
+Hybrid 34,60 angle=E
+ThrallTrooper 84,60 angle=W
+ManInBlack 60,76 angle=N
+Probe 58,48 angle=S skill=345
+DeadOfficeWorker 52,72
+PropBloodPool 53,72
+Ammo556Box 26,58
+Medkit 90,58
+AmmoShellBox 58,40
+FragPickup 58,79
+; --- the Merchant Tower: lobby 0, floors at 192 / 384 / 576, roof 768 (3D floors) ---
+IrisTrigger 116.5,70 args=IRIS_608,160
+SafeZone 116.5,78 args=0
+SafeZone 104.5,66 args=0
+DownedGuard 115,50 angle=S args=0,1
+PropMonitor 112,48
+PropMonitor 118,48
+PropPlant 103,43
+PropPlant 131,43
+OfficeWorker 106,70 angle=E
+OfficeWorkerF 108,69 angle=E
+Thrall 112,66 angle=W
+Thrall 128,50 angle=S
+ManInBlack 104,46 angle=E
+DeadOfficeWorker 120,68
+PropWaterCooler 131,54 args=1
+PropVending 103,54
+PropVending 103,52
+Ammo9mmBox 131,70
+Medkit 103,70
+GlassShards 106,72
+GlassShards 127,72
+LightLamp 116,60 args=256,255,240,210
+IrisTrigger 104.5,54 args=IRIS_609,128 z=top
+PropCubicle 104,44 z=top
+PropCubicle 104,50 z=top
+PropCubicle 104,66 z=top
+PropCubicle 104,70 z=top
+PropCubicle 108,44 z=top
+PropCubicle 108,50 z=top
+PropCubicle 108,66 z=top
+PropCubicle 108,70 z=top
+PropCubicle 112,44 z=top
+PropCubicle 112,50 z=top
+PropCubicle 112,66 z=top
+PropCubicle 112,70 z=top
+PropCubicle 116,44 z=top
+PropCubicle 116,50 z=top
+PropCubicle 116,66 z=top
+PropCubicle 116,70 z=top
+PropCubicle 120,44 z=top
+PropCubicle 120,50 z=top
+PropCubicle 120,66 z=top
+PropCubicle 120,70 z=top
+PropDesk 128,47 z=top
+PropChair 126,47 z=top
+PropChair 130,47 z=top
+OfficeWorker 125,45 angle=S z=top
+OfficeWorkerF 130,45 angle=S z=top
+Grey 127,50 angle=N z=top
+OfficeWorkerF 112,68 angle=N z=top
+Thrall 118,64 angle=W z=top
+Hybrid 130,64 angle=W z=top
+PropCopier 131,70 z=top
+PropWaterCooler 103,72 z=top
+PropPlant 103,42 z=top
+DeadOfficeWorker 108,46 z=top
+Ammo556Mag 120,47 z=top
+Stim 104,64 z=top
+AmmoShells 128,68 z=top
+IrisTrigger 136,53 args=IRIS_610,128 z=top
+Curtain 105,40.5 angle=N args=0 z=320
+Curtain 118,40.5 angle=N args=0 z=320
+IrisTrigger 114.5,65 args=IRIS_611,128 z=top2
+PropCubicle 114,44 z=top2 args=1
+PropCubicle 114,50 z=top2
+PropCubicle 118,44 z=top2 args=1
+PropCubicle 118,50 z=top2
+PropCubicle 122,44 z=top2 args=1
+PropCubicle 122,50 z=top2
+PropCubicle 126,44 z=top2 args=1
+PropCubicle 126,50 z=top2
+PropCubicle 130,44 z=top2 args=1
+PropCubicle 130,50 z=top2
+RandomFire 116,47 z=top2 args=1
+RandomFire 124,52 z=top2 args=1
+RandomFire 130,46 z=top2 args=1
+RandomFire 120,68 z=top2 args=1
+RandomFire 128,66 z=top2 args=1
+PropBurningDesk 122,47 z=top2
+PropBurningPapers 118,52 z=top2
+PropBurningPapers 126,44 z=top2
+PropBurningDesk 126,69 z=top2
+OfficeWorker 104,70 angle=E z=top2
+OfficeWorkerF 106,70 angle=E z=top2
+OfficeWorker 105,68 angle=E z=top2
+Hybrid 108,67 angle=W z=top2
+PropDesk 108,70 z=top2
+PropCabinet 103,66 z=top2
+DeadOfficeWorker 112,46 z=top2
+DeadOfficeWorker 128,70 z=top2
+Grey 120,46 angle=S z=top2
+ThrallTrooper 130,52 angle=W z=top2
+Stalker 118,70 angle=N z=top2 skill=345
+Medkit 132,43 z=top2
+AlienEnergyCell 103,43 z=top2
+PickupPlasmaSMG 104,46 z=top2
+IrisTrigger 114.5,54 args=IRIS_612,192,2 z=top3 obj=1
+ObjectiveMarker 114.5,52 args=1 z=top3
+PropDesk 127,68 z=top3
+PropChair 127,70 z=top3
+PropPlant 123,66 z=top3
+PropPlant 131,66 z=top3
+PropCabinet 131,71 z=top3
+OfficeWorkerF 125,70 angle=N z=top3
+OfficeWorker 129,69 angle=N z=top3
+ManInBlack 127,66 angle=S z=top3
+PropDesk 104,46 z=top3
+PropDesk 111,46 z=top3
+PropDesk 118,46 z=top3
+Overseer 112,48 angle=S z=top3
+Hybrid 104,68 angle=E z=top3
+Grey 120,70 angle=N z=top3
+OfficeWorker 103,43 angle=E z=top3
+OfficeWorkerF 105,43 angle=E z=top3
+AlienEnergyPod 131,43 z=top3
+Medkit 103,72 z=top3
+TacticalArmor 129,72 z=top3
+IrisTrigger 124.5,55 args=IRIS_613,96 z=top3
+IrisTrigger 119.5,66 args=IRIS_614,160 z=768
+SafeZone 119.5,65 args=0 z=768
+PropAntenna 116,47 z=768
+PropAlienGrowth 115,46 z=768
+PropAlienGrowth 118,48 z=768
+PropHiveConduit 116,49 args=0 z=768
+HackTerminal 116,51 angle=S args=60,1,Floor_LowerToNearest,@washer,2 z=768
+ObjectiveMarker 116,51 args=2 z=768
+IrisTrigger 116,53 args=IRIS_615,128,2 z=768
+WaveSpot 104,44 args=1,3 z=768
+WaveSpot 130,44 args=1,0 z=768
+WaveSpot 104,70 args=1,2 z=768
+WaveSpot 130,70 args=1,4 z=768
+WaveSpot 124,50 args=1,3 z=768
+PropFloodlight 103,43 z=768
+PropFloodlight 131,71 z=768
+AlienEnergyPod 104,66 z=768
+Ammo556Box 128,66 z=768
+Medkit 110,72 z=768
+IrisTrigger 134,59.5 args=IRIS_616,96 z=768
+IrisTrigger 140,60 args=IRIS_617,128
+Thrall 140,45 angle=S
+PropDumpster 143,70
+PropTrash 136,72
+Ammo9mmMag 142,66
+ManInBlack 140,53 angle=W z=top
+IrisTrigger 55,100 args=IRIS_618,96
+AlienImplant 45,104
+Ammo556Box 50,106
+AlienEnergyPod 64,104
+PickupAssaultRifle 60,101
+Medkit 124,102
+FragPickup 136,102
+AlienEnergyCell 130,104
+end

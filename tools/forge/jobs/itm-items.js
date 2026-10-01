@@ -67,7 +67,7 @@ export default async function (F) {
   };
   const frames = { HIMP: 'ABCD', AENC: 'AB', AENP: 'AB', KBLU: 'AB', KRED: 'AB', KYEL: 'AB', OSHD: 'AB', OPLN: 'AB' };
   const env = { AENC: 'alien', AENP: 'alien', HIMP: 'alien', OSHD: 'alien', GDET: 'alien', WAST: 'alien', WASC: 'alien', WAPS: 'alien', WSNG: 'alien', WABL: 'alien' };
-  const only = globalThis.ITM_ONLY;
+  const only = null;
   for (const [spr, build] of Object.entries(items)) {
     if (only && !only.includes(spr)) continue;
     for (const f of frames[spr] || 'A') {

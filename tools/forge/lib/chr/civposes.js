@@ -4,6 +4,10 @@
 //   waveThanks(R)                standing, waving with an open hand, relieved
 //   waveOn(R)                    pointing the player on ("go, that way"), looking where it points
 //   pointHand(h)                 index finger out, the rest curled
+//   groundTorso(R, parts) / settleLimb(R, joint, o) / settleBody(R, parts)
+//                                lying bodies: the torso on the floor, then every limb swung down
+//                                until it just touches (no hovering hands, no feet through the floor)
+import * as THREE from 'three';
 import { handQ, stand } from './biped.js';
 import { placeGun, aimQ } from './guns.js';
 import { headTurn } from './poses.js';
@@ -34,7 +38,7 @@ export function agentAim(R, gun, o = {}) {
     R.sync();
     const ear = R.toRig(R.head, V3(0.088, 0.04, 0.012));
     const wrist = R.toRig(R.head, V3(0.135, -0.085, 0.05));
-    R.arm(1, wrist, { pole: V3(0.8, -0.5, 0.4), hand: handQ(ear.clone().sub(wrist), V3(-1, 0, 0.1), -1) });
+    R.arm(1, wrist, { pole: V3(0.35, -1, 0.55), hand: handQ(ear.clone().sub(wrist), V3(-1, 0, 0.1), -1) });
     R.hands[1].pose(0.3, 0.05, 0.3);
     const ix = R.hands[1].fingers.reduce((a, b) => (b.z > a.z ? b : a));
     ix.segs.forEach((j) => j.rotation.set(0, 0, 0));
@@ -82,4 +86,61 @@ export function waveOn(R) {
   const s1 = R.shPos(1);
   R.arm(1, s1.clone().add(V3(0.08, -0.3, 0.3)), { pole: V3(0.6, -1, -0.4), hand: handQ(V3(-0.2, 0.2, 1), V3(0, 1, 0), -1) });
   R.hands[1].pose(0.25, 0.4);
+}
+
+// ------------------------------------------------------------------ lying bodies
+const _q = new THREE.Quaternion();
+// Drop the rig so the lowest of the given torso meshes rests on the floor.
+export function groundTorso(R, parts, eps = 0.005) {
+  const m = Math.min(...parts.filter(Boolean).map((p) => R.lowestOf(p)));
+  R.rig.position.y += eps - m; R.sync();
+}
+// Swing a joint (in its parent's frame) about the axis that carries its bone toward the floor,
+// until the lowest point of the distal part (o.measure: the next joint down, so the cap at the
+// pivot, which no swing can lift, never counts) sits at `target`. o.dir: the bone direction.
+export function settleLimb(R, obj, o = {}) {
+  const target = o.target ?? 0.012, meas = o.measure ?? obj, max = o.max ?? 1.2;
+  const base = obj.quaternion.clone();
+  obj.parent.getWorldQuaternion(_q).invert();
+  const down = V3(0, -1, 0).applyQuaternion(_q);
+  const dir = (o.dir ?? V3(0, -1, 0)).clone().applyQuaternion(base);
+  const axis = V3().crossVectors(dir, down);
+  if (axis.lengthSq() < 1e-6) return;
+  axis.normalize();
+  const rot = new THREE.Quaternion();
+  const f = (t) => { obj.quaternion.copy(rot.setFromAxisAngle(axis, t)).multiply(base); return R.lowestOf(meas); };
+  const f0 = f(0);
+  let lo = null, hi = null;
+  if (f0 > target) { lo = 0; for (let t = 0.04; t <= max; t += 0.04) { if (f(t) <= target) { hi = t; break; } lo = t; } if (hi === null) { f(lo); return; } }
+  else {
+    hi = 0;
+    if (f(-0.04) <= f0 + 0.001) { f(0); return; } // swinging up does not lift it: leave it be
+    for (let t = -0.04; t >= -max; t -= 0.04) { if (f(t) > target) { lo = t; break; } hi = t; }
+    if (lo === null) { f(hi); return; }
+  }
+  for (let i = 0; i < 14; i++) { const m = (lo + hi) / 2; if (f(m) > target) lo = m; else hi = m; }
+  f(hi);
+}
+// Skirt / coat panels out of the floor, swung whichever way clears it first (the upright hem
+// clamp only swings one way, which is wrong face down).
+export function clampPanels(R) {
+  if (!R.coat) return;
+  for (const pv of Object.values(R.coat)) {
+    if (R.lowestOf(pv) >= -0.002) continue;
+    const x0 = pv.rotation.x;
+    let ok = false;
+    for (let k = 1; k <= 30 && !ok; k++) for (const sg of [1, -1]) { pv.rotation.x = x0 + sg * k * 0.05; if (R.lowestOf(pv) >= -0.002) { ok = true; break; } }
+    if (!ok) pv.rotation.x = x0;
+  }
+}
+// Torso down, then the head (at the neck), arms (shoulder, then elbow) and legs (hip, then knee),
+// then the coat panels re-follow the legs and are kept out of the floor.
+export function settleBody(R, parts) {
+  groundTorso(R, parts);
+  settleLimb(R, R.neck, { dir: V3(0, 1, 0), measure: R.head, target: 0.01, max: 0.5 });
+  for (const A of R.arms) { settleLimb(R, A.sh, { measure: A.el }); settleLimb(R, A.el, { measure: A.wrist, max: 0.6 }); }
+  for (const L of R.legs) { settleLimb(R, L.hip, { measure: L.knee }); settleLimb(R, L.knee, { measure: L.ankle, max: 0.6 }); }
+  R.noHemClamp = true; R.after?.(); R.noHemClamp = false;
+  clampPanels(R);
+  R.sync();
 }

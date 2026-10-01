@@ -178,7 +178,7 @@ export function checkLevel(lv) {
     const base = { thing: t, x: t.x, y: t.y, z: t.z, name: `${t.cls}@${t.col},${t.row}` };
     if (m.key && KEYS[t.cls]) triggers.push({ ...base, kind: 'item', key: m.key });
     else if (m.key) triggers.push({ ...base, kind: 'use', key: m.key });
-    if (m.objective && t.cls !== 'HackTerminal') triggers.push({ ...base, kind: 'item', objective: m.objective });
+    if (m.objective && t.cls !== 'HackTerminal') triggers.push({ ...base, kind: 'item', objective: m.objective, rad: t.cls === 'IrisTrigger' ? (t.args[1] || 128) : 0 });
     if (t.cls === 'HackTerminal') triggers.push({ ...base, kind: 'use', rad: 64, effect: m.effect, objective: m.objective });
     if (m.gate) triggers.push({ ...base, kind: 'use', rad: 128, gate: m.gate });
     if (m.heli) triggers.push({ ...base, kind: 'use', rad: 128, needMask: m.heli.mask, objective: m.heli.obj, effect: { special: 243, args: [0] } });
@@ -228,7 +228,7 @@ export function checkLevel(lv) {
   }
 
   function reachedTrigger(tr, at, seen, st) {
-    if (tr.kind === 'item') return near(at, tr.x, tr.y, tr.z, 24, -16, 56);
+    if (tr.kind === 'item') return near(at, tr.x, tr.y, tr.z, tr.rad || 24, -16, tr.rad ? 96 : 56);
     if (tr.kind === 'use') {
       if (tr.needKey && !st.keys.has(tr.needKey)) return false;
       if (tr.needMask) { for (let b = 0; b < 16; b++) if ((tr.needMask >> b) & 1 && !st.objectives.has(b + 1)) return false; }
@@ -298,7 +298,7 @@ export function checkLevel(lv) {
       if (!ok && near(atC, t.x, t.y, t.z, 96, -96, 96)) { ok = true; clamberOnly = true; }
     } else if (t.meta.key || t.meta.objective || t.cls === 'HackTerminal' || t.cls === 'ExitGate' || t.cls === 'Helicopter') {
       need = true;
-      ok = near(at, t.x, t.y, t.z, t.cls === 'HackTerminal' ? 64 : (t.cls === 'ExitGate' || t.cls === 'Helicopter') ? 128 : 48, -24, 72);
+      ok = near(at, t.x, t.y, t.z, t.cls === 'HackTerminal' ? 64 : (t.cls === 'ExitGate' || t.cls === 'Helicopter') ? 128 : t.cls === 'IrisTrigger' ? (t.args[1] || 128) : 48, -24, 96);
     } else if (t.cls === 'SafeZone') {
       ok = near(at, t.x, t.y, t.z, 64, -64, 96);
       if (!ok) warn(`SafeZone at ${pos(t)} is unreachable`);
@@ -403,7 +403,7 @@ export function checkLevel(lv) {
     for (let r = 1; r < lv.H - 1; r++) for (let c = 1; c < lv.W - 1; c++) {
       const S = secAt(r, c);
       if (!reached[(r * 2) * W + c * 2] && !reached[(r * 2 + 1) * W + c * 2 + 1]) continue;
-      if (!S || S.kind === 'door' || S.kind === 'window' || S.kind === 'stairs' || S.ceil - S.floor < 56 || S.p.scenery) continue;
+      if (!S || S.kind === 'door' || S.kind === 'window' || S.kind === 'stairs' || S.ceil - S.floor < 56 || S.p.scenery || S.p.tag !== undefined) continue;
       const w = open(S, secAt(r, c - 1)), e = open(S, secAt(r, c + 1)), n = open(S, secAt(r - 1, c)), so = open(S, secAt(r + 1, c));
       if ((!w && !e && n && so) || (!n && !so && w && e)) squeezes.push(`col ${c} row ${r}`);
     }

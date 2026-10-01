@@ -1,0 +1,191 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Play in Browser — Cosmic Calamity: Assault</title>
+<meta name="description" content="Play Cosmic Calamity: Assault (a GZDoom mod) in your browser: GZDoom compiled to WebAssembly, with Freedoom 2.">
+<link rel="icon" href="data:,">
+<style>
+  :root { --bg:#0b0f12; --panel:#121a1f; --line:#243038; --ink:#d9e4e8; --dim:#8fa3ad; --green:#8cf7a0; --gold:#ffbe5a; --red:#ff463c; }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; background: var(--bg); color: var(--ink); font: 16px/1.55 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
+  a { color: var(--green); }
+  .wrap { max-width: 1240px; margin: 0 auto; padding: 0 16px; }
+  .bar { display: flex; flex-wrap: wrap; gap: 8px 16px; align-items: center; padding: 10px 0; }
+  .bar h1 { font-size: 18px; margin: 0; letter-spacing: .5px; flex: 1 1 auto; }
+  .bar h1 small { color: var(--red); letter-spacing: 4px; font-size: 12px; margin-left: 8px; }
+  .bar .back { text-decoration: none; color: var(--dim); font-size: 14px; }
+  #pad-status { color: var(--gold); font-size: 13px; }
+  .btn { display: inline-block; padding: 10px 18px; border-radius: 6px; border: 0; background: var(--green); color: #07130c; font: 700 15px system-ui, sans-serif; text-decoration: none; cursor: pointer; }
+  .btn.alt { background: transparent; color: var(--ink); border: 1px solid var(--line); font-weight: 600; }
+  .btn.small { padding: 6px 12px; font-size: 13px; }
+
+  /* 16:9 stage that fits the viewport; fills the screen in fullscreen. */
+  #stage { position: relative; margin: 0 auto; background: #000; border: 1px solid var(--line); border-radius: 6px; overflow: hidden;
+    aspect-ratio: var(--aspect, 16 / 9); width: min(100%, calc((100vh - 70px) * 16 / 9)); }
+  #stage:fullscreen { width: 100vw; height: 100vh; border: 0; border-radius: 0; aspect-ratio: auto; display: flex; align-items: center; justify-content: center; }
+  #canvas { display: block; width: 100%; height: 100%; background: #000; outline: none; }
+  #stage:fullscreen #canvas { width: min(100vw, calc(100vh * 16 / 9)); height: auto; aspect-ratio: var(--aspect, 16 / 9); }
+  .overlay { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px;
+    padding: 24px; text-align: center; background: rgba(5,7,10,.82); }
+  .overlay[hidden] { display: none; }
+  /* Title art behind the loader: the art carries the logo, so content sits low. */
+  .overlay.art { justify-content: flex-end; padding-bottom: 7%;
+    background: linear-gradient(rgba(5,7,10,0) 30%, rgba(5,7,10,.9) 72%), #05070a url(../img/title.png) center/cover no-repeat; }
+  .overlay h2 { margin: 0; font-size: clamp(20px, 3.4vw, 34px); letter-spacing: .5px; text-shadow: 0 0 18px rgba(120,255,170,.35); }
+  .overlay p { margin: 0; color: var(--dim); max-width: 640px; }
+  .overlay .warn { color: var(--gold); }
+  .progress { width: min(520px, 80%); height: 12px; border: 1px solid var(--line); border-radius: 6px; background: #0a0e11; overflow: hidden; }
+  #bar { height: 100%; width: 0; background: linear-gradient(90deg, #4fd27a, var(--green)); transition: width .15s linear; }
+  #progress-text { font: 14px/1.4 "Courier New", monospace; color: var(--gold); }
+  #play-btn { font-size: 20px; padding: 14px 34px; }
+  .hint { font-size: 13px; color: var(--dim); }
+  #resume { position: absolute; left: 50%; top: 14px; transform: translateX(-50%); background: rgba(5,7,10,.88); border: 1px solid var(--green);
+    color: var(--green); padding: 8px 14px; border-radius: 6px; font-size: 14px; cursor: pointer; z-index: 3; }
+  #resume[hidden] { display: none; }
+  .spinner { width: 34px; height: 34px; border: 3px solid var(--line); border-top-color: var(--green); border-radius: 50%; animation: spin 1s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  section { padding: 26px 0; border-bottom: 1px solid var(--line); }
+  h3 { font-size: 20px; margin: 0 0 12px; color: var(--green); }
+  .cols { display: grid; gap: 18px; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); }
+  table { width: 100%; border-collapse: collapse; font-size: 14px; }
+  th, td { text-align: left; padding: 6px 8px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  th { color: var(--gold); font-weight: 600; }
+  .scroll { overflow-x: auto; }
+  kbd { background: var(--panel); border: 1px solid var(--line); border-bottom-width: 2px; border-radius: 4px; padding: 0 5px; font: 13px/1.6 ui-monospace, monospace; }
+  .settings { display: grid; gap: 10px; max-width: 520px; }
+  .settings label { display: flex; gap: 10px; align-items: center; justify-content: space-between; color: var(--dim); font-size: 14px; }
+  select, input[type=range] { background: var(--panel); color: var(--ink); border: 1px solid var(--line); border-radius: 4px; padding: 5px 8px; font: inherit; }
+  ul.notes { margin: 0; padding-left: 20px; color: var(--dim); }
+  ul.notes li { margin: 5px 0; }
+  ul.notes b { color: var(--ink); }
+  footer { padding: 22px 0 40px; color: var(--dim); font-size: 14px; }
+
+  /* ?dev=1 */
+  #log, #fps { display: none; }
+  body.dev #log { display: block; white-space: pre-wrap; font: 11px/1.35 ui-monospace, monospace; max-height: 32vh; overflow: auto; background: #05070a; border: 1px solid var(--line); padding: 8px; margin-top: 10px; }
+  body.dev #fps { display: inline; font: 13px ui-monospace, monospace; color: var(--green); }
+  #log .err { color: #ff8f8a; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="bar">
+    <a class="back" href="../">&larr; Case File 51</a>
+    <h1>COSMIC CALAMITY<small>ASSAULT</small></h1>
+    <span id="pad-status"></span>
+    <span id="fps"></span>
+    <button class="btn alt small" id="fs-btn" type="button">Fullscreen</button>
+  </div>
+
+  <div id="stage">
+    <canvas id="canvas" width="1280" height="720" tabindex="1" aria-label="Game"></canvas>
+    <button id="resume" type="button" hidden>Click to capture the mouse</button>
+
+    <div class="overlay art" id="loading">
+      <div class="progress"><div id="bar"></div></div>
+      <div id="progress-text">Starting download…</div>
+      <p class="hint">GZDoom (WebAssembly) + Freedoom 2 + the mod. Later visits load from your browser's cache.</p>
+    </div>
+
+    <div class="overlay art" id="start" hidden>
+      <button class="btn" id="play-btn" type="button">&#9654; Click to play</button>
+      <p class="hint">or press <kbd>A</kbd> on a controller. Fullscreen and mouse capture start with the game.<br>
+        <kbd>Esc</kbd> opens the game menu (New Game, Save, Load, Options). Downloaded <span id="start-size"></span>.</p>
+    </div>
+
+    <div class="overlay" id="booting" hidden>
+      <div class="spinner"></div>
+      <p>Starting GZDoom…</p>
+    </div>
+
+    <div class="overlay" id="unsupported" hidden>
+      <h2>This browser can't run it</h2>
+      <p class="warn">Missing: <span id="missing"></span>.</p>
+      <p>The browser version needs WebAssembly JSPI and WebGL2: use <b>Chrome or Edge 137 or newer</b> on a desktop or laptop,
+        or <a href="../cosmic-calamity-assault.pk3" download>download the .pk3</a> and play it in
+        <a href="https://zdoom.org/downloads" rel="noopener">GZDoom</a> (<a href="../#play">how to play</a>).</p>
+    </div>
+
+    <div class="overlay" id="error" hidden>
+      <h2>Something went wrong</h2>
+      <p class="warn" id="error-text"></p>
+      <p><button class="btn" id="reload-btn" type="button">Reload</button></p>
+      <p class="hint">If it keeps failing, <a href="../cosmic-calamity-assault.pk3" download>download the .pk3</a> and play it in GZDoom.</p>
+    </div>
+  </div>
+  <div id="log"></div>
+</div>
+
+<section>
+  <div class="wrap cols">
+    <div>
+      <h3>Controls</h3>
+      <div class="scroll">
+      <table>
+        <tr><th>Action</th><th>Keyboard + mouse</th><th>Controller</th></tr>
+        <tr><td>Move / look</td><td><kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> / mouse</td><td>Left stick / right stick</td></tr>
+        <tr><td>Fire</td><td>Left click</td><td>RT</td></tr>
+        <tr><td>Aim down sights (left gun when dual)</td><td>Right click</td><td>LT</td></tr>
+        <tr><td>Jump (again in the air at a ledge: clamber)</td><td><kbd>Space</kbd></td><td>A</td></tr>
+        <tr><td>Crouch (hold in the air: dolphin dive)</td><td><kbd>C</kbd></td><td>B</td></tr>
+        <tr><td>Use, revive, hack / reload</td><td><kbd>E</kbd> / <kbd>R</kbd></td><td>X</td></tr>
+        <tr><td>Next / previous weapon</td><td>Wheel, <kbd>1</kbd>–<kbd>7</kbd></td><td>Y / D-pad left</td></tr>
+        <tr><td>Grenade (hold to cook)</td><td><kbd>G</kbd></td><td>LB</td></tr>
+        <tr><td>Quick melee</td><td><kbd>Q</kbd></td><td>RB</td></tr>
+        <tr><td>Run</td><td><kbd>Shift</kbd></td><td>L3 (click left stick)</td></tr>
+        <tr><td>Dual wield (two of the same gun)</td><td><kbd>V</kbd></td><td>R3 (click right stick)</td></tr>
+        <tr><td>Flashlight</td><td><kbd>F</kbd></td><td>D-pad up</td></tr>
+        <tr><td>Grenade type (frag / alien detonator)</td><td><kbd>T</kbd></td><td>D-pad right</td></tr>
+        <tr><td>IRIS: objective + waypoint</td><td><kbd>H</kbd></td><td>D-pad down</td></tr>
+        <tr><td>Map</td><td><kbd>Tab</kbd></td><td>View</td></tr>
+        <tr><td>Menu (new game, save, load, options)</td><td><kbd>Esc</kbd></td><td>Start</td></tr>
+        <tr><td>Quicksave / quickload</td><td><kbd>F6</kbd> / <kbd>F9</kbd></td><td>(menu)</td></tr>
+        <tr><td>In menus</td><td>Arrows, <kbd>Enter</kbd>, <kbd>Esc</kbd>, mouse</td><td>D-pad or left stick, A select, B back</td></tr>
+      </table>
+      </div>
+    </div>
+    <div>
+      <h3>Settings</h3>
+      <div class="settings">
+        <label>Resolution (next start)
+          <select id="res">
+            <option value="960x540">960 × 540 (fastest)</option>
+            <option value="1280x720">1280 × 720</option>
+            <option value="1600x900">1600 × 900</option>
+            <option value="1920x1080">1920 × 1080</option>
+          </select>
+        </label>
+        <label>Controller look speed <input type="range" id="pad-sens" min="0.25" max="3" step="0.05"></label>
+        <label>Controller: invert look up / down <input type="checkbox" id="pad-invert"></label>
+      </div>
+      <h3 style="margin-top:22px">Good to know</h3>
+      <ul class="notes">
+        <li><b>Saves stay in this browser</b> (IndexedDB): save from the menu or with <kbd>F6</kbd>; the game also autosaves after each objective. Clearing site data deletes them.</li>
+        <li><b>Controllers</b>: any pad the browser sees (Xbox, PlayStation, Switch Pro), using the Xbox layout above. Press a button once if it isn't detected.</li>
+        <li><b>Mouse</b>: the game captures the mouse while you play and frees it in menus. If it doesn't, click the game.</li>
+        <li><b>Fullscreen</b>: <kbd>Esc</kbd> opens the game menu; hold <kbd>Esc</kbd> to leave fullscreen.</li>
+        <li><b>Needs</b> Chrome or Edge 137+ (WebAssembly JSPI, WebGL2) on a desktop or laptop, and ~70 MB the first time. Sound is stereo only.</li>
+        <li>The browser build is GZDoom 4.11 (the desktop game targets 4.14). For the best experience, <a href="../#play">play the .pk3 in GZDoom</a>.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    The engine is <a href="https://github.com/ZDoom/gzdoom/tree/g4.11.3">GZDoom 4.11.3</a> compiled to WebAssembly by
+    <a href="https://github.com/mungus43/tomb-engine">tomb-engine</a>, free software under the
+    <a href="engine/LICENSE">GNU GPL v3</a>; this page's harness (<a href="engine.worker.js">engine.worker.js</a>,
+    <a href="play.js">play.js</a>) is adapted from it under the same license, and the
+    <a href="https://github.com/mtd-public/cosmic-calamity-assault/tree/main/web">build notes</a> are in the repository.
+    The base game is <a href="https://freedoom.github.io/">Freedoom: Phase 2</a> (<a href="FREEDOOM-LICENSE.txt">BSD license</a>).
+  </div>
+</footer>
+
+<script src="gamepad.js"></script>
+<script src="play.js"></script>
+</body>
+</html>

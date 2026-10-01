@@ -68,7 +68,7 @@ export function makeShotgun() {
   const gAxis = gBot.clone().sub(gTop).normalize();
   const anchors = {};
   anchors.R = gripAnchor(root, gTop, gBot, { t: 0.3, halfW: 0.0175, halfD: 0.026, roll: 0.2, palm: 0.0105, along: -0.078, sink: 0.002, shift: [0, 0, 0.004] });
-  anchors.L = fistAnchor(pump, { at: [0, -0.012, -0.31], axis: [0, 0, -1], back: [-0.45, -0.9, 0], side: -1, tunnel: [0, -0.042, -0.088] });
+  anchors.L = fistAnchor(pump, { at: [0, -0.012, -0.31], axis: [0, 0, -1], back: [0.26, -0.97, 0], side: -1, tunnel: [0.004, -0.057, -0.088], swing: 0.8 });
   anchors.port = group(root, [0, -0.024, -0.085]);
   anchors.muzzle = group(root, [0, 0.012, -0.646]);
   anchors.eject = group(root, [0.02, 0.014, -0.075]);

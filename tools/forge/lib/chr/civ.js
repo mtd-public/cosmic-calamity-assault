@@ -24,7 +24,7 @@ function se(a, n) {
   const c = Math.cos(a), s = Math.sin(a), p = 2 / n;
   return [Math.sign(s) * Math.pow(Math.abs(s), p), Math.sign(c) * Math.pow(Math.abs(c), p)];
 }
-// rows: [{ y, rx, rz, cz, cx, a0, a1, n }]. Angle 0 is the front (+Z), increasing toward +X
+// rows: [{ y, rx, rz, cz, cx, a0, a1, n, jag }] (jag: ragged edge amplitude). Angle 0 is the front (+Z), increasing toward +X
 // (the character's left), π the back. A ring spanning the full turn welds its seam.
 // UVs in metres (u round the ring, v down the rows).
 export function arcLoftGeo(rows, o = {}) {
@@ -37,7 +37,8 @@ export function arcLoftGeo(rows, o = {}) {
     for (let j = 0; j <= seg; j++) {
       const a = a0 + ((a1 - a0) * j) / seg;
       const [ex, ez] = se(a, s.n ?? n0);
-      pos.push((s.cx ?? 0) + s.rx * ex, s.y, (s.cz ?? 0) + s.rz * ez);
+      const jy = s.jag ? s.jag * (0.6 * Math.sin(a * 5 + 0.7) + 0.4 * Math.sin(a * 11 + 1.9)) : 0;
+      pos.push((s.cx ?? 0) + s.rx * ex, s.y + jy, (s.cz ?? 0) + s.rz * ez);
       uv.push((a * (s.rx + s.rz)) / 2, vm);
     }
   });
@@ -232,15 +233,17 @@ export function lanyard(R, o = {}) {
   }
   // the card: white with a blue band and a photo square, on a clear sleeve
   const tex = canvasTex('idcard:' + (o.band ?? '#1f4fb8'), 32, 48, (g, w, h) => {
-    g.fillStyle = '#f2f2ee'; g.fillRect(0, 0, w, h);
-    g.fillStyle = o.band ?? '#1f4fb8'; g.fillRect(0, 0, w, 12);
-    g.fillStyle = '#8a6a58'; g.fillRect(4, 16, 12, 15);
-    g.fillStyle = '#333'; for (let i = 0; i < 3; i++) g.fillRect(18, 18 + i * 5, 10, 2);
-    g.fillRect(4, 36, 24, 2); g.fillRect(4, 41, 18, 2);
+    g.fillStyle = '#9fb4cc'; g.fillRect(0, 0, w, h);
+    g.fillStyle = o.band ?? '#1f4fb8'; g.fillRect(0, 0, w, 16);
+    g.fillStyle = '#f4f0e6'; g.fillRect(3, 19, 14, 17);
+    g.fillStyle = '#8a6a58'; g.fillRect(6, 22, 8, 12);
+    g.fillStyle = '#20242a'; for (let i = 0; i < 3; i++) g.fillRect(19, 20 + i * 5, 10, 2);
+    g.fillRect(3, 39, 26, 3); g.fillRect(3, 44, 18, 2);
   });
   const c = new THREE.Group();
-  c.add(mesh(rboxGeo(0.058, 0.082, 0.004, 0.0015), mat(0xd8d8d4, { rough: 0.4 })));
-  c.add(mesh(new THREE.PlaneGeometry(0.054, 0.078), mat(0xffffff, { rough: 0.35, map: tex }), 0, 0, 0.0022));
+  c.add(mesh(rboxGeo(0.064, 0.09, 0.004, 0.0015), mat(0x2a2e34, { rough: 0.4 })));
+  c.add(mesh(new THREE.PlaneGeometry(0.056, 0.08), mat(0xffffff, { rough: 0.35, map: tex }), 0, 0, 0.0022));
+  c.add(mesh(rboxGeo(0.016, 0.012, 0.006, 0.002), mat(0x1a1a1c, { rough: 0.4 }), 0, 0.048, 0.001));
   c.position.copy(card.p).addScaledVector(card.n, 0.009);
   c.rotation.set(0.06, card.ry, o.tilt ?? 0.05, 'YXZ');
   R.chest.add(c);
@@ -274,10 +277,10 @@ export function hairTex(color, seed = 1) {
     return c.map((x) => Math.min(255, x * k));
   }, [14, 14]);
 }
-// rows [y, rx, rz, cz, gap] in head space → a double-sided hair shell
+// rows [y, rx, rz, cz, gap, jag?] in head space → a double-sided hair shell
 export function hairShell(rows, color, o = {}) {
   const m = mat(0xffffff, { rough: o.rough ?? 0.8, map: hairTex(color, o.seed ?? 3), side: THREE.DoubleSide });
-  return mesh(arcLoftGeo(rows.map(([y, rx, rz, cz, g]) => ({ y, rx, rz, cz, a0: g, a1: TAU - g })), { seg: 30, n: 2.15 }), m);
+  return mesh(arcLoftGeo(rows.map(([y, rx, rz, cz, g, jag]) => ({ y, rx, rz, cz, a0: g, a1: TAU - g, jag })), { seg: 36, n: 2.15 }), m);
 }
 // spec rows [y, grow, gap] following the head's own profile (top pole added)
 export function headHair(spec, color, o = {}) {
@@ -300,10 +303,11 @@ export function sunglasses() {
   }
   g.add(mesh(new THREE.BoxGeometry(0.104, 0.007, 0.008), frame, 0, 0.074, 0.103));
   g.add(mesh(new THREE.BoxGeometry(0.014, 0.006, 0.008), frame, 0, 0.062, 0.112));
+  // the glint: a hot spot on the right lens with a short diagonal flare (a pixel or two at sprite scale)
   const glint = new THREE.Group();
-  glint.add(mesh(sph(0.0085, 8, 6), glow(0xffffff, 1.3)));
-  glint.add(mesh(new THREE.BoxGeometry(0.03, 0.004, 0.002), glow(0xf4f8ff, 1.1), 0, 0, 0.002, 0, 0, 0.5));
-  glint.position.set(-0.044, 0.065, 0.111);
+  glint.add(mesh(sph(0.0105, 8, 6), glow(0xffffff, 1.4)));
+  glint.add(mesh(new THREE.BoxGeometry(0.036, 0.0075, 0.002), glow(0xf4f8ff, 1.2), 0, 0, 0.003, 0, 0, 0.6));
+  glint.position.set(-0.041, 0.064, 0.112);
   g.add(glint); g.glint = glint;
   return g;
 }
@@ -375,7 +379,7 @@ function makeupFace(R, skin, face) {
 // ------------------------------------------------------------------ the cast
 // MIBK: black suit, white shirt, thin black tie, sunglasses, earpiece.
 export function buildMIB() {
-  const suit = mat(0x1f2025, { rough: 0.55, map: camo('weave', 0.18) });
+  const suit = mat(0x1b1c21, { rough: 0.74, map: camo('weave', 0.18) });
   const shirt = mat(0xf6f6f2, { rough: 0.65, map: camo('weave', 0.25) });
   const skin = 0xd2a283;
   const face = { eyes: 'human', iris: '#2a2018', hair: 0x15110e, hairStyle: 'short', brow: 0x15110e, browW: 3.6, stubble: 0.12, mouth: 'grim' };
@@ -387,7 +391,7 @@ export function buildMIB() {
   stripBDU(R);
   R.M.suit = suit; R.M.shirtW = shirt;
   necktie(R, mat(0x0b0b0d, { rough: 0.45 }), { knotY: 1.5, tipY: 1.07, w0: 0.024, w1: 0.03, knotW: 0.024 });
-  jacket(R, suit, { button: 1.13, vTop: 0.072, hem: 0.855, cut: 0.03, flare: 0.025, lapel: 0.4, lapelMat: mat(0x26272d, { rough: 0.38 }), cuffs: shirt });
+  jacket(R, suit, { button: 1.13, vTop: 0.072, hem: 0.83, cut: 0.03, flare: 0.025, lapel: 0.4, lapelMat: mat(0x2a2b31, { rough: 0.45 }), cuffs: shirt });
   slacks(R, suit, { r0: 0.05, r1: 0.056, from: 0.18 });
   // neat short hair, a side part
   R.headMesh.add(headHair([[0.176, 0.011, 0], [0.16, 0.011, 0], [0.14, 0.01, 0.0], [0.125, 0.008, 0.38], [0.108, 0.006, 0.92], [0.085, 0.005, 1.22], [0.05, 0.004, 1.78], [0.012, 0.004, 2.0], [-0.03, 0.002, 2.2]], 0x15110e, { rough: 0.55, seed: 5 }));
@@ -418,10 +422,10 @@ export function buildOfficeMan() {
   for (const s of [-1, 1]) R.chest.add(mesh(rboxGeo(0.04, 0.05, 0.006, 0.002), shirt, s * 0.04, v.p.y + 0.04, v.p.z - 0.01, -0.5, s * 0.5, s * 0.6));
   // a loud 90s tie, the knot pulled down and skewed
   const tieTex = canvasTex('tie90s', 16, 64, (g, w, h) => {
-    g.fillStyle = '#1d4f6e'; g.fillRect(0, 0, w, h);
-    g.strokeStyle = '#d2a640'; g.lineWidth = 2;
+    g.fillStyle = '#21408c'; g.fillRect(0, 0, w, h);
+    g.strokeStyle = '#2c58b8'; g.lineWidth = 3;
     for (let i = -4; i < 12; i++) { g.beginPath(); g.moveTo(0, i * 8); g.lineTo(w, i * 8 + 10); g.stroke(); }
-    g.fillStyle = '#8a2a30'; for (let i = 0; i < 8; i++) g.fillRect((i * 5) % 12, i * 8 + 3, 3, 3);
+    for (let i = 0; i < 8; i++) { g.fillStyle = i % 2 ? '#d8b040' : '#b02a30'; g.fillRect((i * 5) % 12, i * 8 + 3, 2, 2); }
   }, [12, 6]);
   necktie(R, mat(0xffffff, { rough: 0.55, map: tieTex }), { knotY: 1.43, tipY: 1.07, w0: 0.04, w1: 0.072, knotW: 0.04, drift: 0.12, knotTilt: 0.2, bulge: 0.012, tip: 0.05 });
   // rolled sleeves: a fat cuff below the elbow
@@ -431,7 +435,7 @@ export function buildOfficeMan() {
   const pp = R.surf(1.375, 0.6, 'chest');
   R.chest.add(mesh(cyl(0.005, 0.005, 0.05, 6), mat(0x1a1a1a, { rough: 0.4 }), pp.p.x - 0.015, pp.p.y, pp.p.z + 0.012));
   webBelt(R, 0x24180f, 0xc8c4b4, 1.035, 1.072);
-  lanyard(R, { color: 0xb8242a, band: '#b8242a', cardY: 1.25, cardA: 0.3, tilt: 0.12 });
+  lanyard(R, { color: 0xb8242a, band: '#b8242a', cardY: 1.26, cardA: -0.34, tilt: -0.1 });
   slacks(R, slack, { r0: 0.052, r1: 0.058, from: 0.18 });
   // curtains: parted in the middle, falling either side of the forehead
   R.headMesh.add(headHair([[0.176, 0.026, 0], [0.165, 0.025, 0.05], [0.148, 0.023, 0.09], [0.13, 0.02, 0.16], [0.112, 0.016, 0.28], [0.097, 0.012, 0.55], [0.083, 0.01, 1.0], [0.062, 0.008, 1.32], [0.03, 0.006, 1.78], [-0.005, 0.005, 2.0], [-0.04, 0.003, 2.2]], hair, { seed: 7 }));
@@ -443,8 +447,8 @@ export function buildOfficeWoman() {
   const navy = mat(0x243256, { rough: 0.7, map: camo('weave', 0.18) });
   const blouse = mat(0xf3ead6, { rough: 0.5, map: camo('weave', 0.3) });
   const skin = 0xeec6ab;
-  const hair = 0x7a3c22;
-  const face = { eyes: 'human', iris: '#3d5a3a', hair, hairStyle: 'short', brow: 0x5a2c18, browW: 2.4, mouth: 'line', lips: '#a8282e', liner: '#2a1a14', blush: '#d05050' };
+  const hair = 0xa8834e;
+  const face = { eyes: 'human', iris: '#3d5a3a', hair, hairStyle: 'short', brow: 0x6a4a2c, browW: 2.4, mouth: 'line', lips: '#a8282e', liner: '#2a1a14', blush: '#d05050' };
   const R = buildHuman({
     outfit: 'bdu-black', noChestPockets: true, belt: false, boots: false, h: 0.94, girth: 0.88, wide: 0.9, skin, handS: 0.88, headS: 0.95,
     mats: { shirt: blouse, pants: navy, sleeve: navy, fore: navy, collar: blouse, boot: mat(0x14182a, { rough: 0.3 }), sole: mat(0x0a0a0a, { rough: 0.9 }) },
@@ -480,11 +484,11 @@ export function buildOfficeWoman() {
   }
   // shoulder-length 90s hair: volume on top, swept bangs, flipped ends
   R.headMesh.add(hairShell([
-    [0.205, 0, 0, -0.013, 0], [0.198, 0.048, 0.056, -0.013, 0], [0.186, 0.074, 0.088, -0.012, 0], [0.165, 0.092, 0.11, -0.008, 0.0],
-    [0.14, 0.1, 0.12, -0.004, 0.12], [0.118, 0.103, 0.122, -0.002, 0.3], [0.098, 0.104, 0.12, -0.004, 0.72], [0.075, 0.105, 0.113, -0.008, 1.05],
-    [0.04, 0.106, 0.105, -0.014, 1.15], [0.0, 0.108, 0.1, -0.02, 1.2], [-0.04, 0.112, 0.094, -0.026, 1.24], [-0.08, 0.118, 0.09, -0.032, 1.28],
-    [-0.11, 0.126, 0.09, -0.034, 1.32], [-0.124, 0.122, 0.086, -0.032, 1.36],
-  ].reverse(), hair, { seed: 9 }));
+    [0.208, 0, 0, -0.016, 0], [0.202, 0.04, 0.05, -0.016, 0], [0.19, 0.066, 0.084, -0.014, 0], [0.17, 0.083, 0.104, -0.01, 0],
+    [0.145, 0.091, 0.113, -0.006, 0.1], [0.12, 0.093, 0.115, -0.004, 0.3], [0.098, 0.092, 0.111, -0.006, 0.72], [0.07, 0.089, 0.105, -0.01, 1.05],
+    [0.035, 0.088, 0.099, -0.016, 1.15], [0.0, 0.091, 0.094, -0.022, 1.2], [-0.035, 0.098, 0.09, -0.028, 1.24], [-0.07, 0.11, 0.089, -0.034, 1.28],
+    [-0.098, 0.124, 0.093, -0.038, 1.32], [-0.112, 0.134, 0.097, -0.036, 1.38, 0.006], [-0.106, 0.129, 0.092, -0.03, 1.43, 0.012],
+  ], hair, { seed: 9 }));
   // earrings
   for (const s of [-1, 1]) R.headMesh.add(mesh(sph(0.0075, 8, 6), mat(0xd8b048, { rough: 0.2, metal: 0.9, env: true }), s * 0.078, 0.0, 0.004));
   return R;

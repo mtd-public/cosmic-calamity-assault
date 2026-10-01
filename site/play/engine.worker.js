@@ -1,15 +1,19 @@
-// engine.worker.js — GZDoom engine running in a Web Worker with OffscreenCanvas.
+// engine.worker.js — GZDoom (WebAssembly) running in a Web Worker against an
+// OffscreenCanvas, for COSMIC CALAMITY: ASSAULT's browser build (site/play/).
 //
-// The single-threaded baseline (see index-singlethread.html) stop-motions
-// because emscripten_sleep(0) yields drain into the main thread's microtask
-// queue and Chrome's compositor never gets a paint slot. Moving the engine off
-// the main thread lets the compositor pull frames from the OffscreenCanvas at
-// vsync regardless of how busy the engine is. That's the unlock.
+// Adapted from tomb-engine's demo/engine.worker.js
+// (https://github.com/mungus43/tomb-engine, GPLv3; see engine/LICENSE). Changes:
+//   - boot takes the engine's base URL, a pre-fetched gzdoom.js (blob URL) and
+//     gzdoom.wasm bytes, so the page can show download progress
+//   - savegames persist in IndexedDB (the wasm build has no IDBFS): restored
+//     into MEMFS before main(), written back whenever they change
+//   - posts {type:'capture', on} when the engine grabs / releases the mouse
+//     (SDL relative mode: gameplay vs menus), so the page can manage pointer
+//     lock and the gamepad bridge can switch between game and menu mappings
+//   - log noise filtered (debug traces, terminal escape codes)
 //
-// Audio: emscripten's OpenAL bridge checks `globalThis.AudioContext` in
-// `alcOpenDevice` and returns NULL when absent. Workers have no AudioContext,
-// so audio degrades to silent — acceptable for the MVP (per the 2026-05-15
-// perf handoff; audio re-routing is follow-up work).
+// Main-thread side: play.js. Engine build: GZDoom g4.11.3 + tomb-engine's
+// WebAssembly patches (Emscripten, JSPI, WebGL2), vendored in web/engine/.
 
 'use strict';
 
@@ -129,8 +133,8 @@ const documentShim = Object.assign(docTarget, {
     requestPointerLock() {},
     requestFullscreen() { return Promise.reject(new Error('blocked')); },
   },
-  // Some emscripten paths probe `document.exitPointerLock`. Make it a noop.
-  exitPointerLock() {},
+  // SDL leaving relative mouse mode (menu / console up) calls this.
+  exitPointerLock() { postCapture(false); },
 });
 
 const windowShim = Object.assign(winTarget, {
@@ -321,6 +325,7 @@ class _FakeBufferSource {
       channels: buf.numberOfChannels,
       ch0, ch1,
       when: when || 0,
+      now: performance.now() / 1000 - _audioCtxStartWall,   // = ctx.currentTime
       offset: offset || 0,
       duration: duration === undefined ? -1 : duration,
       loop: !!this.loop,
@@ -404,8 +409,8 @@ self.screen = self.screen || {
 windowShim.screen = self.screen;
 
 // `localStorage` is not available in DedicatedWorker. emscripten's
-// SDL_GetPrefPath / IDBFS may probe for it. Provide an in-memory stub so
-// nothing throws — savegame persistence is out of scope for the smoke harness.
+// SDL_GetPrefPath may probe for it. Provide an in-memory stub so nothing
+// throws (savegames persist through IndexedDB, section 4).
 const _lsStore = new Map();
 self.localStorage = self.localStorage || {
   getItem(k) { return _lsStore.has(k) ? _lsStore.get(k) : null; },
@@ -421,6 +426,14 @@ windowShim.localStorage = self.localStorage;
 windowShim.matchMedia = (q) => ({ matches: false, media: q, addEventListener(){}, removeEventListener(){} });
 
 let rafCounter = 0;
+
+// Engine mouse-capture state, reported to the page on change.
+let _captured = null;
+function postCapture(on) {
+  if (_captured === on) return;
+  _captured = on;
+  self.postMessage({ type: 'capture', on });
+}
 
 // ---------------------------------------------------------------------------
 // 2. CANVAS WRAP
@@ -511,7 +524,8 @@ function augmentOffscreenCanvas(canvas) {
   // mouse-delta events from main and rely on the engine's `m_use_mouse=1` path.
   canvas.focus = function () {};
   canvas.blur = function () {};
-  canvas.requestPointerLock = function () {};
+  // SDL entering relative mouse mode (gameplay) lands here.
+  canvas.requestPointerLock = function () { postCapture(true); };
   canvas.requestFullscreen = function () { return Promise.reject(new Error('blocked')); };
   // tagName for `instanceof`-fallback checks in libraries that read it.
   if (!('tagName' in canvas)) {
@@ -521,139 +535,160 @@ function augmentOffscreenCanvas(canvas) {
 }
 
 // ---------------------------------------------------------------------------
-// 3. FRAME-STAT TELEMETRY HOOK
+// 3. FRAME COUNTER
 //
-// Hook the WebGL2 context's `bindFramebuffer` after engine boot to count
-// frames the same way the single-threaded harness did: count transitions from
-// a non-default FB binding back to the default (canvas) — that's the canonical
-// "frame end / present pass" moment. Post stats to main on a 200ms cadence.
+// A frame ends when the engine binds the default framebuffer (the canvas)
+// after drawing into its scene framebuffers. Frame intervals are posted to the
+// page twice a second (FPS / frame time readout, ?dev=1 and the smoke test).
 // ---------------------------------------------------------------------------
 
-const fg = {
-  ts: new Float64Array(600),
-  head: 0,
-  total: 0,
-  lastBoundWasNonDefault: false,
-  drawCalls: 0,
-};
+const fg = { last: 0, n: 0, sum: 0, max: 0, total: 0, wasOffscreen: false };
 
 function installGLHook(canvas) {
-  // Wrap getContext so we hook the GL context the engine creates. Note that
-  // emscripten registers the context via its own `emscripten_webgl_create_context`
-  // path which eventually calls `canvas.getContext('webgl2', ...)`.
   const orig = canvas.getContext.bind(canvas);
   canvas.getContext = function (type, attrs) {
     const ctx = orig(type, attrs);
-    if (ctx && (type === 'webgl' || type === 'webgl2' || type === 'experimental-webgl')) {
-      const origBindFB = ctx.bindFramebuffer.bind(ctx);
-      const FB_TARGET = ctx.FRAMEBUFFER;
+    if (ctx && (type === 'webgl2' || type === 'webgl')) {
+      const bind = ctx.bindFramebuffer.bind(ctx);
+      const FB = ctx.FRAMEBUFFER;
       ctx.bindFramebuffer = function (target, fb) {
-        const isDefault = (fb === null || fb === 0);
-        if (isDefault && fg.lastBoundWasNonDefault && target === FB_TARGET) {
+        const isDefault = !fb;
+        if (isDefault && fg.wasOffscreen && target === FB) {
           const now = performance.now();
-          fg.ts[fg.head] = now;
-          fg.head = (fg.head + 1) % fg.ts.length;
+          if (fg.last) {
+            const dt = now - fg.last;
+            if (dt < 1000) { fg.n++; fg.sum += dt; if (dt > fg.max) fg.max = dt; }
+          }
+          fg.last = now;
           fg.total++;
         }
-        fg.lastBoundWasNonDefault = !isDefault;
-        return origBindFB(target, fb);
+        fg.wasOffscreen = !isDefault;
+        return bind(target, fb);
       };
-      const wrapDraw = (name) => {
-        const o = ctx[name];
-        if (typeof o !== 'function') return;
-        ctx[name] = function () { fg.drawCalls++; return o.apply(ctx, arguments); };
-      };
-      ['drawElements','drawArrays','drawElementsInstanced','drawArraysInstanced','drawRangeElements']
-        .forEach(wrapDraw);
-      const origClear = ctx.clear.bind(ctx);
-      ctx.clear = function (mask) { fg.drawCalls++; return origClear(mask); };
     }
     return ctx;
   };
 }
 
-// Telemetry pump: every 100ms, ship a window of recent frame intervals plus
-// 1-second-window aggregate metrics (instantaneous FPS, pct60/pct70 targets,
-// min/max) so the perf HUD can react to changes faster than the slow-EMA.
-let telemTimer = null;
-let lastSentTotal = 0;
 function startTelemetry() {
-  if (telemTimer) return;
-  telemTimer = setInterval(() => {
-    const now = performance.now();
-    const frames = fg.total - lastSentTotal;
-    lastSentTotal = fg.total;
-    // Collect last N timestamps for the frame graph (N up to ring capacity).
-    const N = Math.max(0, Math.min(fg.ts.length, fg.total));
-    const recent = new Float64Array(N);
-    for (let i = 0; i < N; i++) {
-      const a = (fg.head - 1 - i + fg.ts.length) % fg.ts.length;
-      recent[N - 1 - i] = fg.ts[a];
-    }
-
-    // 1-second-window aggregate metrics — only the frames whose timestamp is
-    // within the last 1000ms. Gives instantaneous reaction to perf changes.
-    const oneSecAgo = now - 1000;
-    let win1sCount = 0, win1sMin = Infinity, win1sMax = 0, win1sSum = 0;
-    let win1sUnder60 = 0, win1sUnder70 = 0;  // counts of frames meeting target
-    for (let i = 1; i < N; i++) {
-      const t = recent[i], tp = recent[i - 1];
-      if (t >= oneSecAgo) {
-        const dt = t - tp;
-        if (dt > 0 && dt < 500) {
-          win1sCount++;
-          win1sSum += dt;
-          if (dt < win1sMin) win1sMin = dt;
-          if (dt > win1sMax) win1sMax = dt;
-          if (dt <= 16.7) win1sUnder60++;
-          if (dt <= 14.3) win1sUnder70++;
-        }
-      }
-    }
-    const win1sMean = win1sCount > 0 ? win1sSum / win1sCount : 0;
-    const win1sFps  = win1sMean > 0 ? 1000 / win1sMean : 0;
-    if (!isFinite(win1sMin)) win1sMin = 0;
-
-    const attachSummary = {};
-    for (const a of _attachLog) {
-      const key = a.on + ':' + a.type;
-      attachSummary[key] = (attachSummary[key] || 0) + 1;
-    }
-    self.postMessage({
-      type: 'frame-stats',
-      now,
-      framesSinceLast: frames,
-      totalFrames: fg.total,
-      drawCalls: fg.drawCalls,
-      tsRing: recent,
-      // 1-sec rolling window for fast perf feedback.
-      win1s: {
-        fps: win1sFps, mean: win1sMean, min: win1sMin, max: win1sMax,
-        frames: win1sCount,
-        pct60: win1sCount ? (100 * win1sUnder60 / win1sCount) : 0,
-        pct70: win1sCount ? (100 * win1sUnder70 / win1sCount) : 0,
-      },
-      workerDiag: { ...workerDiag, attachSummary, attachCount: _attachLog.length },
-    }, [recent.buffer]);
-  }, 100);
+  setInterval(() => {
+    self.postMessage({ type: 'frame-stats', frames: fg.n, meanMs: fg.n ? fg.sum / fg.n : 0,
+                       maxMs: fg.max, total: fg.total });
+    fg.n = 0; fg.sum = 0; fg.max = 0;
+  }, 500);
 }
 
 // ---------------------------------------------------------------------------
-// 4. MESSAGE PROTOCOL
+// 4. SAVEGAME PERSISTENCE (IndexedDB)
+//
+// The engine writes saves (and nothing else we keep) under SAVE_ROOT in MEMFS.
+// Before main() runs they are restored from IndexedDB; afterwards the tree is
+// scanned every few seconds (and on 'flush', sent when the page is hidden) and
+// changed or deleted files are mirrored to IndexedDB. The scan runs between
+// engine frames (the wasm is suspended in emscripten_sleep), so files are
+// never half-written.
+// ---------------------------------------------------------------------------
+
+const SAVE_ROOT = '/home/web_user/.config/gzdoom';
+const SAVE_MATCH = /\/savegames?\/|\.zds$/i;   // only savegames, not the ini or caches
+const DB_NAME = 'cca-gzdoom', DB_STORE = 'files';
+let _db = null;
+const _persisted = new Map();   // path -> "mtime:size" last written to IndexedDB
+
+function openDB() {
+  return new Promise((resolve) => {
+    let req;
+    try { req = indexedDB.open(DB_NAME, 1); } catch (e) { resolve(null); return; }
+    req.onupgradeneeded = () => req.result.createObjectStore(DB_STORE);
+    req.onsuccess = () => resolve(req.result);
+    req.onerror = () => resolve(null);
+    req.onblocked = () => resolve(null);
+  });
+}
+
+function dbAll(db) {
+  return new Promise((resolve) => {
+    if (!db) return resolve([]);
+    const out = [];
+    const tx = db.transaction(DB_STORE, 'readonly');
+    const cur = tx.objectStore(DB_STORE).openCursor();
+    cur.onsuccess = () => {
+      const c = cur.result;
+      if (c) { out.push([c.key, c.value]); c.continue(); } else resolve(out);
+    };
+    cur.onerror = () => resolve(out);
+  });
+}
+
+function walkFiles(FS, dir, out) {
+  let names;
+  try { names = FS.readdir(dir); } catch (_) { return out; }
+  for (const n of names) {
+    if (n === '.' || n === '..') continue;
+    const p = dir + '/' + n;
+    let st;
+    try { st = FS.stat(p); } catch (_) { continue; }
+    if (FS.isDir(st.mode)) walkFiles(FS, p, out);
+    else if (SAVE_MATCH.test(p)) out.set(p, st);
+  }
+  return out;
+}
+
+function stamp(st) { return (+st.mtime) + ':' + st.size; }
+
+function syncSaves() {
+  const FS = self.Module && self.Module.FS;
+  if (!_db || !FS) return;
+  const now = walkFiles(FS, SAVE_ROOT, new Map());
+  const puts = [], dels = [];
+  for (const [p, st] of now) if (_persisted.get(p) !== stamp(st)) puts.push([p, st]);
+  for (const p of _persisted.keys()) if (!now.has(p)) dels.push(p);
+  if (!puts.length && !dels.length) return;
+  try {
+    const tx = _db.transaction(DB_STORE, 'readwrite');
+    const store = tx.objectStore(DB_STORE);
+    for (const [p, st] of puts) {
+      store.put({ data: FS.readFile(p), mtime: +st.mtime }, p);
+      _persisted.set(p, stamp(st));
+    }
+    for (const p of dels) { store.delete(p); _persisted.delete(p); }
+    tx.oncomplete = () => self.postMessage({ type: 'saves', stored: puts.map((x) => x[0]), deleted: dels });
+  } catch (e) {
+    self.postMessage({ type: 'log', stream: 'stderr', msg: '[worker] save sync failed: ' + (e && e.message) });
+  }
+}
+
+function restoreSaves(FS, entries) {
+  let n = 0;
+  for (const [p, v] of entries) {
+    if (!v || !v.data || !SAVE_MATCH.test(p)) continue;
+    try {
+      FS.mkdirTree(p.slice(0, p.lastIndexOf('/')));
+      FS.writeFile(p, v.data);
+      if (v.mtime) FS.utime(p, v.mtime, v.mtime);
+      _persisted.set(p, stamp(FS.stat(p)));
+      n++;
+    } catch (e) {
+      self.postMessage({ type: 'log', stream: 'stderr', msg: '[worker] restore ' + p + ' failed: ' + (e && e.message) });
+    }
+  }
+  return n;
+}
+
+// ---------------------------------------------------------------------------
+// 5. MESSAGE PROTOCOL
 //
 // From main:
-//   { type: 'boot', canvas, args, files: {path: Uint8Array}, devMode }
-//   { type: 'input', target: 'window'|'document'|'canvas', evType, init }
-//   { type: 'resize', width, height }
-//   { type: 'pointerlock', locked: bool }
-//   { type: 'visibility', state: 'visible'|'hidden' }
+//   { type: 'boot', canvas, pinW, pinH, args, files: {path: Uint8Array},
+//     engineBase, scriptUrl, wasm: ArrayBuffer }
+//   { type: 'input', target, evType, init }
+//   { type: 'pointerlock', locked }   { type: 'visibility', state }   { type: 'flush' }
 //
 // To main:
-//   { type: 'ready' }                      after onRuntimeInitialized
-//   { type: 'log', stream, msg }           print/printErr
-//   { type: 'abort', reason }              engine aborted
-//   { type: 'frame-stats', ... }           periodic telemetry
-//   { type: 'error', message, stack }      worker-side caught exception
+//   { type: 'ready' }  { type: 'log', stream, msg }  { type: 'abort', reason }
+//   { type: 'error', message, stack }  { type: 'frame-stats', ... }
+//   { type: 'capture', on }  { type: 'saves', stored, deleted, restored }
+//   { audio: ... }  (see the AudioContext shim)
 // ---------------------------------------------------------------------------
 
 let booted = false;
@@ -668,96 +703,85 @@ self.onunhandledrejection = (e) => {
 self.onmessage = (e) => {
   const m = e.data;
   switch (m.type) {
-    case 'boot':       return handleBoot(m);
-    case 'input':      return handleInput(m);
-    case 'resize':     return handleResize(m);
+    case 'boot':        return handleBoot(m);
+    case 'input':       return handleInput(m);
     case 'pointerlock': return handlePointerLock(m);
-    case 'visibility': return handleVisibility(m);
-    case 'snapshot-request': return handleSnapshotRequest(m);
-    default:
-      self.postMessage({ type: 'log', stream: 'stderr', msg: '[worker] unknown message type: ' + m.type });
+    case 'visibility':  return handleVisibility(m);
+    case 'flush':       return syncSaves();
   }
 };
 
-function handleBoot(m) {
+// Engine output: drop debug traces and terminal control sequences.
+const NOISE = /^\s*$|\[trace\]|\[creg-walk\]|^\[worker\] canvas-pin|emscripten_set_main_loop_timing/;
+function cleanLine(t) {
+  return String(t)
+    .replace(/\x1b\[[0-9;]*[A-Za-z]|\x1b[78]/g, '')
+    .replace(/\[[.=]{20,}\]\s*/g, '');
+}
+function out(stream) {
+  return (...a) => {
+    const msg = cleanLine(a.join(' '));
+    if (NOISE.test(msg)) return;
+    self.postMessage({ type: 'log', stream, msg });
+  };
+}
+
+async function handleBoot(m) {
   if (booted) return;
   booted = true;
 
-  // Override default pin if boot message specifies a larger canvas size.
-  if (m.pinW && m.pinH) {
-    PIN_W = m.pinW | 0;
-    PIN_H = m.pinH | 0;
-  }
-  // Also update the shims that report dimensions to the engine.
+  if (m.pinW && m.pinH) { PIN_W = m.pinW | 0; PIN_H = m.pinH | 0; }
   windowShim.innerWidth = PIN_W;
   windowShim.innerHeight = PIN_H;
   documentShim.documentElement.clientWidth = PIN_W;
   documentShim.documentElement.clientHeight = PIN_H;
 
   const canvas = m.canvas;
-  if (!canvas) {
-    self.postMessage({ type: 'log', stream: 'stderr', msg: '[worker] boot: no canvas in message' });
-    return;
-  }
-  instrumentCanvasAddListener(canvas);  // must wrap BEFORE engine attaches
+  instrumentCanvasAddListener(canvas);   // must wrap BEFORE the engine attaches
   augmentOffscreenCanvas(canvas);
   installGLHook(canvas);
   self.__moduleCanvas = canvas;
-
-  // (Diagnostic spy listener removed — mouse-look verified working. Spy was
-  // adding per-mousemove overhead.)
-
-  // emscripten convention for specialHTMLTargets:
-  //   index 0 = invalid (placeholder)
-  //   index 1 = EMSCRIPTEN_EVENT_TARGET_DOCUMENT  → document
-  //   index 2 = EMSCRIPTEN_EVENT_TARGET_WINDOW    → window
-  //   index 3 = EMSCRIPTEN_EVENT_TARGET_SCREEN    → screen (rarely used)
-  // SDL2's emscripten port may pass these numeric pseudo-pointers for
-  // keyboard/window events, looked up via findEventTarget. Wrong values here
-  // were why mouse-look broke — keyboard/mouse listeners were attaching to
-  // wrong targets (our augmented canvas instead of document/window).
+  // emscripten's EMSCRIPTEN_EVENT_TARGET_DOCUMENT / _WINDOW / _SCREEN = 1 / 2 / 3.
   self.specialHTMLTargets = [0, documentShim, windowShim, self.screen];
+
+  _db = await openDB();
+  const saved = await dbAll(_db);
+  const base = m.engineBase || '';
 
   self.Module = {
     canvas,
     arguments: m.args || [],
     noInitialRun: false,
+    wasmBinary: m.wasm || undefined,
     preRun: [() => {
-      for (const [path, bytes] of Object.entries(m.files || {})) {
-        self.Module.FS.writeFile(path, bytes);
-      }
-      self.Module.FS.chdir('/');
-      self.postMessage({ type: 'log', stream: 'stdout',
-        msg: '[worker] preRun: wrote ' + Object.keys(m.files || {}).length + ' files into MEMFS' });
+      const FS = self.Module.FS;
+      for (const [path, bytes] of Object.entries(m.files || {})) FS.writeFile(path, bytes);
+      FS.chdir('/');
+      const restored = restoreSaves(FS, saved);
+      self.postMessage({ type: 'saves', stored: [], deleted: [], restored });
     }],
     onRuntimeInitialized() {
       self.postMessage({ type: 'ready' });
       startTelemetry();
-      // Tell the engine the window has focus right out of the gate. Without
-      // this, SDL2 may consider its window inactive and filter input events
-      // (including mouse-motion deltas) out of the queue. In a worker there's
-      // no native focus to inherit, so we synthesize one.
+      setInterval(syncSaves, 3000);
+      // No native focus in a worker: tell SDL its window is focused, or it
+      // filters input events.
       setTimeout(() => {
         windowShim.dispatchEvent(makeEvent('focus', {}));
         documentShim.dispatchEvent(makeEvent('focus', {}));
       }, 0);
     },
-    print(...a)    { self.postMessage({ type: 'log', stream: 'stdout', msg: a.join(' ') }); },
-    printErr(...a) { self.postMessage({ type: 'log', stream: 'stderr', msg: a.join(' ') }); },
+    print: out('stdout'),
+    printErr: out('stderr'),
     onAbort(reason) { self.postMessage({ type: 'abort', reason: String(reason) }); },
     setStatus() {},
-    // Important: locateFile should resolve relative to the worker's own
-    // location (not the page). importScripts already handles `gzdoom.js`;
-    // emscripten will fetch `gzdoom.wasm` via this path.
-    locateFile(f) { return f; },
+    locateFile(f) { return base + f; },
   };
 
   try {
-    importScripts('gzdoom.js');
+    importScripts(m.scriptUrl || (base + 'gzdoom.js'));
   } catch (err) {
-    self.postMessage({ type: 'error',
-      message: 'importScripts(gzdoom.js) failed: ' + (err && err.message),
-      stack: err && err.stack });
+    self.postMessage({ type: 'error', message: 'loading gzdoom.js failed: ' + (err && err.message), stack: err && err.stack });
   }
 }
 
@@ -795,18 +819,8 @@ function makeEvent(evType, init) {
   return evt;
 }
 
-// Worker-side mouse-look diagnostics. Counts mousemoves we dispatch and the
-// `e.movementX/Y` values an OffscreenCanvas-attached spy listener observes.
-// Reported back to main with each frame-stats tick.
-const workerDiag = { mmDispatched: 0, mmSpySeen: 0, sumSpyMvX: 0, sumSpyMvY: 0,
-                     sumOwnMvX: 0, lastSpyMvX: 0, pointerLockSet: 0 };
-
 function handleInput(m) {
   const evt = makeEvent(m.evType, m.init || {});
-  if (m.evType === 'mousemove') {
-    workerDiag.mmDispatched++;
-    workerDiag.sumOwnMvX += Math.abs(evt.movementX || 0);
-  }
   // Always provide preventDefault / stopPropagation no-ops in case the real
   // event lacks them (plain-object fallback path).
   if (typeof evt.preventDefault !== 'function') evt.preventDefault = () => { evt.defaultPrevented = true; };
@@ -843,71 +857,9 @@ function handleInput(m) {
   }
 }
 
-function handleResize(m) {
-  if (self.__moduleCanvas) {
-    self.__moduleCanvas.width = m.width;
-    self.__moduleCanvas.height = m.height;
-  }
-  windowShim.innerWidth = m.width;
-  windowShim.innerHeight = m.height;
-  // Fire a resize event so SDL2 picks it up.
-  windowShim.dispatchEvent(makeEvent('resize', {}));
-}
-
 function handlePointerLock(m) {
   documentShim.pointerLockElement = m.locked ? self.__moduleCanvas : null;
-  workerDiag.pointerLockSet = m.locked ? 1 : 0;
   documentShim.dispatchEvent(makeEvent('pointerlockchange', {}));
-}
-
-// Worker-side canvas pixel readback. Used by main to verify the renderer is
-// actually drawing something other than a clear color when we have no other
-// way to see the canvas (preview tool can't screenshot OffscreenCanvas-driven
-// canvases). Returns a tiny thumbnail-array of RGB samples + min/max/mean
-// luminance so we can detect a black or solid-color frame.
-function handleSnapshotRequest(m) {
-  try {
-    const cv = self.__moduleCanvas;
-    if (!cv) { self.postMessage({ type: 'snapshot', error: 'no canvas' }); return; }
-    // Read 16x10 sample grid from the WebGL context.
-    const gl = cv.getContext('webgl2') || cv.getContext('webgl');
-    if (!gl) { self.postMessage({ type: 'snapshot', error: 'no GL context' }); return; }
-    const w = cv.width, h = cv.height;
-    const full = new Uint8Array(w * h * 4);
-    gl.readPixels(0, 0, w, h, gl.RGBA, gl.UNSIGNED_BYTE, full);
-    // Build 16x10 thumbnail by sampling.
-    const TW = 16, TH = 10;
-    const thumb = new Uint8Array(TW * TH * 3);
-    let lumMin = 255, lumMax = 0, lumSum = 0, lumN = 0;
-    let distinctColors = new Set();
-    for (let y = 0; y < TH; y++) {
-      for (let x = 0; x < TW; x++) {
-        const sx = Math.floor((x + 0.5) * w / TW);
-        const sy = Math.floor((y + 0.5) * h / TH);
-        // OpenGL readPixels origin is bottom-left; flip for sensible thumbnail.
-        const sIdx = ((h - 1 - sy) * w + sx) * 4;
-        const r = full[sIdx], g = full[sIdx + 1], b = full[sIdx + 2];
-        const tIdx = (y * TW + x) * 3;
-        thumb[tIdx] = r; thumb[tIdx + 1] = g; thumb[tIdx + 2] = b;
-        const lum = 0.299 * r + 0.587 * g + 0.114 * b;
-        if (lum < lumMin) lumMin = lum;
-        if (lum > lumMax) lumMax = lum;
-        lumSum += lum;
-        lumN++;
-        distinctColors.add((r >> 4 << 8) | (g >> 4 << 4) | (b >> 4));  // quantize to 4-bit/ch
-      }
-    }
-    self.postMessage({
-      type: 'snapshot',
-      w, h,
-      thumbW: TW, thumbH: TH,
-      thumb,
-      lumMin, lumMax, lumMean: lumSum / Math.max(1, lumN),
-      distinctColorCount: distinctColors.size,
-    }, [thumb.buffer]);
-  } catch (e) {
-    self.postMessage({ type: 'snapshot', error: String(e && e.message || e) });
-  }
 }
 
 function handleVisibility(m) {
@@ -916,4 +868,4 @@ function handleVisibility(m) {
   documentShim.dispatchEvent(makeEvent('visibilitychange', {}));
 }
 
-self.postMessage({ type: 'log', stream: 'stdout', msg: '[worker] booted, awaiting message...' });
+self.postMessage({ type: 'log', stream: 'stdout', msg: '[worker] waiting for boot' });

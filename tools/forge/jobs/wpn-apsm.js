@@ -5,7 +5,7 @@ import { renderRifle } from '../lib/wpn/riflepose.js';
 export default async function (F) {
   const gun = makePlasmaSMG();
   await renderRifle(F, gun, {
-    hip: { p: [0.1, -0.082, -0.46], r: [0.05, 0.18, 0.09] }, adsDist: 0.4, kick: 0.6, env: 'alien',
+    hip: { p: [0.1, -0.082, -0.46], r: [0.05, 0.18, 0.09] }, adsDist: 0.4, kick: 0.6, env: 'alien', supportGrip: 'wrap',
     lightColor: 0xc890ff, lightK: 0.5, flashLen: 120, flashW: 70, flashColor: [190, 120, 255], flashCore: [245, 225, 255],
     override(P, { HIP, Rh, add }) {
       const vent = (v, dp, dr) => ({ gun: { p: add(HIP.p, dp), r: add(HIP.r, dr) }, state: { vent: v }, R: Rh });

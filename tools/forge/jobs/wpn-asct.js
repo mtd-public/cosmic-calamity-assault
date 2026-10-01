@@ -15,7 +15,7 @@ export default async function (F) {
   const ADS = { p: [0, -SHOT_SIGHT_Y, -0.3], r: [0, 0, 0] };
   const Rh = { at: 'R', grip: 'pistol', elbow: [0.3, -0.5, -0.1] };
   const Ra = { at: 'R', grip: 'pistol', elbow: [0.2, -0.4, -0.02] };
-  const La = { at: 'L', grip: 'pump', elbow: [-0.16, -0.42, -0.3] };
+  const La = { at: 'L', grip: 'cradle', elbow: [-0.2, -0.45, -0.15] };
   // shell load: the gun rolled right so the loading port faces the left hand
   const TILT = { p: [0.06, -0.06, -0.44], r: [0.25, 0.25, -0.95] };
   // left hand under the port, thumb pushing the shell up into it
@@ -39,7 +39,7 @@ export default async function (F) {
     L: { gun: ADS, state: {}, R: Ra, L: La },
     M: { gun: { p: [0, -SHOT_SIGHT_Y + 0.004, -0.27], r: [0.12, 0, 0.02] }, state: { trigger: 1 }, R: { ...Ra, grip: 'pistolFire' }, L: La, light: 1 },
     N: { gun: { p: [0, -SHOT_SIGHT_Y + 0.001, -0.29], r: [0.035, 0, 0.005] }, state: {}, R: Ra, L: La },
-    O: { gun: { p: [0.05, -0.06, -0.38], r: [0.03, 0.1, 0.05] }, state: {}, R: Rh, L: { at: { mix: [{ cam: 'L', dp: [-0.04, -0.07, 0.04] }, 'L', 0.7] }, grip: 'pump', elbow: [-0.2, -0.46, -0.25] } },
+    O: { gun: { p: [0.05, -0.06, -0.38], r: [0.03, 0.1, 0.05] }, state: {}, R: Rh, L: { at: { mix: [{ cam: 'L', dp: [-0.04, -0.07, 0.04] }, 'L', 0.7] }, grip: 'cradle', elbow: [-0.22, -0.5, -0.12] } },
     P: { gun: { p: [0.13, -0.15, -0.42], r: [-0.55, 0.55, 0.45] }, state: {}, R: { at: 'R', grip: 'pistol', elbow: [0.32, -0.45, 0.0] } },
   };
   const muzzleLight = new THREE.PointLight(0x90ffe8, 0, 0.8, 2);
@@ -53,6 +53,5 @@ export default async function (F) {
   const frames = [...'ABCDEFGHIJKLMNOP'].map((f) => ({ name: `ASCT${f}0`, key: f }));
   frames.push(flashFrame('ASCTX0', () => pose('B'), gun, { len: 160, width: 140, seed: 27, prongs: 7, color: [90, 255, 220], core: [230, 255, 250] }));
   frames.push(flashFrame('ASCTY0', () => pose('M'), gun, { len: 70, width: 170, endOn: 1, seed: 29, prongs: 8, color: [90, 255, 220], core: [230, 255, 250] }));
-  const ONLY = null;
-  await hud(F, { model: { root: vm.root, pose }, frames: ONLY ? frames.filter((f) => ONLY.includes(f.name[4])) : frames, fov: FOV, env: 'alien' });
+  await hud(F, { model: { root: vm.root, pose }, frames, fov: FOV, env: 'alien' });
 }

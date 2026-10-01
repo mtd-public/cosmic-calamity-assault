@@ -22,7 +22,7 @@ export default async function (F, params = {}) {
   const flying = new THREE.Group(); const fs = sunglasses(); fs.glint.visible = false; fs.position.set(0, -0.09, -0.08); flying.add(fs);
   const scrap = mesh(rboxGeo(0.12, 0.1, 0.02, 0.006), R.M.shirtW);
   const G = makeGibs(R, {
-    seed: 31, cloth: R.M.suit,
+    seed: 31, cloth: R.M.suit, fluid: mat(0x6a0b09, { rough: 0.2 }), poolColor: 0x5c0907,
     extra: [
       { m: flying, dir: V3(-0.2, 1, 0.35).normalize(), sp: 1.1, y0: 1.66, land: V3(0.45, 0, 0.35), spin: V3(0, 2.4, 0) },
       { m: scrap, dir: V3(0.5, 0.8, -0.2).normalize(), sp: 0.9, y0: 1.3, land: V3(-0.5, 0, -0.15), spin: V3(0.3, 1.2, 0.2) },
@@ -44,8 +44,8 @@ export default async function (F, params = {}) {
       R.sync();
       const hp = R.head.getWorldPosition(V3()); R.root.worldToLocal(hp);
       shades.visible = true;
-      shades.position.set(hp.x - 0.05, 0.012, hp.z + 0.26);
-      shades.rotation.set(-Math.PI / 2 + 0.2, 0, 0.9);
+      shades.position.set(hp.x - 0.3, 0.012, hp.z + 0.12);
+      shades.rotation.set(-Math.PI / 2 + 0.15, 0, 0.5);
     }
   };
   for (const [i, f] of [...'MNOP'].entries()) poses[f] = () => {

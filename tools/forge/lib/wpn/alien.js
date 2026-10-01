@@ -119,7 +119,7 @@ export function makeScatter() {
   put(root, new THREE.Mesh(torus(0.022, 0.003, Math.PI * 1.1, 20, 6), m.bone), [0, -0.016, -0.02], [0, Math.PI / 2, Math.PI * 0.95]);
   const anchors = {};
   anchors.R = gripAnchor(root, gTop, gBot, { t: 0.25, halfW: 0.017, halfD: 0.025, roll: 0.2, palm: 0.0105, along: -0.078, sink: 0.002, shift: [0, 0, 0.004] });
-  anchors.L = fistAnchor(pump, { at: [0, -0.012, -0.21], axis: [0, 0, -1], back: [-0.45, -0.9, 0], side: -1, tunnel: [0, -0.042, -0.088] });
+  anchors.L = fistAnchor(pump, { at: [0, -0.012, -0.21], axis: [0, 0, -1], back: [0.26, -0.97, 0], side: -1, tunnel: [0.004, -0.057, -0.088], swing: 0.8 });
   anchors.port = group(root, [0, -0.03, -0.06]);
   anchors.muzzle = group(root, [0, 0.018, -0.44]);
   anchors.eject = group(root, [0.03, 0.03, -0.05]);

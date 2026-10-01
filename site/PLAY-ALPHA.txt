@@ -1,4 +1,4 @@
-COSMIC CALAMITY: ASSAULT - Case File 51  (alpha: 4 maps)
+COSMIC CALAMITY: ASSAULT - Case File 51  (alpha: 6 maps)
 ===========================================================================
 
 1. Install GZDoom 4.14 (https://zdoom.org / GitHub releases) or UZDoom.
@@ -19,6 +19,7 @@ Controls (Xbox / keyboard+mouse)
   R3 / V ............... dual wield (with two of the same gun)
   View / Tab ........... map                      F6 / F9 .. quicksave / quickload
 
-Alpha notes: all four maps play through (Groom Lake, the city, the crash
-site, the mothership). The alien guns use stand-in art until their renders
-land; two more maps (a Dark Forces-style base raid and Chicago) are coming.
+Alpha notes: all six maps play through: Groom Lake (Area 51), Dulce Base
+(a Dark Forces-style raid; the black helicopter waits on the roof), Night of
+the Harvest (Washington D.C.), The Loop (Chicago: save the office workers in
+the burning Merchant Tower), Crash Site, and the Mothership.

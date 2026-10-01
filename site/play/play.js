@@ -360,6 +360,13 @@
       lastEscDown = performance.now();
     }
     post({ type: 'input', target: 'window', evType: e.type, init: keyInit(e) });
+    // Text input (console, savegame names) comes from keypress, which the
+    // browser drops once keydown is default-prevented: synthesize it.
+    if (e.type === 'keydown' && e.key && [...e.key].length === 1 && !e.ctrlKey && !e.metaKey) {
+      const init = keyInit(e);
+      init.charCode = init.which = e.key.codePointAt(0);
+      post({ type: 'input', target: 'window', evType: 'keypress', init });
+    }
     e.preventDefault();
     e.stopPropagation();
   }
@@ -390,7 +397,6 @@
     if (inputAttached) return;
     inputAttached = true;
     window.addEventListener('keydown', onKey, true);
-    window.addEventListener('keypress', onKey, true);   // text input: console, save names
     window.addEventListener('keyup', onKey, true);
     canvas.addEventListener('mousedown', (e) => {
       ensureAudio();

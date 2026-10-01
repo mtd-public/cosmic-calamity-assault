@@ -47,17 +47,18 @@ for (const [sum, name] of sums) {
 }
 copyFileSync(join(ENGINE, 'LICENSE'), join(PLAY, 'engine/LICENSE'));
 
-// The prebuilt engine still Printf()s porting traces ("[trace] FShader::Bind
-// ...") that GZDoom shows on screen as notify messages. Blank each one by
-// turning its first byte into NUL (an empty format string prints nothing).
-// Only data-segment bytes change, never the length, so the module stays
-// valid; a string that is a shared suffix of a trace keeps working.
+// The prebuilt engine still prints porting traces ("[trace] FShader::Bind
+// ...") through Printf, which GZDoom shows on screen as notify messages.
+// Each trace format string becomes a bare newline ("\n\0" over its first two
+// bytes; the extra printf arguments are ignored). Only data-segment bytes
+// change, never the length, so the module stays valid. (An empty "" format
+// is not used: the engine's stdio path then re-emits stale output.)
 function silenceTraces(buf) {
   let n = 0;
   for (const tag of ['[trace]', '[creg-walk]']) {
     const needle = Buffer.from(tag);
     for (let i = buf.indexOf(needle); i >= 0; i = buf.indexOf(needle, i + 1)) {
-      if (i > 0 && buf[i - 1] === 0) { buf[i] = 0; n++; }
+      if (i > 0 && buf[i - 1] === 0) { buf[i] = 10; buf[i + 1] = 0; n++; }
     }
   }
   return n;

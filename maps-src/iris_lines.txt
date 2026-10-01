@@ -36,6 +36,49 @@ IRIS_113 | MAP01 dissection theatre gallery (140,83) | 128 | - | the theatre   *
 IRIS_114 | MAP01 specimen tank room entrance (170,83) | 128 | - | the specimen tanks   ** LANGUAGE MISMATCH (LANGUAGE has the theatre line)
   "IRIS|Specimen tanks. Some of them are empty. That should worry you."
 
+; ------------------------------------------------------------------ MAP02 Dulce Base
+; (no Kade in this map.) Already in LANGUAGE, fine as written: IRIS_MAP02_START, IRIS_MAP02_OBJ1 (said when
+; the plans are picked up, which is also when the alarm closets open), IRIS_MAP02_OBJ2 (boarding).
+; OBJ_MAP02_1 "Steal the plans from the Level 7 vault" / OBJ_MAP02_2 "Get to the helicopter on the roof": keep.
+IRIS_501 | MAP02 the canyon under the mesa, player start (16,69) | 192 | - | arrival at night; the compound is up the road
+  "IRIS|Archuleta Mesa. That fence line is the only thing out here with lights on. Follow the road, keep off the ridge."
+IRIS_502 | MAP02 the compound gate in the west fence (70,21) | 192 | - | towers, radar dish, men in black; the building is the way down
+  "IRIS|Two towers, one dish, and men in sunglasses at midnight. The way down is through the building at the back."
+IRIS_503 | MAP02 topside building, lobby entrance (125,22) | 160 | - | a cover building for the base
+  "IRIS|Reception desk, potted plant, a sign about a water survey. Nobody surveys water seven floors down."
+IRIS_504 | MAP02 elevator hall, at the main lift (152,34) | 128 | - | the main elevator to Level 3
+  "IRIS|Main elevator. It only goes to Level 3. After that, we take the stairs they don't put on the tour."
+IRIS_505 | MAP02 service bay, at the foot of the service stairs (194,26) | 128 | - | stairs to the roof, freight elevator from the bottom: remember both (the return route)
+  "IRIS|Service bay. Stairs to the roof, freight elevator to the bottom of the base. Remember this room, Marsh. We may want to leave quickly."
+IRIS_506 | MAP02 top of the service stairs, beside the helipad (194,10) | 192 | 2 | the black helicopter (objective 2); can be reached before the plans, the helicopter then nags IRIS_HELI_LOCKED
+  "IRIS|Helipad. A black helicopter with the rotors ticking over. Our ride, once we have something worth leaving with."
+IRIS_507 | MAP02 Level 3 elevator landing (152.5,47) | 160 | - | Level 3: security and labs; the checkpoint
+  "IRIS|Level 3. Security and labs. The checkpoint ahead wants a card we don't have. Yet."
+IRIS_508 | MAP02 Level 3 security office, beside the DownedGuard with the blue card (138,55) | 128 | - | revive him: he has the blue card
+  "IRIS|That guard is still breathing. Hold X on him. He has the blue card, and I doubt he likes the management either."
+IRIS_509 | MAP02 Level 3 armory locker, at the battle rifle (125,50) | 64 | - | the battle rifle
+  "IRIS|Battle rifle. Heavy, loud, unsubtle. I approve."
+IRIS_510 | MAP02 Level 3 lab 1 (136,67) | 128 | - | the scientists; what Dulce is for
+  "IRIS|Lab coats, clipboards, and specimen jars labelled in a language nobody here should be able to read."
+IRIS_511 | MAP02 the great shaft, east end of the Level 3 bridge (116,61.5) | 192 | - | the shaft drops to Level 7; the blue door on the far side leads down to Level 6
+  "IRIS|The shaft goes all the way down. Don't. The blue door on the far side leads to Level 6."
+IRIS_512 | MAP02 Level 6, bottom of the lift into the Nightmare Hall (73.5,80) | 192 | - | Nightmare Hall: tanks, pods, the Stalker
+  "IRIS|Level 6. The staff call it Nightmare Hall. The staff are not wrong. Something big is awake in here."
+IRIS_513 | MAP02 Level 6 control room, beside the DownedGuard with the red card (15,106) | 128 | - | the red card opens the way down to Level 7
+  "IRIS|Another guard, still with us. He has the red card. It opens the lift down to the vault."
+IRIS_514 | MAP02 Level 6 east landing, past the lower bridge, at the red door (124.5,105) | 160 | - | the red door and the lift to Level 7
+  "IRIS|Red door. Behind it, Level 7. If the dossier is right, this is where they keep the future."
+IRIS_515 | MAP02 Level 7 arrival hall (130,122) | 160 | - | Level 7; the vault terminal is in the next hall
+  "IRIS|Level 7. The vault door is magnetic and wired to a terminal in the next hall. I can open it. It won't be quick."
+IRIS_516 | MAP02 holdout hall, at the HackTerminal (152,134) | 128 | - | 75 s hold: the terminal opens the vault door (it completes no objective; the plans do)
+  "IRIS|Plug me in and stay close. Seventy-five seconds. They'll come down every shaft in the building."
+IRIS_517 | MAP02 inside the vault, in front of the pedestal (177,135) | 128 | 1 | the plans on the pedestal (objective 1); stepping onto the pedestal opens the alarm doors
+  "IRIS|The Invasion Plans. On a pedestal. Somebody here has a sense of theatre. The moment you lift them, every alarm goes off."
+IRIS_518 | MAP02 vault back door, into the deep service tunnel (195,135) | 160 | 2 | the alarm: the closets along the tunnel are open; the climb back is this way, not the shaft (objective 2)
+  "IRIS|Back door. This tunnel runs north to the freight elevator. The closets along it just opened. They weren't empty."
+IRIS_519 | MAP02 north end of the deep tunnel, at the freight elevator (195,48) | 96 | - | the freight elevator up to the service bay, then the stairs to the roof
+  "IRIS|Freight elevator, straight up to the service bay. Then the stairs to the roof. Don't stop for souvenirs."
+
 ; ------------------------------------------------------------------ MAP03 Night of the Harvest
 IRIS_201 | MAP03 the neon strip, player start (10,108) | 160 | - | Kade on the radio, D.C. burning
   "KADE|Marsh? Where are you? Half of D.C. is on fire and the other half is staring at the sky."
@@ -61,6 +104,49 @@ IRIS_211 | MAP03 basement office terminal (68,10) | 128 | 2 | 60 s upload (objec
   "IRIS|Plug me in. Every newsroom, every wire service. Hold them off for a minute and the executive lift will take us to the roof."
 IRIS_212 | MAP03 the roof, at the top of the executive lift (30,10) | 160 | 3 | rooftop exit (objective 3)
   "IRIS|Rooftop access. Condor's inbound. Don't make me wait."
+
+; ------------------------------------------------------------------ MAP04 The Loop
+; Already in LANGUAGE: IRIS_MAP04_START (fine). IRIS_MAP04_OBJ1 is said when the 4th-floor comms terminal
+; finishes (objective 1). Suggest "IRIS|There it is. They grew it right into the antenna on the roof. Get me up there."
+; ("up here" reads oddly a floor below the roof). IRIS_MAP04_OBJ2 / OBJ3: fine.
+; OBJ_MAP04_1 "Climb the Merchant Tower to the relay": keep (it is completed by the 20 s 4th-floor terminal).
+; OBJ_MAP04_2 "Jam the harvest relay (defend the uplink)" / OBJ_MAP04_3 "Get out of the Loop": keep.
+IRIS_601 | MAP04 State Street under the Chicago Theatre marquee, player start (8,42) | 192 | - | Chicago 1997 under attack; the tower is east
+  "IRIS|State Street. The marquee still works, which is more than I can say for the city. The Merchant Tower is east, past the plaza."
+IRIS_602 | MAP04 top of the stairs to the State/Lake L platform (87.5,34) | 128 | - | the L: fight along the tracks; the Wabash L reaches the tower's skybridge
+  "IRIS|The L. Mind the third rail; it's still live, even if nothing else is. The Wabash line passes the tower's skybridge."
+IRIS_603 | MAP04 State/Lake station house on Lake Street (51,16) | 128 | - | the station house; the exit platform is behind the locked door
+  "IRIS|The station house. There's a train waiting on the other platform, and a door that won't open until we've done our job."
+IRIS_604 | MAP04 station house, at the ExitGate by the platform door (44,13.5) | 96 | 3 | the door opens with objectives 1+2 (ExitGate), then the train (objective 3)
+  "IRIS|Locked. CTA override. I'll open it when the relay's down. Not before."
+IRIS_605 | MAP04 the exit platform, in front of the stalled train (20,13.5) | 160 | - | walk into the train to leave (Exit_Normal)
+  "IRIS|Doors are open and the driver is long gone. Get aboard, Marsh. I'll drive. Badly."
+IRIS_606 | MAP04 Daley Plaza, west entrance from State (30,50) | 192 | - | the plaza; the tower is across it
+  "IRIS|Daley Plaza. Half of Chicago's government in that building, and none of it is answering the phone."
+IRIS_607 | MAP04 in front of the Picasso (58,66) | 96 | - | quiet beat
+  "IRIS|Fifty feet of Cor-Ten steel and nobody agrees what it is. Our visitors seem to like it. They haven't touched it."
+IRIS_608 | MAP04 Merchant Tower lobby (116.5,70) | 160 | - | the tower: stairs core and express elevator; workers to rescue; SafeZones
+  "IRIS|The Merchant Tower. Stairs or the express elevator. There are people on every floor. Get them to the stairwell or the doors and they'll run."
+IRIS_609 | MAP04 2nd floor, at the top of the first flight (104.5,54) | 128 | - | cubicle farm; workers cornered in the conference room
+  "IRIS|Cubicles. Somebody left a screensaver of flying toasters running. Fitting. Two people in the conference room, and they have company."
+IRIS_610 | MAP04 the skybridge breach into the 2nd floor, from the Wabash L (136,53) | 128 | - | the other way in
+  "IRIS|They blew the windows out of the skybridge. Convenient. Not for the windows."
+IRIS_611 | MAP04 3rd floor, at the stair core (114.5,65) | 128 | - | the burning floor; workers trapped in the corner office
+  "IRIS|This floor is on fire. The sprinklers are thinking about it. People in the corner office, west side."
+IRIS_612 | MAP04 4th floor, at the stair core beside the comms terminal (114.5,55) | 192 | 1 | the comms terminal: a 20 s trace that finds the relay (completes objective 1); an Overseer holds the floor
+  "IRIS|Top floor. That terminal is wired into the building's antennas. Plug me in, I'll find which one they took. And mind the tall one."
+IRIS_613 | MAP04 4th floor, at the express elevator (124.5,55) | 96 | - | the express elevator runs straight down to the lobby
+  "IRIS|Express elevator, straight down to the lobby. Muzak included, at no extra charge."
+IRIS_614 | MAP04 the roof, at the stair head (119.5,66) | 160 | - | the relay grown into the antenna; SafeZone here
+  "IRIS|There's the relay, grown into the antenna like ivy. Every ship over the lake is listening to it."
+IRIS_615 | MAP04 the roof, at the relay terminal (116,53) | 128 | 2 | 60 s holdout (objective 2); finishing it drops the washer-platform barrier
+  "IRIS|Plug me in. Sixty seconds to jam it. They will notice. Hold the roof."
+IRIS_616 | MAP04 the roof, at the window-washer platform (134,59.5) | 96 | - | the barrier is down: ride the platform down the outside of the tower
+  "IRIS|Window-washer platform. Forty storeys of fresh air. Fine, four. Step on."
+IRIS_617 | MAP04 the alley at the foot of the tower (140,60) | 128 | - | back to the station house on Lake Street
+  "IRIS|Back on the ground. The station house is on Lake Street, under the L. The train won't wait forever."
+IRIS_618 | MAP04 the back room south of Randolph, secret (55,100) | 96 | - | secret
+  "IRIS|A back room with a gun under the bar. This city has character."
 
 ; ------------------------------------------------------------------ MAP05 Crash Site
 IRIS_301 | MAP05 the road in, player start (47,130) | 192 | - | the cordon has been overrun

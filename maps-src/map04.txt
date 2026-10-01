@@ -9,7 +9,7 @@
 ; the barrier to the window-washer platform -> ride it down the outside of the tower to the alley ->
 ; the State/Lake station house on Lake Street -> the ExitGate (objectives 1+2) opens the door to the
 ; exit platform -> walk into the waiting L train (exit, obj 3).
-; Civilians: 16 office workers across the floors, most of them near aliens; SafeZones at the lobby
+; Civilians: 14 office workers across the floors, most of them near aliens; SafeZones at the lobby
 ; doors, the stairwell exit in the lobby and the roof stair head.
 ; Tower construction: one footprint with four stacked 3D floors (176..192, 368..384, 560..576,
 ; 752..768). Walls that exist on one floor only are regions whose slabs merge through that floor

@@ -47,7 +47,7 @@ Outside the grid, `;` and `//` start comments.
 |---|---|
 | `solid` / `void` | `tex=`: the face texture. Without it, faces use the room's `wall=`. |
 | `room` | `floor ceil ff cf wall upper lower light color=#RRGGBB fade=#RRGGBB sky` (sets `cf=F_SKY1`; a `sky` in `defaults` only applies to entries without their own `cf=`, and `nosky` cancels it), `damage= dmgtype= dmginterval=`, `secret`, `tag=N\|@name[,..]`, `merge`, `block` (impassable boundary), `scenery` (never entered; left out of the coverage stat), `lowerself=` (texture for this sector's own lower walls, for pits), `enter=Special(args)` (walk-over trigger on every line into or out of the region; add `enterrepeat` to repeat it), `seq=` (sound sequence) |
-| 3D floor (on a room) | `slab=z0..z1 slabtop= slabbot= slabside= slablight= slabtype= slabalpha=`. mapc builds the control sector below the map and gives the region a `Sector_Set3DFloor` tag. |
+| 3D floor (on a room) | `slab=z0..z1 slabtop= slabbot= slabside= slablight= slabtype= slabalpha=`. mapc builds the control sector below the map and gives the region a `Sector_Set3DFloor` tag.  Stacked storeys: up to six slabs per region, `slab=`, `slab2=` ... `slab6=` (each takes the same keys with its number, e.g. `slab2top=`, falling back to the unnumbered key); a wall that exists on one storey only is a region whose slabs merge through that storey (MAP04 Merchant Tower). |
 | `door` | `tex=` (face), `track=` (jambs, lower-unpegged), `lock=blue\|red\|yellow`, `speed= delay=`, `stay` (Door_Open), `blast` (slow), `secret` (looks like its `tex=`, a secret line, stays open; put `secret` on the room behind it), `remote` + `tag=` (no use special; opened by a switch, terminal or gate), `open`, `floor=` |
 | `lift` | `top=` (up position), `tex=` (its side face), `wall=` (the shaft), `speed= delay=`, `remote` + `tag=` |
 | `stairs` | `dir=N\|S\|E\|W` (the direction they rise), `floor=` (the level below the first step), `top=` (the last step), `riser=`, `headroom=` (the ceiling follows the steps) or `ceil=`. Each row or column is one step, and each rise must be 24 or less. |
@@ -69,7 +69,7 @@ What mapc generates:
 - `args=a,b,c,d,e`: each can be a number, `@tag`, special name or `IRIS_nnn`. `a0=` .. `a4=` set one.
 - `skill=12345`, `ambush`, `dormant`
 - `dx= dy=` (offset in units)
-- `z=top` (stand on the region's 3D slab) or `z=N`
+- `z=top` (stand on the region's lowest 3D slab), `z=top2` ... `z=top6` (the Nth slab up), or `z=N`
 - Checker-only:
   - `obj=N`: this item completes objective N.
   - `ondeath=Special(args)`: what this actor's death does.
@@ -85,7 +85,9 @@ The map is sampled on a 16-unit grid with the real 32×32 player box.
 - **Fixpoint:** the checker collects every reachable key, objective, switch, walk-over line,
   terminal (`HackTerminal` args 2-4), `ExitGate` (objective mask → `Door_Open(tag)`) and boss death
   (`HiveMind`: args[0] is the shield objective, args[1] is the death objective, and its death runs
-  `ondeath=`). It applies what they do and repeats until nothing changes.
+  `ondeath=`), `InvasionPlans` (completes objective args[0], default 1) and the `Helicopter` (an exit:
+  boarding needs objective mask args[0] and completes objective args[1]). It applies what they do and
+  repeats until nothing changes. `IrisTrigger` args[2] only points the waypoint, so it completes nothing.
 
 The compile **fails** if:
 - the exit, any key, objective item, terminal, gate, monster or NPC can't be reached;

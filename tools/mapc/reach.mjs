@@ -181,7 +181,10 @@ export function checkLevel(lv) {
     if (m.objective && t.cls !== 'HackTerminal') triggers.push({ ...base, kind: 'item', objective: m.objective });
     if (t.cls === 'HackTerminal') triggers.push({ ...base, kind: 'use', rad: 64, effect: m.effect, objective: m.objective });
     if (m.gate) triggers.push({ ...base, kind: 'use', rad: 128, gate: m.gate });
-    if (m.effect && t.cls !== 'HackTerminal') triggers.push({ ...base, kind: 'monster', effect: m.effect });
+    if ((m.effect || m.deathObj) && t.cls !== 'HackTerminal') {
+      const boss = t.cls === 'HiveMind';
+      triggers.push({ ...base, kind: 'monster', effect: m.effect || null, rad: boss ? 320 : 128, requires: m.shieldObj || 0, objective: m.deathObj || 0 });
+    }
   }
   for (const sw of lv.switches) triggers.push({ kind: 'use', rad: 40, x: sw.pos[0], y: sw.pos[1], z: sw.sector.floor + 32, effect: { special: sw.line.special, args: sw.args }, name: `switch '${sw.mark.char}'@${sw.cell.c},${sw.cell.r}` });
   const enterSectors = new Map();
@@ -229,7 +232,10 @@ export function checkLevel(lv) {
       if (tr.gate) { const need = tr.gate.mask; for (let b = 0; b < 16; b++) if ((need >> b) & 1 && !st.objectives.has(b + 1)) return false; }
       return near(at, tr.x, tr.y, tr.z, tr.rad || 48, -24, 72);
     }
-    if (tr.kind === 'monster') return near(at, tr.x, tr.y, tr.z, 128, -96, 96);
+    if (tr.kind === 'monster') {
+      if (tr.requires && !st.objectives.has(tr.requires)) return false;
+      return near(at, tr.x, tr.y, tr.z, tr.rad || 128, -128, 128);
+    }
     if (tr.kind === 'enter') {
       for (const [k] of at) if (subSec[k].some((s) => s.id === tr.sid)) return true;
       return false;

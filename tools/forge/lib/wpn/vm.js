@@ -59,10 +59,11 @@ export class Viewmodel {
     this.gunHolder.rotation.set(...(g.r || [0, 0, 0]), 'YXZ');
     this.gunHolder.visible = g.visible ?? true;
     if (this.gun?.set) this.gun.set(P.state || {});
-    // props: hidden unless listed in the pose
+    // props: hidden unless listed in the pose (hand-attached props are placed after the arms)
     for (const [k, o] of Object.entries(this.props)) {
       const v = (P.props || {})[k];
       if (!v) { o.visible = false; continue; }
+      if (v.hand) continue;
       o.visible = v.vis ?? true;
       this.root.updateMatrixWorld(true);
       if (v.at) { const r = this.resolve(v.at, v.off); if (o.parent !== this.root) this.root.add(o); o.position.copy(r.p); o.quaternion.copy(r.q); }
@@ -81,6 +82,17 @@ export class Viewmodel {
       const grip = typeof a.grip === 'string' ? GRIPS[a.grip] : a.grip ? (a.grip.mix ? mixGrip(a.grip.mix[0], a.grip.mix[1], a.grip.mix[2]) : a.grip) : GRIPS.relaxed;
       arm.hand.pose(grip);
       arm.place(r.p, r.q, { bend: a.bend || [0, 0], shoulder: a.shoulder || null, roll: a.roll || 0, elbow: a.elbow || null, twist: a.twist || 0 });
+    }
+    this.root.updateMatrixWorld(true);
+    for (const [k, v] of Object.entries(P.props || {})) {
+      if (!v.hand) continue;
+      const o = this.props[k], h = this[v.hand].hand.root;
+      o.visible = v.vis ?? true;
+      if (o.parent !== this.root) this.root.add(o);
+      const q = Q(...(v.r || [0, 0, 0]), v.order || 'XYZ');
+      o.position.copy(V3(...(v.p || [0, 0, 0])).applyQuaternion(h.quaternion).add(h.position));
+      o.quaternion.copy(h.quaternion).multiply(q);
+      if (v.set) v.set(o);
     }
     this.root.updateMatrixWorld(true);
   }

@@ -15,11 +15,34 @@ import { fileURLToPath } from 'node:url';
 import { pngInfo } from './lib/png.mjs';
 import { writeZip } from './lib/zip.mjs';
 import { readWad } from './lib/wad.mjs';
+import { quantizePNG } from './lib/quant.mjs';
+import { createHash } from 'node:crypto';
+import { execFileSync } from 'node:child_process';
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const MOD = join(ROOT, 'mod');
 const args = process.argv.slice(2);
 const STRICT = args.includes('--strict');
+// Pack optimisation (source art in mod/ stays truecolour / WAV):
+//   sprites + HUD frames → 256-colour indexed PNGs; sounds → OGG Vorbis (if ffmpeg exists)
+const QUANT = !args.includes('--no-quantize');
+const OGG = !args.includes('--no-ogg') && (() => { try { execFileSync('ffmpeg', ['-hide_banner', '-encoders'], { stdio: 'pipe' }).toString().includes('libvorbis'); return true; } catch { return false; } })();
+const CACHE = join(ROOT, '.gz/cache');
+mkdirSync(CACHE, { recursive: true });
+function cached(kind, data, fn) {
+  const key = createHash('sha1').update(kind).update(data).digest('hex');
+  const f = join(CACHE, key);
+  if (existsSync(f)) return readFileSync(f);
+  const out = fn(data);
+  writeFileSync(f, out);
+  return out;
+}
+const oggOf = (wav) => cached('ogg-q3', wav, (d) => {
+  const tmpIn = join(CACHE, 'in.wav'), tmpOut = join(CACHE, 'out.ogg');
+  writeFileSync(tmpIn, d);
+  execFileSync('ffmpeg', ['-y', '-loglevel', 'error', '-i', tmpIn, '-c:a', 'libvorbis', '-q:a', '3', tmpOut]);
+  return readFileSync(tmpOut);
+});
 const OUT = resolve(ROOT, args.includes('--out') ? args[args.indexOf('--out') + 1] : 'dist/cosmic-calamity-assault.pk3');
 
 const walk = (d) => existsSync(d) ? readdirSync(d).flatMap((f) => { const p = join(d, f); return statSync(p).isDirectory() ? walk(p) : [p]; }) : [];
@@ -156,7 +179,13 @@ for (const f of files) {
   if (r.startsWith('textures/')) r = 'texsrc/walls/' + r.slice('textures/'.length);
   else if (r.startsWith('flats/')) r = 'texsrc/flats/' + r.slice('flats/'.length);
   else if (r.startsWith('graphics/hires/')) r = 'texsrc/gfx/' + r.slice('graphics/hires/'.length);
-  entries.push({ name: r, data: readFileSync(f) });
+  let data = readFileSync(f);
+  if (QUANT && f.endsWith('.png') && (r.startsWith('sprites/') || r.startsWith('graphics/hud/'))) {
+    const q = cached('quant256', data, quantizePNG);
+    if (q.length < data.length) data = q;
+  }
+  if (OGG && r.startsWith('sounds/') && r.endsWith('.wav')) { data = oggOf(data); r = r.replace(/\.wav$/, '.ogg'); }
+  entries.push({ name: r, data });
 }
 // the generated files were written after `files` was listed on a first run
 for (const g of ['mapinfo/doomednums.gen.txt', 'TEXTURES.gen.txt']) if (!entries.some((e) => e.name === g)) entries.push({ name: g, data: readFileSync(join(MOD, g)) });

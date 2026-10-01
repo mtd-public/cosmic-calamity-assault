@@ -641,6 +641,9 @@ function makeThings(lv, ctx) {
       if (!th.args[0]) lv.err('HackTerminal needs args[0] = seconds', t.line);
     }
     if (t.cls === 'ExitGate') th.meta.gate = { mask: th.args[0], tag: th.args[1] };
+    // HiveMind: args[0] = objective whose completion drops its shield (default 1),
+    //           args[1] = objective its death completes (default 2); its death lowers tag 666
+    if (t.cls === 'HiveMind') { th.meta.shieldObj = th.args[0] || 1; th.meta.deathObj = th.args[1] || 2; }
     if (p.ondeath) {
       if (!p.ondeath.special) lv.err(`${t.cls}: ondeath=Special(args)`, t.line);
       else th.meta.effect = { special: specialNumber(p.ondeath.special), args: p.ondeath.args.map((a) => resolveArg(lv, a, t.line)) };

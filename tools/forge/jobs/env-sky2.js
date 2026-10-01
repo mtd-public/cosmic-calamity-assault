@@ -276,7 +276,7 @@ export default async function (F, params = {}) {
     s.each((u, v, x, y, i) => {
       const k = lakeK(u); if (k <= 0 || v < HZ - 0.003) return;
       const ripple = fbm(u, v, 400, 40, 3, 2440), dv = clamp((v - HZ) / 0.25);
-      s.set(i, [mix(26, 8, dv) + ripple * 8, mix(28, 9, dv) + ripple * 9, mix(44, 14, dv) + ripple * 12], k);
+      s.set(i, [mix(18, 8, dv) + ripple * 5, mix(18, 8, dv) + ripple * 6, mix(30, 11, dv) + ripple * 8], k * (v < HZ + 0.06 ? 1 : 0.6));
     });
     // a low lakefront and the 1995 Ferris wheel on Navy Pier
     s.art((g) => {

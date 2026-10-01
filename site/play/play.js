@@ -493,9 +493,8 @@
       if (pad) log('[page] gamepad: ' + pad.id + ' (' + (pad.mapping || 'no standard mapping') + ')');
       syncWorkerLock();
     }
-    if (S.phase === 'ready' && pad && CCAPad.active(pad) && pad.buttons[0] && pad.buttons[0].pressed) {
-      start();   // A on the start screen
-    }
+    // No pad-button start: a gamepad press is not a user gesture (iOS), so
+    // fullscreen / audio need the click or tap on the start button.
     if (S.phase === 'running') {
       const dt = padLast ? now - padLast : 16;
       const evs = CCAPad.step(padState, pad, padOpts(), S.padMode, dt, now);

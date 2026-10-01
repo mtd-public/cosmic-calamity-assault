@@ -3,7 +3,7 @@
 // (flashlight, dual wield, grenade type, IRIS repeat). Lives in play scope;
 // the HUD reads it (ui may read play data).
 
-enum ESpeaker { SPK_IRIS, SPK_MARSH, SPK_KADE, SPK_CUSTODIAN, SPK_GUARD, SPK_SCIENTIST, SPK_HUM }
+enum ESpeaker { SPK_IRIS, SPK_MARSH, SPK_KADE, SPK_CUSTODIAN, SPK_GUARD, SPK_SCIENTIST, SPK_HUM, SPK_CIVILIAN }
 
 class CCAEvents : EventHandler
 {
@@ -30,6 +30,9 @@ class CCAEvents : EventHandler
 	double reviveFrac;
 	int hitMarkerTic;
 	int waypointPulse;
+	// ---------------------------------------------------------------- civilians (rescue)
+	int civTotal, civSaved, civLost;
+	int civFlashTic;
 	// computed in play scope for the UI (it can't trace or iterate thinkers)
 	Vector3 wpPos;
 	bool wpValid;
@@ -56,6 +59,10 @@ class CCAEvents : EventHandler
 		}
 		if (!e.IsSaveGame)
 		{
+			civTotal = civSaved = civLost = 0;
+			let ci = ThinkerIterator.Create("CCANPC");
+			CCANPC n;
+			while ((n = CCANPC(ci.Next())) != null) if (n.rescuable) civTotal++;
 			String start = "IRIS_" .. map .. "_START";
 			String txt = StringTable.Localize("$" .. start);
 			if (txt != start) Say(start, 70);
@@ -86,6 +93,45 @@ class CCAEvents : EventHandler
 		if (StringTable.Localize("$" .. key) != key) Say(key);
 	}
 
+	// ------------------------------------------------------------------ civilians API
+	void CivilianSaved(Actor who)
+	{
+		civSaved++;
+		civFlashTic = Level.maptime;
+		S_StartSound("iris/objective", CHAN_AUTO, CHANF_UI, 0.6, ATTN_NONE);
+		if (civSaved + civLost >= civTotal && civLost == 0) Say("IRIS_CIV_ALL");
+		else Say(String.Format("NPC_OFCTHANKS%d", random(1, 6)));
+	}
+	void CivilianLost(Actor who)
+	{
+		civLost++;
+		civFlashTic = Level.maptime;
+		if (civLost == 1) Say("IRIS_CIV_LOST");
+	}
+	// Idle aliens that can't see the player go after civilians they can see.
+	void HuntCivilians()
+	{
+		let ci = ThinkerIterator.Create("CCANPC");
+		CCANPC n;
+		while ((n = CCANPC(ci.Next())) != null)
+		{
+			if (!n.rescuable || n.saved || n.health <= 0) continue;
+			int hunters = 0;
+			let it = BlockThingsIterator.Create(n, 768);
+			while (it.Next() && hunters < 2)
+			{
+				let m = it.thing;
+				if (!m || m.health <= 0 || !m.bIsMonster || m.bFriendly || m.bDormant) continue;
+				if (m.target == n) { hunters++; continue; }
+				bool busy = m.target && m.target.health > 0 && (m.target.player ? m.CheckSight(m.target) : true);
+				if (busy || m.Distance3D(n) > 768 || !m.CheckSight(n)) continue;
+				m.target = n;
+				if (m.InStateSequence(m.CurState, m.SpawnState) && m.SeeState) m.SetState(m.SeeState);
+				hunters++;
+			}
+		}
+	}
+
 	// ------------------------------------------------------------------ subtitles API
 	// A LANGUAGE value is "SPEAKER|text", e.g. "IRIS|Door's jammed. Try the vent."
 	void Say(String key, int delay = 0)
@@ -104,6 +150,7 @@ class CCAEvents : EventHandler
 			else if (who == "GUARD") spk = SPK_GUARD;
 			else if (who == "SCIENTIST") spk = SPK_SCIENTIST;
 			else if (who == "HUM") spk = SPK_HUM;
+			else if (who == "OFFICE WORKER" || who == "CIVILIAN") spk = SPK_CIVILIAN;
 		}
 		// avoid stacking the same line twice
 		for (int i = 0; i < subText.Size(); i++) if (subText[i] == raw) return;
@@ -136,6 +183,7 @@ class CCAEvents : EventHandler
 
 		// secret hints (every half second)
 		if ((Level.maptime % 17) == 0) CheckSecretHints();
+		if (civTotal > 0 && (Level.maptime % 35) == 11) HuntCivilians();
 		UpdateHudData();
 	}
 

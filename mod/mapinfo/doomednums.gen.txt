@@ -104,4 +104,25 @@ DoomEdNums
 	20901 = LightLamp
 	20902 = LightAlarm
 	20903 = LightNeon
+	20009 = ManInBlack
+	20108 = OfficeWorker
+	20109 = OfficeWorkerF
+	20110 = DeadOfficeWorker
+	20514 = InvasionPlans
+	20606 = SafeZone
+	20607 = Helicopter
+	20608 = HelipadMark
+	20841 = PropCubicle
+	20842 = PropCopier
+	20843 = PropWaterCooler
+	20844 = PropPlant
+	20845 = PropBurningPapers
+	20846 = PropBurningDesk
+	20847 = PropVending
+	20848 = PropTaxi
+	20849 = PropBus
+	20850 = PropPicasso
+	20881 = PropRadarDish
+	20882 = PropAntenna
+	20883 = PropBarrier
 }

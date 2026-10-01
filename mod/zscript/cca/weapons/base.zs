@@ -276,7 +276,7 @@ class CCAWeapon : Weapon abstract
 		bool trig = w.semiAuto ? pressed : (btn & BT_ATTACK) != 0;
 		if (trig)
 		{
-			if (w.HasRound(false)) { player.SetPSprite(PSP_WEAPON, w.FindStateByString(w.ads ? "ADSFire" : "Fire")); return; }
+			if (w.HasRound(false)) { player.SetPSprite(PSP_WEAPON, w.ads ? w.FindState("ADSFire") : w.FindState("Fire")); return; }
 			if (pressed)
 			{
 				A_StartSound("weapons/dryfire", CHAN_WEAPON);
@@ -303,7 +303,7 @@ class CCAWeapon : Weapon abstract
 		}
 		else
 		{
-			State fs = w.FindStateByString(w.ads ? "ADSFlash" : "Flash");
+			State fs = w.ads ? w.FindState("ADSFlash") : w.FindState("Flash");
 			if (fs) { player.SetPSprite(PSP_FLASH, fs, true); A_OverlayRenderStyle(PSP_FLASH, STYLE_Add); }
 		}
 		A_StartSound(w.fireSound, left ? CHAN_7 : CHAN_WEAPON);

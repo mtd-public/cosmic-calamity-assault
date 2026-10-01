@@ -50,7 +50,7 @@ export class Viewmodel {
     if (typeof at === 'string') return this.poseOf(this.gun.anchors[at], off);
     if (at.isObject3D) return this.poseOf(at, off);
     // explicit: { p, r } (Euler YXZ) or { p, q }
-    const p = V3(...at.p), q = at.q || Q(...(at.r || [0, 0, 0]));
+    const p = V3(...at.p), q = at.q ? at.q.clone() : Q(...(at.r || [0, 0, 0]));
     return { p, q };
   }
   pose(P) {
@@ -86,7 +86,7 @@ export class Viewmodel {
     this.root.updateMatrixWorld(true);
     for (const [k, v] of Object.entries(P.props || {})) {
       if (!v.hand) continue;
-      const o = this.props[k], h = this[v.hand].hand.root;
+      const o = this.props[k], h = v.fore ? this[v.hand].fore : this[v.hand].hand.root;
       o.visible = v.vis ?? true;
       if (o.parent !== this.root) this.root.add(o);
       const q = Q(...(v.r || [0, 0, 0]), v.order || 'XYZ');
@@ -114,4 +114,13 @@ export function fistAnchor(parent, { at = [0, 0, 0], axis = [0, 0, -1], back = [
   const a = new THREE.Group(); a.position.set(at[0] - c.x, at[1] - c.y, at[2] - c.z);
   a.quaternion.setFromRotationMatrix(R);
   parent.add(a); return a;
+}
+
+// Hand orientation from a pointing direction (the fingers / a forearm blade
+// along dir) and a hint for where the back of the hand faces.
+export function aimQ(dir, backHint = [0, 1, 0]) {
+  const Zm = V3(...dir).normalize().negate(); // hand +Z points back along the arm
+  const Y = V3(...backHint); Y.addScaledVector(Zm, -Y.dot(Zm)).normalize();
+  const X = new THREE.Vector3().crossVectors(Y, Zm);
+  return new THREE.Quaternion().setFromRotationMatrix(new THREE.Matrix4().makeBasis(X, Y, Zm));
 }

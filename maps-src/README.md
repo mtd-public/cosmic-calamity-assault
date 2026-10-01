@@ -7,7 +7,7 @@ with where it is and what it should say.
 
 ```
 node tools/mapc.mjs                 # all maps
-node tools/mapc.mjs map02           # one map
+node tools/mapc.mjs map03           # one map
 node tools/mapc.mjs path/to/x.txt   # any source file
   --no-nodes  --no-preview  --quiet  --unreached (list unreached areas)  --out DIR
 ```
@@ -112,15 +112,15 @@ GAME_DESIGN §5.4), and damaging floor on the route.
   That is fine for city blocks and perimeter walls, but it makes a tent or shed look like a tower.
   Build small structures from *roof blocks*: raised-floor sectors at the roof height with the
   facade texture as their `lower=`, and mark them `scenery`. Give the interior a sky ceiling plus a
-  3D-slab roof, and use open doorways, not doors (MAP01 shed and hut, MAP03 tents and cabin).
+  3D-slab roof, and use open doorways, not doors (MAP01 shed and hut, MAP05 tents and cabin).
 - **Facades with signs.** Sign textures are 64-128 units tall. Stack raised blocks so that each
-  texture is exactly one block's lower face (MAP02: storefront block at 136 → neon block at 200).
+  texture is exactly one block's lower face (MAP03: storefront block at 136 → neon block at 200).
 - **Windows.** The player's eye is 41 units above the floor, so keep sills at about 24, not 40.
 - **Looking out into space.** A sector with `ff=F_SKY1 cf=F_SKY1`, ringed by a zero-height
-  `F_SKY1` sector, shows sky on every side through a window (MAP04 observation gallery).
+  `F_SKY1` sector, shows sky on every side through a window (MAP06 observation gallery).
 - **Pits.** Anything more than 24 units below its surroundings needs steps out, or the softlock
-  check fails (MAP02 subway track bed).
+  check fails (MAP03 subway track bed).
 
 ## Tags reserved
-- MAP04 tag **666**: the exit barrier. The Hive Mind's death runs `Floor_LowerToLowest(666,16)`.
+- MAP06 tag **666**: the exit barrier. The Hive Mind's death runs `Floor_LowerToLowest(666,16)`.
 - Symbolic `@tags` are numbered from 100. 3D-floor control tags start at 900.

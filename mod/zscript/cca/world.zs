@@ -195,6 +195,88 @@ class ExitGate : Actor
 	States { Spawn: TNT1 A -1; Stop; }
 }
 
+// ---------------------------------------------------------------- rescue + helicopter exit
+// Where rescued civilians run to (and leave the map out of your sight).
+class SafeZone : Actor
+{
+	Default { +NOBLOCKMAP; +NOGRAVITY; +NOSECTOR; +DONTSPLASH; RenderStyle "None"; }
+	States { Spawn: TNT1 A -1; Stop; }
+}
+
+// The black helicopter on the roof (MAP02, Dark Forces' Secret Base exit).
+// args[0]: objective mask needed before you can board
+// args[1]: objective completed on boarding (0 = none); boarding ends the level
+// args[2]: 1 = rotors idling slowly until you board
+class Helicopter : Actor
+{
+	bool boarded;
+	int boardTic, nagTic;
+	Default
+	{
+		Radius 56; Height 96; Mass 10000; Scale 1.0;
+		+SOLID +NOGRAVITY +DONTSPLASH +NOTAUTOAIMED
+	}
+	override void PostBeginPlay()
+	{
+		Super.PostBeginPlay();
+		A_StartSound("world/helirotor", CHAN_BODY, CHANF_LOOPING, args[2] ? 0.5 : 0.9, ATTN_NORM);
+		A_AttachLight('beacon', DynamicLight.PulseLight, Color(255, 40, 30), 24, 72, DynamicLight.LF_ATTENUATE, (0, 0, 92), 0.6);
+		A_AttachLight('cabin', DynamicLight.PointLight, Color(120, 160, 255), 96, 0, DynamicLight.LF_ATTENUATE, (0, 0, 48));
+		if (args[2]) SetStateLabel("Idle");
+	}
+	override bool Used(Actor user) { if (user && user.player) TryBoard(user); return true; }
+	void TryBoard(Actor p)
+	{
+		if (boarded) return;
+		let ev = CCAEvents.Get();
+		if (!ev) return;
+		if (!ev.MaskDone(args[0]))
+		{
+			if (Level.maptime > nagTic) { nagTic = Level.maptime + 350; ev.Say("IRIS_HELI_LOCKED"); }
+			return;
+		}
+		boarded = true;
+		boardTic = Level.maptime;
+		if (args[1] > 0) ev.Complete(args[1]);
+		ev.Say("IRIS_HELI_BOARD");
+		A_StartSound("world/heliboard", CHAN_VOICE, 0, 1, ATTN_NONE);
+		A_StartSound("world/helirotor", CHAN_BODY, CHANF_LOOPING, 1.0, ATTN_NONE);
+		SetStateLabel("Spawn");
+		p.bInvulnerable = true;
+		if (p.player) p.player.cheats |= CF_TOTALLYFROZEN;
+	}
+	override void Tick()
+	{
+		Super.Tick();
+		if (isFrozen()) return;
+		if (boarded)
+		{
+			if (Level.maptime - boardTic == 70) Level.ExitLevel(0, false);
+			return;
+		}
+		if ((Level.maptime % 8) != 0) return;
+		let p = players[consoleplayer].mo;
+		if (p && p.health > 0 && Distance2D(p) < Radius + 72 && abs(p.pos.z - pos.z) < 64) TryBoard(p);
+	}
+	States
+	{
+	Spawn:
+		DHEL AB 2;
+		Loop;
+	Idle:
+		DHEL CD 5;
+		Loop;
+	}
+}
+
+// The H on the pad: a floor decal.
+class HelipadMark : Actor
+{
+	Default { +NOBLOCKMAP; +NOGRAVITY; +NOINTERACTION; +FLATSPRITE; +DONTSPLASH; Scale 1.0; }
+	override void PostBeginPlay() { Super.PostBeginPlay(); SetZ(floorz + 0.5); }
+	States { Spawn: DHPD A -1; Stop; }
+}
+
 // ---------------------------------------------------------------- curtains, fire, sparks, steam
 // A curtain billowing in and out of a broken window: a wall sprite along
 // the thing's angle (place it facing into the room).

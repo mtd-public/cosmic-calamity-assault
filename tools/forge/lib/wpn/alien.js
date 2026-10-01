@@ -41,10 +41,10 @@ export function makeCell(len = 0.07, r = 0.011, color = TEAL) {
 export function makeStinger() {
   const root = new THREE.Group(); root.name = 'ASTG'; const m = A();
   // carapace: a curved iridescent shell, rounded rear, tapering nose
-  put(root, body([[0.04, 0.018, 0.026, 0.03], [0.015, 0.02, 0.036, 0.046], [-0.04, 0.02, 0.038, 0.048], [-0.1, 0.017, 0.032, 0.04], [-0.15, 0.014, 0.022, 0.028], [-0.175, 0.012, 0.012, 0.016]], m.chrome, { r: (th, i) => 1 + 0.06 * Math.pow(Math.max(0, Math.sin(th)), 12) }));
+  put(root, body([[0.035, 0.014, 0.02, 0.022], [0.012, 0.016, 0.029, 0.036], [-0.04, 0.017, 0.031, 0.038], [-0.1, 0.015, 0.027, 0.032], [-0.15, 0.013, 0.019, 0.024], [-0.175, 0.012, 0.011, 0.014]], m.chrome, { r: (th, i) => 1 + 0.06 * Math.pow(Math.max(0, Math.sin(th)), 12) }));
   // dorsal energy slot: glowing core under three bone ribs
-  const core = put(root, energyCore(0.09, 0.006, VIOLET, 1.25), [0, 0.042, -0.055]);
-  for (let i = 0; i < 4; i++) put(root, new THREE.Mesh(rbox(0.024, 0.007, 0.006, 0.0025), m.bone), [0, 0.044, -0.02 - i * 0.025]);
+  const core = put(root, energyCore(0.09, 0.0055, VIOLET, 1.25), [0, 0.034, -0.055]);
+  for (let i = 0; i < 4; i++) put(root, new THREE.Mesh(rbox(0.02, 0.006, 0.006, 0.0025), m.bone), [0, 0.036, -0.02 - i * 0.025]);
   // belly plates (bone)
   put(root, body([[0.03, -0.006, 0.022, 0.016], [-0.02, -0.008, 0.03, 0.02], [-0.09, -0.004, 0.024, 0.016], [-0.12, 0.0, 0.014, 0.01]], m.bone));
   // mandible prongs + emitter
@@ -55,8 +55,9 @@ export function makeStinger() {
   const emit = put(root, new THREE.Mesh(torus(0.006, 0.0018, Math.PI * 2, 20, 8), glow(VIOLET, 1.2)), [0, 0.013, -0.178]);
   put(root, new THREE.Mesh(sphere(0.004, 12, 8), glow(0xf0d8ff, 1.3)), [0, 0.013, -0.178]);
   // sights: two bone horns at the rear, a glowing bead up front
-  for (const s of [-1, 1]) put(root, new THREE.Mesh(new THREE.ConeGeometry(0.003, 0.012, 8), m.boneD), [s * 0.005, 0.046, 0.02], [-0.3, 0, s * 0.15]);
-  put(root, new THREE.Mesh(sphere(0.0022, 10, 8), glow(0x90ffe0, 1.2)), [0, 0.0405, -0.135]);
+  for (const s of [-1, 1]) put(root, new THREE.Mesh(new THREE.ConeGeometry(0.0035, 0.026, 8), m.boneD), [s * 0.0055, 0.044, 0.02], [-0.15, 0, s * 0.12]);
+  put(root, new THREE.Mesh(new THREE.ConeGeometry(0.0025, 0.024, 8), m.boneD), [0, 0.04, -0.135], [0, 0, 0]);
+  put(root, new THREE.Mesh(sphere(0.0026, 10, 8), glow(0x90ffe0, 1.25)), [0, 0.0535, -0.135]);
   // grip + claw trigger
   const gTop = V3(0, -0.012, 0.012), gBot = V3(0, -0.112, 0.046);
   const gAxis = alienGrip(root, m, gTop, gBot);
@@ -76,7 +77,7 @@ export function makeStinger() {
   const bot = gTop.clone().lerp(gBot, 0.28 + 0.7);
   anchors.magwell = group(root, [gBot.x, gBot.y, gBot.z]); anchors.magwell.quaternion.copy(magQ);
   anchors.Lrack = group(root, [-0.07, 0.035, 0.0]); anchors.Lrack.quaternion.copy(new THREE.Quaternion().setFromEuler(new THREE.Euler(0, -Math.PI / 2, -0.2, 'YXZ')));
-  const gun = { root, parts: { mag, trigger, core }, anchors, gAxis, magQ, magLen: 0.07, sightY: 0.0465, name: 'ASTG', makeMag };
+  const gun = { root, parts: { mag, trigger, core }, anchors, gAxis, magQ, magLen: 0.07, sightY: 0.0545, name: 'ASTG', makeMag };
   const coreMat = [glow(VIOLET, 1.0), glow(0xe0c0ff, 1.35)];
   gun.set = (s = {}) => {
     mag.position.copy(gAxis).multiplyScalar((s.mag ?? 0)); mag.visible = s.magVis ?? true;
@@ -93,14 +94,17 @@ export function makeStinger() {
 export function makeScatter() {
   const root = new THREE.Group(); root.name = 'ASCT'; const m = A();
   // broad flattened carapace widening to a fan muzzle
-  put(root, body([[0.05, 0.022, 0.03, 0.036], [0.0, 0.026, 0.05, 0.05], [-0.12, 0.024, 0.06, 0.05], [-0.28, 0.02, 0.085, 0.04, 2.8], [-0.4, 0.018, 0.12, 0.034, 3.2], [-0.43, 0.018, 0.12, 0.03, 3.2]], m.chrome, { radial: 40, r: (th) => 1 + 0.05 * Math.pow(Math.max(0, Math.sin(th)), 10) }));
+  put(root, body([[0.045, 0.018, 0.024, 0.026], [0.0, 0.02, 0.04, 0.038], [-0.12, 0.02, 0.048, 0.04], [-0.28, 0.018, 0.075, 0.034, 2.8], [-0.4, 0.018, 0.11, 0.03, 3.2], [-0.43, 0.018, 0.11, 0.026, 3.2]], m.chrome, { radial: 40, r: (th) => 1 + 0.05 * Math.pow(Math.max(0, Math.sin(th)), 10) }));
   // bone ribs over the top
-  for (let i = 0; i < 7; i++) { const z = -0.02 - i * 0.05, w = 0.052 + i * 0.0105; const rib = put(root, new THREE.Mesh(torus(w * 0.5, 0.0045, Math.PI, 24, 6), m.bone), [0, 0.022, z], [0, 0, 0]); rib.scale.set(1, 0.5 - i * 0.02, 1); }
+  for (let i = 0; i < 7; i++) { const z = -0.02 - i * 0.05, w = 0.044 + i * 0.0095; const rib = put(root, new THREE.Mesh(torus(w * 0.5, 0.004, Math.PI, 24, 6), m.bone), [0, 0.02, z], [0, 0, 0]); rib.scale.set(1, 0.45 - i * 0.02, 1); }
   // five emitters in a fan, teal glow
   const emitters = [];
   for (let i = 0; i < 5; i++) { const x = (i - 2) * 0.022, a = (i - 2) * 0.12; const e = put(root, new THREE.Mesh(torus(0.0075, 0.0022, Math.PI * 2, 18, 8), glow(TEAL, 1.15)), [x, 0.018, -0.432], [0, a, 0]); emitters.push(e); put(root, new THREE.Mesh(sphere(0.0045, 10, 8), glow(0xd0fff4, 1.3)), [x, 0.018, -0.43]); }
   // bead sight + top channel
-  put(root, new THREE.Mesh(sphere(0.003, 10, 8), glow(0x90ffe0, 1.25)), [0, 0.048, -0.38]);
+  put(root, new THREE.Mesh(new THREE.ConeGeometry(0.003, 0.026, 8), m.boneD), [0, 0.044, -0.38]);
+  put(root, new THREE.Mesh(sphere(0.0032, 10, 8), glow(0x90ffe0, 1.25)), [0, 0.058, -0.38]);
+  // rear sight: a bone fin with a notch
+  for (const sx of [-1, 1]) put(root, new THREE.Mesh(new THREE.ConeGeometry(0.004, 0.03, 8), m.boneD), [sx * 0.007, 0.046, 0.025], [-0.1, 0, sx * 0.1]);
   // under-sleeve "pump" (ribbed bone, slides +Z)
   const pump = group(root); pump.name = 'pump';
   const ps = [];
@@ -119,7 +123,7 @@ export function makeScatter() {
   anchors.port = group(root, [0, -0.03, -0.06]);
   anchors.muzzle = group(root, [0, 0.018, -0.44]);
   anchors.eject = group(root, [0.03, 0.03, -0.05]);
-  const gun = { root, parts: { pump, trigger }, anchors, sightY: 0.051, name: 'ASCT' };
+  const gun = { root, parts: { pump, trigger }, anchors, sightY: 0.0605, name: 'ASCT' };
   gun.set = (s = {}) => { pump.position.z = (s.pump ?? 0) * 0.07; trigger.rotation.x = -(s.trigger ?? 0) * 0.3; };
   gun.set();
   return gun;
@@ -128,21 +132,21 @@ export function makeScatter() {
 // ---------------------------------------------------------------- APSM plasma SMG
 export function makePlasmaSMG() {
   const root = new THREE.Group(); root.name = 'APSM'; const m = A();
-  put(root, body([[0.12, 0.02, 0.03, 0.04], [0.06, 0.024, 0.04, 0.05], [-0.05, 0.026, 0.044, 0.056], [-0.2, 0.022, 0.04, 0.046], [-0.3, 0.018, 0.026, 0.03], [-0.34, 0.016, 0.016, 0.02]], m.chrome, { radial: 36, r: (th) => 1 + 0.05 * Math.pow(Math.max(0, Math.sin(th)), 10) }));
+  put(root, body([[0.085, 0.02, 0.024, 0.03], [0.05, 0.022, 0.034, 0.042], [-0.05, 0.024, 0.036, 0.046], [-0.2, 0.021, 0.033, 0.04], [-0.3, 0.018, 0.024, 0.028], [-0.34, 0.016, 0.015, 0.018]], m.chrome, { radial: 36, r: (th) => 1 + 0.05 * Math.pow(Math.max(0, Math.sin(th)), 10) }));
   // glowing coil along both sides (heat)
   const coils = [];
-  for (const s of [-1, 1]) for (let i = 0; i < 8; i++) { const c = put(root, new THREE.Mesh(torus(0.009, 0.0022, Math.PI * 2, 14, 6), glow(VIOLET, 1.1)), [s * 0.021, 0.022, 0.03 - i * 0.03], [0, Math.PI / 2, 0]); coils.push(c); }
+  for (const s of [-1, 1]) for (let i = 0; i < 8; i++) { const c = put(root, new THREE.Mesh(torus(0.008, 0.002, Math.PI * 2, 14, 6), glow(VIOLET, 1.1)), [s * 0.0175, 0.022, 0.03 - i * 0.03], [0, Math.PI / 2, 0]); coils.push(c); }
   // spine of bone vertebrae on top
-  for (let i = 0; i < 9; i++) put(root, new THREE.Mesh(sphere(0.008, 12, 8), m.bone), [0, 0.052, 0.07 - i * 0.035]).scale.set(1.2, 0.7, 1.4);
+  for (let i = 0; i < 9; i++) put(root, new THREE.Mesh(sphere(0.007, 12, 8), m.bone), [0, 0.045, 0.06 - i * 0.034]).scale.set(1.2, 0.7, 1.4);
   // vent panels (left/right), hinged at the top edge, open outward
   const vents = [];
   for (const s of [-1, 1]) {
-    const hinge = group(root, [s * 0.022, 0.04, -0.09]);
+    const hinge = group(root, [s * 0.018, 0.04, -0.09]);
     put(hinge, new THREE.Mesh(rbox(0.004, 0.032, 0.09, 0.0015), m.bone), [s * 0.002, -0.016, 0]);
     for (let i = 0; i < 4; i++) put(hinge, new THREE.Mesh(rbox(0.005, 0.004, 0.08, 0.001), m.boneD), [s * 0.003, -0.006 - i * 0.007, 0]);
     vents.push({ hinge, s });
   }
-  const hot = put(root, new THREE.Mesh(rbox(0.036, 0.026, 0.085, 0.004), glow(0xff8a50, 1.0)), [0, 0.022, -0.09]);
+  const hot = put(root, new THREE.Mesh(rbox(0.03, 0.024, 0.085, 0.004), glow(0xff8a50, 1.0)), [0, 0.022, -0.09]);
   // emitter + claw foregrip
   put(root, new THREE.Mesh(torus(0.008, 0.0022, Math.PI * 2, 20, 8), glow(VIOLET, 1.2)), [0, 0.016, -0.342]);
   put(root, new THREE.Mesh(sphere(0.005, 12, 8), glow(0xf0d8ff, 1.3)), [0, 0.016, -0.34]);
@@ -193,7 +197,7 @@ export function makeBlade() {
   const prof = fillet([[0.0, 0.012], [0.06, 0.016], [0.16, 0.026], [0.25, 0.04], [0.32, 0.062], [0.27, 0.03], [0.18, -0.004], [0.08, -0.028], [0.0, -0.03]], [0, 0.02, 0.03, 0.02, 0, 0.02, 0.02, 0.01, 0], 4);
   put(bladeRoot, new THREE.Mesh(extrude(prof, 0.01, { bevel: 0.0025 }), m.bone));
   const edge = fillet([[0.02, -0.0315], [0.08, -0.0295], [0.18, -0.0055], [0.27, 0.0285], [0.322, 0.0625], [0.268, 0.038], [0.176, 0.006], [0.078, -0.018], [0.02, -0.02]], [0, 0.01, 0.03, 0.02, 0, 0.02, 0.02, 0.01, 0], 4);
-  const edgeM = put(bladeRoot, new THREE.Mesh(extrude(edge, 0.005, { bevel: 0.0012 }), glow(0xd8a8ff, 1.2)));
+  const edgeM = put(bladeRoot, new THREE.Mesh(extrude(edge, 0.006, { bevel: 0.0015 }), glow(0xd8a8ff, 1.25)), [0, -0.003, 0]);
   // bone barbs along the spine
   for (let i = 0; i < 4; i++) put(bladeRoot, new THREE.Mesh(new THREE.ConeGeometry(0.004, 0.018, 8), m.boneD), [0, 0.006 + i * 0.006, -(0.06 + i * 0.05)], [-1.2, 0, 0]);
   g.userData.edge = edgeM;

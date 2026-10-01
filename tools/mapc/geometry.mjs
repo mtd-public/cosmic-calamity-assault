@@ -364,14 +364,20 @@ function makeSectors(lv) {
       if (!p.enter.special) lv.err(`'${s.char}': enter= needs Special(args)`, s.def.line);
       s.enter = p.enter;
     }
-    if (p.slab) {
-      if (!p.slab.range) lv.err(`'${s.char}': slab=z0..z1`, s.def.line);
-      else {
-        const [z0, z1] = p.slab.range;
-        if (z0 < s.floor || z1 > s.ceil || z1 <= z0) lv.err(`'${s.char}': slab ${z0}..${z1} outside floor ${s.floor}..ceil ${s.ceil}`, s.def.line);
-        s.slab = { z0, z1, top: p.slabtop || s.ff, bot: p.slabbot || s.cf, side: p.slabside || p.wall, light: p.slablight ?? Math.max(0, s.light - 24), type: p.slabtype ?? 1, flags: p.slabflags ?? 0, alpha: p.slabalpha ?? 255 };
-      }
+    // 3D floors: slab=z0..z1 and slab2..slab6 (stacked storeys); slabN* keys override slab* textures
+    s.slabs = [];
+    for (const n of ['', '2', '3', '4', '5', '6']) {
+      const v = p['slab' + n];
+      if (v === undefined) continue;
+      if (!v.range) { lv.err(`'${s.char}': slab${n}=z0..z1`, s.def.line); continue; }
+      const [z0, z1] = v.range;
+      if (z0 < s.floor || z1 > s.ceil || z1 <= z0) lv.err(`'${s.char}': slab${n} ${z0}..${z1} outside floor ${s.floor}..ceil ${s.ceil}`, s.def.line);
+      const k = (key) => p['slab' + n + key] ?? p['slab' + key];
+      s.slabs.push({ z0, z1, top: k('top') || s.ff, bot: k('bot') || s.cf, side: k('side') || p.wall, light: k('light') ?? Math.max(0, s.light - 24), type: k('type') ?? 1, flags: k('flags') ?? 0, alpha: k('alpha') ?? 255 });
     }
+    s.slabs.sort((a, b) => a.z0 - b.z0);
+    for (let i = 1; i < s.slabs.length; i++) if (s.slabs[i].z0 < s.slabs[i - 1].z1) lv.err(`'${s.char}': slabs overlap`, s.def.line);
+    s.slab = s.slabs[0] || null;
     if (s.ceil - s.floor < 0) lv.err(`'${s.char}' at ${where(s)}: ceiling below floor`, s.def.line);
   }
   // texture roles
@@ -554,15 +560,16 @@ function mergeLines(lv) {
 function makeControls(lv) {
   const specs = new Map();
   for (const s of lv.sectors) {
-    if (!s.slab) continue;
-    const k = JSON.stringify(s.slab);
-    if (!specs.has(k)) {
-      let t = 900; while (lv.usedTags.has(t)) t++;
-      lv.usedTags.add(t);
-      specs.set(k, { tag: t, slab: s.slab, targets: [] });
+    for (const slab of s.slabs || []) {
+      const k = JSON.stringify(slab);
+      if (!specs.has(k)) {
+        let t = 900; while (lv.usedTags.has(t)) t++;
+        lv.usedTags.add(t);
+        specs.set(k, { tag: t, slab, targets: [] });
+      }
+      const sp = specs.get(k);
+      sp.targets.push(s); s.tags.push(sp.tag);
     }
-    const sp = specs.get(k);
-    sp.targets.push(s); s.tags.push(sp.tag);
   }
   // control sectors: 64x64 squares in a row below the map
   let x = 0;
@@ -621,9 +628,11 @@ function makeThings(lv, ctx) {
     const sec = sectorAt(lv, x, y);
     if (!sec) { lv.err(`${t.cls} at col ${t.col} row ${t.row} is not inside a sector`, t.line); continue; }
     let height = 0;
-    if (p.z === 'top') {
-      if (!sec.slab) lv.err(`${t.cls} at col ${t.col} row ${t.row}: z=top but no slab there`, t.line);
-      else height = sec.slab.z1 - sec.floor;
+    const zt = typeof p.z === 'string' && /^top(\d?)$/.exec(p.z);
+    if (zt) {
+      const i = zt[1] ? +zt[1] - 1 : 0;   // z=top / top2 / top3: stand on that slab (lowest first)
+      if (!sec.slabs || !sec.slabs[i]) lv.err(`${t.cls} at col ${t.col} row ${t.row}: z=${p.z} but no such slab there`, t.line);
+      else height = sec.slabs[i].z1 - sec.floor;
     } else if (typeof p.z === 'number') height = p.z - sec.floor;
     const args = (p.args === undefined ? [] : Array.isArray(p.args) ? p.args : [p.args]).map((a) => resolveArg(lv, a, t.line));
     for (let i = 0; i < 5; i++) if (p['a' + i] !== undefined) args[i] = resolveArg(lv, p['a' + i], t.line);
@@ -645,6 +654,9 @@ function makeThings(lv, ctx) {
       if (!th.args[0]) lv.err('HackTerminal needs args[0] = seconds', t.line);
     }
     if (t.cls === 'ExitGate') th.meta.gate = { mask: th.args[0], tag: th.args[1] };
+    if (t.cls === 'InvasionPlans') th.meta.objective = p.obj ?? (th.args[0] || 1);
+    // Helicopter: boarding needs objective mask args[0], completes objective args[1] and ends the level
+    if (t.cls === 'Helicopter') th.meta.heli = { mask: th.args[0], obj: th.args[1] };
     // HiveMind: args[0] = objective whose completion drops its shield (default 1),
     //           args[1] = objective its death completes (default 2); its death lowers tag 666
     if (t.cls === 'HiveMind') { th.meta.shieldObj = th.args[0] || 1; th.meta.deathObj = th.args[1] || 2; }

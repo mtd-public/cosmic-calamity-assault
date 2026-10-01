@@ -9,8 +9,8 @@ class CCAStatusBar : BaseStatusBar
 	HUDFont fSmall, fBig;
 	const HW = 640;
 	const HH = 400;
-	static const Color SPK_COL[] = { 0xff8cf7a0, 0xffe8d9b0, 0xff9fd3ff, 0xffc9c9c9, 0xffffcf6e, 0xffffffff, 0xffb18cff };
-	static const String SPK_NAME[] = { "IRIS", "MARSH", "KADE", "CUSTODIAN", "GUARD", "SCIENTIST", "???" };
+	static const Color SPK_COL[] = { 0xff8cf7a0, 0xffe8d9b0, 0xff9fd3ff, 0xffc9c9c9, 0xffffcf6e, 0xffffffff, 0xffb18cff, 0xffffb0a0 };
+	static const String SPK_NAME[] = { "IRIS", "MARSH", "KADE", "CUSTODIAN", "GUARD", "SCIENTIST", "???", "CIVILIAN" };
 
 	override void Init()
 	{
@@ -77,7 +77,7 @@ class CCAStatusBar : BaseStatusBar
 	// ---------------------------------------------------------------- objectives
 	void DrawObjectives(CCAEvents ev)
 	{
-		if (!ev || ev.objText.Size() == 0) return;
+		if (!ev || (ev.objText.Size() == 0 && ev.civTotal == 0)) return;
 		double y = 84;
 		int R = DI_SCREEN_RIGHT_TOP;
 		int cur = ev.CurrentObjective();
@@ -96,6 +96,16 @@ class CCAStatusBar : BaseStatusBar
 				Fill(0xb0a0a0a0, -8 - w, y + 5, w, 1, R);
 			}
 			y += 10;
+		}
+		// civilians saved (maps with rescuable office workers)
+		if (ev.civTotal > 0)
+		{
+			bool cflash = Level.maptime - ev.civFlashTic < 70 && (Level.maptime % 10) < 5;
+			int left = ev.civTotal - ev.civSaved - ev.civLost;
+			String txt = String.Format("%s %d / %d%s", StringTable.Localize("$C51_HUD_CIVS"), ev.civSaved, ev.civTotal,
+				ev.civLost > 0 ? String.Format("  (%d %s)", ev.civLost, StringTable.Localize("$C51_HUD_CIVLOST")) : "");
+			int col = cflash ? Font.CR_WHITE : left == 0 ? Font.CR_DARKGRAY : Font.CR_LIGHTBLUE;
+			DrawString(fSmall, txt, (-8, y + 2), DI_SCREEN_RIGHT_TOP | DI_TEXT_ALIGN_RIGHT, col, 0.9, -1, 4, (0.7, 0.7));
 		}
 	}
 

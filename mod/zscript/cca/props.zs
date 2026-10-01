@@ -469,7 +469,7 @@ class ExplosiveDrum : Actor
 	}
 }
 
-// Hive conduit (MAP04). args[0] = 1: shootable; each one destroyed slows
+// Hive conduit (MAP06). args[0] = 1: shootable; each one destroyed slows
 // the Hive Mind's spawning and IRIS counts them down.
 class PropHiveConduit : Actor
 {
@@ -490,4 +490,112 @@ class PropHiveConduit : Actor
 		DHVC A -1;
 		Stop;
 	}
+}
+
+// ---------------------------------------------------------------- office tower + the Loop (MAP04)
+// args[0] = 1: on fire
+class PropCubicle : CCAProp
+{
+	Default { Radius 28; Height 40; +SOLID }
+	override void PostBeginPlay()
+	{
+		Super.PostBeginPlay();
+		if (args[0] == 1)
+		{
+			SetStateLabel("Burning");
+			A_AttachLight('glow', DynamicLight.FlickerLight, Color(255, 140, 50), 144, 96, DynamicLight.LF_ATTENUATE, (0, 0, 30), 0.15);
+			A_StartSound("world/fire", CHAN_BODY, CHANF_LOOPING, 0.35, ATTN_STATIC);
+		}
+	}
+	States
+	{
+	Spawn:
+		DCUB A -1;
+		Stop;
+	Burning:
+		DCUB BCDE 3 Bright;
+		Loop;
+	}
+}
+class PropCopier : CCAProp
+{
+	Default { Radius 16; Height 36; +SOLID }
+	States { Spawn: DCPY A -1; Stop; }
+}
+// args[0] = 1: knocked over, leaking
+class PropWaterCooler : CCAProp
+{
+	Default { Radius 10; Height 40; +SOLID }
+	override void PostBeginPlay() { Super.PostBeginPlay(); if (args[0] == 1) { frame = 1; A_SetSize(12, 12); } }
+	States { Spawn: DWCL A -1; Stop; }
+}
+class PropPlant : CCAProp
+{
+	Default { Radius 10; Height 40; +SOLID }
+	States { Spawn: DPLT A -1; Stop; }
+}
+class PropBurningPapers : CCAProp
+{
+	Default { Radius 12; Height 16; }
+	override void PostBeginPlay()
+	{
+		Super.PostBeginPlay();
+		A_AttachLight('glow', DynamicLight.FlickerLight, Color(255, 150, 60), 96, 64, DynamicLight.LF_ATTENUATE, (0, 0, 12), 0.15);
+		A_StartSound("world/fire", CHAN_BODY, CHANF_LOOPING, 0.25, ATTN_STATIC);
+		tics = random(1, 3);
+	}
+	States { Spawn: DPBN ABCD 3 Bright; Loop; }
+}
+class PropBurningDesk : CCAProp
+{
+	Default { Radius 24; Height 30; +SOLID }
+	override void PostBeginPlay()
+	{
+		Super.PostBeginPlay();
+		A_AttachLight('glow', DynamicLight.FlickerLight, Color(255, 140, 50), 160, 112, DynamicLight.LF_ATTENUATE, (0, 0, 28), 0.15);
+		A_StartSound("world/fire", CHAN_BODY, CHANF_LOOPING, 0.35, ATTN_STATIC);
+		tics = random(1, 3);
+	}
+	States { Spawn: DDBN ABCD 3 Bright; Loop; }
+}
+class PropVending : CCAProp
+{
+	Default { Radius 16; Height 56; +SOLID }
+	override void PostBeginPlay() { Super.PostBeginPlay(); A_AttachLight('glow', DynamicLight.PointLight, Color(200, 230, 255), 72, 0, DynamicLight.LF_ATTENUATE, (0, 0, 40)); }
+	States { Spawn: DVND A 30 Bright; DVND B 3 Bright; DVND A 50 Bright; DVND B 2 Bright; Loop; }
+}
+class PropTaxi : CCAProp
+{
+	Default { Radius 44; Height 44; +SOLID }
+	override void PostBeginPlay() { Super.PostBeginPlay(); A_AttachLight('glow', DynamicLight.FlickerLight, Color(255, 140, 50), 192, 128, DynamicLight.LF_ATTENUATE, (0, 0, 34), 0.15); A_StartSound("world/fire", CHAN_BODY, CHANF_LOOPING, 0.3, ATTN_STATIC); }
+	States { Spawn: DTXI ABC 4 Bright; Loop; }
+}
+class PropBus : CCAProp
+{
+	Default { Radius 72; Height 96; +SOLID }
+	States { Spawn: DBUS A -1; Stop; }
+}
+// The Daley Plaza Picasso (rendered at 32 texels per metre)
+class PropPicasso : CCAProp
+{
+	Default { Radius 64; Height 400; Scale 1.0; +SOLID }
+	States { Spawn: DPIC A -1; Stop; }
+}
+
+// ---------------------------------------------------------------- Dulce base (MAP02)
+class PropRadarDish : CCAProp
+{
+	Default { Radius 40; Height 160; +SOLID }
+	States { Spawn: DRAD AB 35; Loop; }
+}
+class PropAntenna : CCAProp
+{
+	Default { Radius 8; Height 192; +SOLID }
+	override void PostBeginPlay() { Super.PostBeginPlay(); A_AttachLight('beacon', DynamicLight.PulseLight, Color(255, 30, 20), 16, 48, DynamicLight.LF_ATTENUATE, (0, 0, 190), 1.2); }
+	States { Spawn: DANT A 35 Bright; DANT B 35; Loop; }
+}
+class PropBarrier : CCAProp
+{
+	Default { Radius 24; Height 26; +SOLID }
+	States { Spawn: DBRR A -1; Stop; }
 }

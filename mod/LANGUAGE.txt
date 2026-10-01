@@ -5,9 +5,11 @@
 // ------------------------------------------------------------ episode / maps / skills
 C51_EP_CASEFILE = "Case File 51";
 C51_MAP01_NAME = "Groom Lake";
-C51_MAP02_NAME = "Night of the Harvest";
-C51_MAP03_NAME = "Crash Site";
-C51_MAP04_NAME = "Mothership";
+C51_MAP02_NAME = "Dulce Base";
+C51_MAP03_NAME = "Night of the Harvest";
+C51_MAP04_NAME = "The Loop";
+C51_MAP05_NAME = "Crash Site";
+C51_MAP06_NAME = "Mothership";
 C51_SKILL1 = "Probationary Agent";
 C51_SKILL2 = "Field Agent";
 C51_SKILL3 = "Special Agent";
@@ -30,19 +32,42 @@ C51_CLUSTER1_EXIT =
 	"The Committee kept the dossier in a drawer marked\n"
 	"CLEANING SUPPLIES. The drive held something else.\n"
 	"It talks now. It calls itself IRIS.\n\n"
-	"Every screen in the base lit up with the same\n"
-	"coordinates before we climbed out: Washington.\n\n"
+	"The dossier names one more place: a base dug\n"
+	"under Archuleta Mesa, outside Dulce, New Mexico.\n"
+	"Level 7. The Committee keeps the plans there:\n"
+	"the deal, the timetable, the cities.\n\n"
 	"They're not coming. They're here.";
 C51_CLUSTER2_EXIT =
+	"FIELD JOURNAL - S.A. ELI MARSH\n"
+	"0312 HOURS, OVER NEW MEXICO\n\n"
+	"The pilot never said a word. Black helicopter,\n"
+	"no markings. I stopped laughing at those years ago.\n\n"
+	"The plans are a schedule. Forty cities, one night,\n"
+	"in an order a bureaucrat would love.\n"
+	"Washington is first. Then Chicago.\n\n"
+	"IRIS has the coordinates. I have a case file\n"
+	"in a basement that nobody ever read.";
+C51_CLUSTER3_EXIT =
 	"FIELD JOURNAL - S.A. ELI MARSH\n"
 	"2340 HOURS, WASHINGTON D.C.\n\n"
 	"The case file is uploaded. Kade finally saw one\n"
 	"with her own eyes and asked it for ID.\n\n"
+	"The plans say Chicago is the harvest hub for half\n"
+	"the continent. A relay grown into the top of an\n"
+	"office tower in the Loop, calling the ships down.\n\n"
+	"Kade got me a seat on the last flight out of\n"
+	"Andrews. IRIS says the in-flight movie is me.";
+C51_CLUSTER4_EXIT =
+	"FIELD JOURNAL - S.A. ELI MARSH\n"
+	"0050 HOURS, CHICAGO\n\n"
+	"The relay is dead and the beams over the lake\n"
+	"went out one by one. Some people in ties walked\n"
+	"out of that tower because of us. Not enough.\n\n"
 	"The Air Force shot something down in the Cascades\n"
 	"three nights ago. The Committee called it a\n"
 	"meteor. IRIS calls it a lifeboat.\n\n"
 	"If there's a lifeboat, there's a ship.";
-C51_CLUSTER3_EXIT =
+C51_CLUSTER5_EXIT =
 	"FIELD JOURNAL - S.A. ELI MARSH\n"
 	"0205 HOURS, CASCADE RANGE\n\n"
 	"The shard hums in my coat like a trapped wasp.\n"
@@ -50,7 +75,7 @@ C51_CLUSTER3_EXIT =
 	"and that it's been screaming for its mother.\n\n"
 	"Its mother answered.\n\n"
 	"When the beam comes, I'm going up with it.";
-C51_CLUSTER4_EXIT =
+C51_CLUSTER6_EXIT =
 	"FIELD JOURNAL - FINAL ENTRY\n\n"
 	"The hum stopped at 0351. Everywhere.\n\n"
 	"Forty cities woke up at once. The Thralls\n"
@@ -68,31 +93,43 @@ C51_CLUSTER4_EXIT =
 OBJ_MAP01_1 = "Find the Committee's dossier";
 OBJ_MAP01_2 = "Download the HDD cache (defend the terminal)";
 OBJ_MAP01_3 = "Reach the surface lift";
-OBJ_MAP02_1 = "Retrieve your case file from Bureau HQ";
-OBJ_MAP02_2 = "Upload the case file from the basement";
-OBJ_MAP02_3 = "Get to the rooftop";
-OBJ_MAP03_1 = "Take the navigation shard from the wreck";
-OBJ_MAP03_2 = "Signal the ship";
-OBJ_MAP04_1 = "Upload the virus to the core (defend it)";
-OBJ_MAP04_2 = "Kill the Hive Mind";
-OBJ_MAP04_3 = "Get off this ship";
+OBJ_MAP02_1 = "Steal the plans from the Level 7 vault";
+OBJ_MAP02_2 = "Get to the helicopter on the roof";
+OBJ_MAP03_1 = "Retrieve your case file from Bureau HQ";
+OBJ_MAP03_2 = "Upload the case file from the basement";
+OBJ_MAP03_3 = "Get to the rooftop";
+OBJ_MAP04_1 = "Climb the Merchant Tower to the relay";
+OBJ_MAP04_2 = "Jam the harvest relay (defend the uplink)";
+OBJ_MAP04_3 = "Get out of the Loop";
+OBJ_MAP05_1 = "Take the navigation shard from the wreck";
+OBJ_MAP05_2 = "Signal the ship";
+OBJ_MAP06_1 = "Upload the virus to the core (defend it)";
+OBJ_MAP06_2 = "Kill the Hive Mind";
+OBJ_MAP06_3 = "Get off this ship";
 
 // ------------------------------------------------------------ IRIS: generic
 IRIS_MAP01_START = "IRIS|Power's down in the detention block. Your flashlight is F, or up on the pad. Something opened the containment wing.";
-IRIS_MAP02_START = "IRIS|Washington. Beams over every district. Kade is on the radio and she is not calm.";
-IRIS_MAP03_START = "IRIS|The Cascades. The Army cordon went quiet an hour ago. The wreck is past the ridge.";
-IRIS_MAP04_START = "IRIS|We're inside. It's bigger on the inside, which I resent. The core is at the centre.";
+IRIS_MAP02_START = "IRIS|Dulce, New Mexico. Archuleta Mesa. Seven levels down, if the dossier is right. Nobody up here is wearing a uniform, Marsh, and that's worse.";
+IRIS_MAP04_START = "IRIS|Chicago. The relay is on top of the Merchant Tower. There are still people inside, Marsh. Get to them before the Greys do.";
+IRIS_MAP03_START = "IRIS|Washington. Beams over every district. Kade is on the radio and she is not calm.";
+IRIS_MAP05_START = "IRIS|The Cascades. The Army cordon went quiet an hour ago. The wreck is past the ridge.";
+IRIS_MAP06_START = "IRIS|We're inside. It's bigger on the inside, which I resent. The core is at the centre.";
 IRIS_MAP01_OBJ1 = "IRIS|The dossier. Everything they promised them is in there. Everything they got.";
 IRIS_MAP01_OBJ2 = "IRIS|Download complete. Hello, Marsh. I'm awake now. Properly.";
 IRIS_MAP01_OBJ3 = "IRIS|Surface lift. Hold on to something.";
-IRIS_MAP02_OBJ1 = "KADE|Marsh, that's your case file? You still use paper clips?";
-IRIS_MAP02_OBJ2 = "IRIS|Uploaded to every newsroom east of the Mississippi. Deniability: revoked.";
-IRIS_MAP02_OBJ3 = "IRIS|Rooftop. Condor is inbound. Don't jump without me.";
-IRIS_MAP03_OBJ1 = "IRIS|The shard. It's singing. Hold it away from your fillings.";
-IRIS_MAP03_OBJ2 = "IRIS|They heard it. Look up.";
-IRIS_MAP04_OBJ1 = "IRIS|Virus uploaded. It's a Mac joke, Marsh. You wouldn't get it.";
-IRIS_MAP04_OBJ2 = "IRIS|The hum is gone. Listen to that.";
-IRIS_MAP04_OBJ3 = "IRIS|We're clear. Earth is right where we left it.";
+IRIS_MAP02_OBJ1 = "IRIS|The plans. And that's the alarm. They know. Up, Marsh, any way but the way we came.";
+IRIS_MAP02_OBJ2 = "IRIS|Black helicopter. Of course it is. Get in, I'll do the talking.";
+IRIS_MAP04_OBJ1 = "IRIS|There it is. They grew it right into the antenna. Plug me in up here.";
+IRIS_MAP04_OBJ2 = "IRIS|Relay jammed. Every ship over the lake just lost its signal. Now get us out.";
+IRIS_MAP04_OBJ3 = "IRIS|Out of the Loop. For once, that's a good thing.";
+IRIS_MAP03_OBJ1 = "KADE|Marsh, that's your case file? You still use paper clips?";
+IRIS_MAP03_OBJ2 = "IRIS|Uploaded to every newsroom east of the Mississippi. Deniability: revoked.";
+IRIS_MAP03_OBJ3 = "IRIS|Rooftop. Condor is inbound. Don't jump without me.";
+IRIS_MAP05_OBJ1 = "IRIS|The shard. It's singing. Hold it away from your fillings.";
+IRIS_MAP05_OBJ2 = "IRIS|They heard it. Look up.";
+IRIS_MAP06_OBJ1 = "IRIS|Virus uploaded. It's a Mac joke, Marsh. You wouldn't get it.";
+IRIS_MAP06_OBJ2 = "IRIS|The hum is gone. Listen to that.";
+IRIS_MAP06_OBJ3 = "IRIS|We're clear. Earth is right where we left it.";
 IRIS_SECRET1 = "IRIS|Wall's hollow here, Marsh.";
 IRIS_SECRET2 = "IRIS|The air current's wrong in this corner. Something's behind it.";
 IRIS_SECRET3 = "IRIS|I'm reading a void in the blueprints right about... here.";
@@ -108,35 +145,34 @@ IRIS_CONDUIT = "IRIS|Conduit down. It's weakening.";
 
 // ------------------------------------------------------------ IRIS: MAP01 beats (IrisTrigger args[0])
 IRIS_101 = "IRIS|Your cell door's open from the outside. Whatever did that went left.";
-IRIS_102 = "IRIS|That guard's still breathing. Hold X on him. He can still shoot, and he's got the blue card.";
-IRIS_103 = "IRIS|Security office. The blue card opens the stairwell to the surface.";
+IRIS_102 = "IRIS|Power's failing. Flashlight's on F. Use it, Marsh. Something is moving in the cells.";
+IRIS_103 = "IRIS|That guard's still breathing. Hold X on him. He can still shoot, and he's got the blue card to the stairwell.";
 IRIS_104 = "IRIS|The yard. The floodlights are down and the fences are cut. They came over the wire.";
 IRIS_105 = "IRIS|Warehouse 9. Forty years of things they said didn't exist, stacked in crates.";
 IRIS_106 = "IRIS|The freight lift back down to S-4 is at the far end. Watch the catwalks.";
 IRIS_107 = "IRIS|S-4. Xenobiology. Keep your voice down. Not everything in here is dead.";
-IRIS_108 = "IRIS|Observation deck. They watched them through the glass. Now the glass is on the floor.";
+IRIS_108 = "IRIS|Marsh, behind you. Containment just opened.";
 IRIS_109 = "IRIS|Records. The Committee's dossier is in here. The waypoint's on your HUD.";
 IRIS_110 = "IRIS|That terminal is wired into the hull growth. Plug me in and hold the room.";
 IRIS_111 = "IRIS|The hangar. They reverse-engineered it. Badly. It's still trying to leave.";
 IRIS_112 = "IRIS|Surface lift. It won't move until we have the dossier and the drive.";
-IRIS_113 = "IRIS|Containment wing. Every cell was opened from the inside.";
-IRIS_114 = "IRIS|Dissection theatre. I'd rather you didn't look at the table, Marsh.";
-
-// ------------------------------------------------------------ IRIS: MAP02 beats
+IRIS_113 = "IRIS|Dissection theatre. I'd rather you didn't look at the table, Marsh.";
+IRIS_114 = "IRIS|Specimen tanks. Some of them are empty. That should worry you.";
+// ------------------------------------------------------------ IRIS: MAP03 beats
 IRIS_201 = "KADE|Marsh? Where are you? Half of D.C. is on fire and the other half is staring at the sky.";
-IRIS_202 = "IRIS|The Pink Flamingo. Rooms by the hour, visitors by the thousand.";
+IRIS_202 = "IRIS|The Late Show. Tonight's feature: the end of the world. I'd skip the matinee.";
 IRIS_203 = "IRIS|Alleys. Stay out of the beams. Whatever they touch stops being where it was.";
 IRIS_204 = "IRIS|The plaza. They're landing troops. We hold here or we don't get across.";
-IRIS_205 = "KADE|I'm watching this on three channels and for once none of them are lying.";
+IRIS_205 = "IRIS|Police uplink van. Plug me in and I can trip the subway gate. Sixty seconds, Marsh. Hold the plaza.";
 IRIS_206 = "IRIS|The subway's dead. The power's out; the trains aren't. Mind the third rail.";
-IRIS_207 = "IRIS|The tunnel runs under Pennsylvania Avenue to the Bureau. So do they.";
+IRIS_207 = "IRIS|That's an Overseer. It raises the dead. Kill it first. The blue card is on the far platform; the service tunnel runs north to the Bureau.";
 IRIS_208 = "KADE|That's our lobby. Somebody put an alien through the metal detector.";
 IRIS_209 = "IRIS|Your old basement office is three floors down. Nobody ever cleaned it.";
 IRIS_210 = "IRIS|Your case file. Six years of 'crackpot' in one folder.";
 IRIS_211 = "IRIS|Plug me in. Every newsroom, every wire service. Hold them off for a minute.";
 IRIS_212 = "IRIS|Rooftop access. Condor's inbound. Don't make me wait.";
 
-// ------------------------------------------------------------ IRIS: MAP03 beats
+// ------------------------------------------------------------ IRIS: MAP05 beats
 IRIS_301 = "IRIS|The cordon. Somebody set up a perimeter and forgot to tell the perimeter what it was keeping in.";
 IRIS_302 = "IRIS|Command tent. The red card should be with whoever was in charge. Check the bodies.";
 IRIS_303 = "IRIS|They were digging in when it hit. You can see where the sandbags stopped.";
@@ -282,3 +318,42 @@ C51_KB_FLASH = "Flashlight";
 C51_KB_DUAL = "Dual wield";
 C51_KB_GTYPE = "Grenade type";
 C51_KB_IRIS = "IRIS: objective + waypoint";
+
+// ------------------------------------------------------------ MAP02 / MAP04 systems
+C51_GOT_PLANS = "Picked up the Committee's plans (MAJESTIC-12).";
+C51_TAG_OFFICE = "Office worker";
+C51_TAG_MIB = "Man in Black";
+C51_OB_MIB = "%o met the Men in Black.";
+C51_HUD_CIVS = "Civilians saved";
+C51_HUD_CIVLOST = "lost";
+IRIS_HELI_LOCKED = "IRIS|We're not leaving without the plans, Marsh.";
+IRIS_HELI_BOARD = "IRIS|Go, go, go. Pilot, I'm in your instruments. Don't argue.";
+IRIS_CIV_ALL = "IRIS|That's all of them. Every one, Marsh. I'm writing that down.";
+IRIS_CIV_LOST = "IRIS|We lost one. Keep moving. The others are still alive.";
+NPC_OFCTHANKS1 = "OFFICE WORKER|Oh God, thank you. Thank you!";
+NPC_OFCTHANKS2 = "OFFICE WORKER|Are you a cop? I don't care. Thank you!";
+NPC_OFCTHANKS3 = "OFFICE WORKER|It took Dave. It just took Dave. I'm going, I'm going!";
+NPC_OFCTHANKS4 = "OFFICE WORKER|The stairs! I'm taking the stairs!";
+NPC_OFCTHANKS5 = "OFFICE WORKER|I always said this job would kill me. Thanks, mister.";
+NPC_OFCTHANKS6 = "OFFICE WORKER|Who ARE you people? Never mind. Thank you!";
+NPC_OFCHELP1 = "OFFICE WORKER|Don't leave us here! Please!";
+NPC_OFCHELP2 = "OFFICE WORKER|It's in the copy room! It's in the copy room!";
+NPC_OFCHELP3 = "OFFICE WORKER|I can't feel my legs, I can't feel my legs...";
+NPC_OFCHELP4 = "OFFICE WORKER|Is this a fire drill? Tell me this is a drill.";
+NPC_OFCSAFE1 = "OFFICE WORKER|I'm going! Exit's that way, right?";
+NPC_OFCSAFE2 = "OFFICE WORKER|You don't have to tell me twice.";
+NPC_OFCSAFE3 = "OFFICE WORKER|I'm quitting. I'm quitting tomorrow.";
+NPC_OFCSAFE4 = "OFFICE WORKER|Get the ones on fourteen. Please.";
+
+// ------------------------------------------------------------ IRIS: map beats from maps-src/iris_lines.txt
+IRIS_401 = "IRIS|We're in. Docking bay. Those racks go up a mile, and every one of them is a ship.";
+IRIS_402 = "IRIS|Abduction bays. Don't stop to read the faces in the pods. We can't help them yet.";
+IRIS_403 = "IRIS|The yellow glyph opens the inner ship. The Overseer is wearing it.";
+IRIS_404 = "IRIS|Clean lines, cold light. This is where they live. The red glyph is in their security node.";
+IRIS_405 = "IRIS|Security node. The red glyph opens the gravity lift.";
+IRIS_406 = "IRIS|Gravity lift. Step on and hold still. Or don't; I'm curious.";
+IRIS_407 = "IRIS|The conduit ring. Four conduits feed the Hive Mind. The core terminal is on the dais.";
+IRIS_408 = "IRIS|Upload the virus. Ninety seconds. It's a Mac joke, Marsh. You wouldn't get it.";
+IRIS_409 = "IRIS|There it is. Shield's down. Everything it has is coming through that core. Kill it.";
+IRIS_410 = "IRIS|The barrier's down. Escape bay ahead. The ship is shaking itself apart, Marsh. Run.";
+IRIS_411 = "IRIS|That's home. From up here you can't see any of it burning.";

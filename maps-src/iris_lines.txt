@@ -36,78 +36,78 @@ IRIS_113 | MAP01 dissection theatre gallery (140,83) | 128 | - | the theatre   *
 IRIS_114 | MAP01 specimen tank room entrance (170,83) | 128 | - | the specimen tanks   ** LANGUAGE MISMATCH (LANGUAGE has the theatre line)
   "IRIS|Specimen tanks. Some of them are empty. That should worry you."
 
-; ------------------------------------------------------------------ MAP02 Night of the Harvest
-IRIS_201 | MAP02 the neon strip, player start (10,108) | 160 | - | Kade on the radio, D.C. burning
+; ------------------------------------------------------------------ MAP03 Night of the Harvest
+IRIS_201 | MAP03 the neon strip, player start (10,108) | 160 | - | Kade on the radio, D.C. burning
   "KADE|Marsh? Where are you? Half of D.C. is on fire and the other half is staring at the sky."
-IRIS_202 | MAP02 cinema lobby, under the LATE SHOW marquee (66,96) | 160 | - | the adult cinema (PG-13 joke)   ** LANGUAGE MISMATCH (LANGUAGE has the motel line; there is no motel trigger)
+IRIS_202 | MAP03 cinema lobby, under the LATE SHOW marquee (66,96) | 160 | - | the adult cinema (PG-13 joke)   ** LANGUAGE MISMATCH (LANGUAGE has the motel line; there is no motel trigger)
   "IRIS|The Late Show. Tonight's feature: the end of the world. I'd skip the matinee."
-IRIS_203 | MAP02 east back alley, from the arcade side alley (100,82) | 160 | - | alleys
+IRIS_203 | MAP03 east back alley, from the arcade side alley (100,82) | 160 | - | alleys
   "IRIS|Alleys. Stay out of the beams. Whatever they touch stops being where it was."
-IRIS_204 | MAP02 plaza south entrance (55,68) | 192 | - | the plaza under the beams
+IRIS_204 | MAP03 plaza south entrance (55,68) | 192 | - | the plaza under the beams
   "IRIS|The plaza. They're landing troops. We hold here or we don't get across."
-IRIS_205 | MAP02 plaza, at the police uplink van terminal (64,58) | 128 | - | the 60 s holdout: the terminal opens the subway gate   ** LANGUAGE has a generic Kade line; suggest:
+IRIS_205 | MAP03 plaza, at the police uplink van terminal (64,58) | 128 | - | the 60 s holdout: the terminal opens the subway gate   ** LANGUAGE has a generic Kade line; suggest:
   "IRIS|Police uplink van. Plug me in and I can trip the subway gate. Sixty seconds, Marsh. Hold the plaza."
-IRIS_206 | MAP02 subway stairs landing (118,47) | 128 | - | the subway
+IRIS_206 | MAP03 subway stairs landing (118,47) | 128 | - | the subway
   "IRIS|The subway's dead. The power's out; the trains aren't. Mind the third rail."
-IRIS_207 | MAP02 south platform, near the first Overseer and the blue card (140,69) | 192 | - | first Overseer (raises the dead); the blue card   ** LANGUAGE has the tunnel line; suggest:
+IRIS_207 | MAP03 south platform, near the first Overseer and the blue card (140,69) | 192 | - | first Overseer (raises the dead); the blue card   ** LANGUAGE has the tunnel line; suggest:
   "IRIS|That's an Overseer. It raises the dead. Kill it first. The blue card is on the far platform; the service tunnel runs north to the Bureau."
-IRIS_208 | MAP02 HQ sub-basement at the end of the service tunnel, blue door (150,5) | 128 | - | under the Bureau; stairs up to the lobby
+IRIS_208 | MAP03 HQ sub-basement at the end of the service tunnel, blue door (150,5) | 128 | - | under the Bureau; stairs up to the lobby
   "KADE|You're under the Hoover Building. The service stairs come up in our lobby. Somebody put an alien through the metal detector."
-IRIS_209 | MAP02 top of the service stairs, entering the marble lobby (125,8) | 192 | - | the lobby: yellow card at the front desk; the basement office down the west stairs
+IRIS_209 | MAP03 top of the service stairs, entering the marble lobby (125,8) | 192 | - | the lobby: yellow card at the front desk; the basement office down the west stairs
   "IRIS|Your old basement office is three floors down, behind the west door. The yellow card's at the front desk."
-IRIS_210 | MAP02 basement office entrance (80,9) | 160 | 1 | the case file (objective 1)
+IRIS_210 | MAP03 basement office entrance (80,9) | 160 | 1 | the case file (objective 1)
   "IRIS|Your case file. Six years of 'crackpot' in one folder."
-IRIS_211 | MAP02 basement office terminal (68,10) | 128 | 2 | 60 s upload (objective 2); it opens the executive lift to the roof
+IRIS_211 | MAP03 basement office terminal (68,10) | 128 | 2 | 60 s upload (objective 2); it opens the executive lift to the roof
   "IRIS|Plug me in. Every newsroom, every wire service. Hold them off for a minute and the executive lift will take us to the roof."
-IRIS_212 | MAP02 the roof, at the top of the executive lift (30,10) | 160 | 3 | rooftop exit (objective 3)
+IRIS_212 | MAP03 the roof, at the top of the executive lift (30,10) | 160 | 3 | rooftop exit (objective 3)
   "IRIS|Rooftop access. Condor's inbound. Don't make me wait."
 
-; ------------------------------------------------------------------ MAP03 Crash Site
-IRIS_301 | MAP03 the road in, player start (47,130) | 192 | - | the cordon has been overrun
+; ------------------------------------------------------------------ MAP05 Crash Site
+IRIS_301 | MAP05 the road in, player start (47,130) | 192 | - | the cordon has been overrun
   "IRIS|The Army cordon. Nobody's answering on any channel. The wreck is past the ridge, in the trench it dug."
-IRIS_302 | MAP03 command tent (19,104) | 128 | - | the red card: the wounded major, or the map table
+IRIS_302 | MAP05 command tent (19,104) | 128 | - | the red card: the wounded major, or the map table
   "IRIS|Command tent. The major's alive; get him up and he'll give you the red card for the inner gate. If he can't, it's on the map table."
-IRIS_303 | MAP03 armory tent (79,104) | 96 | - | the captured alien SMG
+IRIS_303 | MAP05 armory tent (79,104) | 96 | - | the captured alien SMG
   "IRIS|They captured one of the carbines and took it apart. Put it back together the wrong way and it's a plasma SMG."
-IRIS_304 | MAP03 forest trail just past the red gatehouse (47.5,84) | 160 | - | into the woods; Stalkers hunt here
+IRIS_304 | MAP05 forest trail just past the red gatehouse (47.5,84) | 160 | - | into the woods; Stalkers hunt here
   "IRIS|The trail goes up the ridge. Stalkers hunt in the trees. Listen for them."
-IRIS_305 | MAP03 level-1 terrace, before the steps up (99,62) | 160 | - | ranger cabin hint
+IRIS_305 | MAP05 level-1 terrace, before the steps up (99,62) | 160 | - | ranger cabin hint
   "IRIS|There's a ranger cabin on the next terrace. Rangers keep things."
-IRIS_306 | MAP03 the ridge top over the trench (121.5,44) | 192 | - | first look at the wreck
+IRIS_306 | MAP05 the ridge top over the trench (121.5,44) | 192 | - | first look at the wreck
   "IRIS|There it is. It came down hard enough to plough a trench a mile long. The cut steps go down on the west side."
-IRIS_307 | MAP03 the trench, at the foot of the cut steps (87.5,30) | 192 | - | the breach in the hull
+IRIS_307 | MAP05 the trench, at the foot of the cut steps (87.5,30) | 192 | - | the breach in the hull
   "IRIS|The hull's breached on the near side. That's our way in."
-IRIS_308 | MAP03 inside the breach (108,21.5) | 160 | - | first alien architecture
+IRIS_308 | MAP05 inside the breach (108,21.5) | 160 | - | first alien architecture
   "IRIS|Alien architecture. The walls are warm, Marsh. I don't like that the walls are warm."
-IRIS_309 | MAP03 engine room, at the Overseer and the blue glyph (123,13) | 128 | - | the blue glyph opens the cockpit door
+IRIS_309 | MAP05 engine room, at the Overseer and the blue glyph (123,13) | 128 | - | the blue glyph opens the cockpit door
   "IRIS|That glyph is a key. The cockpit door on the east side of the ring wants it."
-IRIS_310 | MAP03 the ramp up into the cockpit (128,22) | 128 | - | the Singularity and the navigation shard
+IRIS_310 | MAP05 the ramp up into the cockpit (128,22) | 128 | - | the Singularity and the navigation shard
   "IRIS|The cockpit. The navigation shard is in the console; it knows where the mothership is. And that thing on the rack is a weapon. A big one."
-IRIS_311 | MAP03 ring corridor at the hatch / ExitGate (136,21.5) | 128 | 2 | the hatch opens once the shard is taken (objective 2: extraction)
+IRIS_311 | MAP05 ring corridor at the hatch / ExitGate (136,21.5) | 128 | 2 | the hatch opens once the shard is taken (objective 2: extraction)
   "IRIS|Hatch. It opens when we have the shard. The far bank's above it."
-IRIS_312 | MAP03 the far bank, at the top of the hatch lift (148,21.5) | 192 | - | extraction
+IRIS_312 | MAP05 the far bank, at the top of the hatch lift (148,21.5) | 192 | - | extraction
   "KADE|Marsh, I've got a chopper on the ridge. Get to the pad."
 
-; ------------------------------------------------------------------ MAP04 Mothership
-IRIS_401 | MAP04 docking bay, player start (37,129) | 192 | - | arrival; ID4 scale
+; ------------------------------------------------------------------ MAP06 Mothership
+IRIS_401 | MAP06 docking bay, player start (37,129) | 192 | - | arrival; ID4 scale
   "IRIS|We're in. Docking bay. Those racks go up a mile, and every one of them is a ship."
-IRIS_402 | MAP04 passage from the docking bay into the abduction bays (37,68) | 192 | - | the abduction bays
+IRIS_402 | MAP06 passage from the docking bay into the abduction bays (37,68) | 192 | - | the abduction bays
   "IRIS|Abduction bays. Don't stop to read the faces in the pods. We can't help them yet."
-IRIS_403 | MAP04 operating theatre at the north end of the east bay (55,7) | 160 | - | the yellow glyph, guarded by an Overseer
+IRIS_403 | MAP06 operating theatre at the north end of the east bay (55,7) | 160 | - | the yellow glyph, guarded by an Overseer
   "IRIS|The yellow glyph opens the inner ship. The Overseer is wearing it."
-IRIS_404 | MAP04 the corridors, through the yellow door (78,79.5) | 160 | - | Perfect Dark corridors
+IRIS_404 | MAP06 the corridors, through the yellow door (78,79.5) | 160 | - | Perfect Dark corridors
   "IRIS|Clean lines, cold light. This is where they live. The red glyph is in their security node."
-IRIS_405 | MAP04 security node (100,59) | 160 | - | the red glyph
+IRIS_405 | MAP06 security node (100,59) | 160 | - | the red glyph
   "IRIS|Security node. The red glyph opens the gravity lift."
-IRIS_406 | MAP04 the gravity lift (135.5,68) | 96 | - | going up
+IRIS_406 | MAP06 the gravity lift (135.5,68) | 96 | - | going up
   "IRIS|Gravity lift. Step on and hold still. Or don't; I'm curious."
-IRIS_407 | MAP04 top of the lift, the conduit ring (146,68) | 160 | - | the four conduits feed the Hive Mind
+IRIS_407 | MAP06 top of the lift, the conduit ring (146,68) | 160 | - | the four conduits feed the Hive Mind
   "IRIS|The conduit ring. Four conduits feed the Hive Mind. The core terminal is on the dais."
-IRIS_408 | MAP04 the dais terminal (156,76) | 128 | 1 | the virus upload, 90 s (objective 1): drops the shield, opens the hive door
+IRIS_408 | MAP06 the dais terminal (156,76) | 128 | 1 | the virus upload, 90 s (objective 1): drops the shield, opens the hive door
   "IRIS|Upload the virus. Ninety seconds. It's a Mac joke, Marsh. You wouldn't get it."
-IRIS_409 | MAP04 hive corridor, above the steps into the chamber (155,46) | 192 | 2 | the Hive Mind (objective 2)
+IRIS_409 | MAP06 hive corridor, above the steps into the chamber (155,46) | 192 | 2 | the Hive Mind (objective 2)
   "IRIS|There it is. Shield's down. Everything it has is coming through that core. Kill it."
-IRIS_410 | MAP04 escape corridor, past the barrier that drops when it dies (174,22) | 128 | 3 | get off the ship (objective 3)
+IRIS_410 | MAP06 escape corridor, past the barrier that drops when it dies (174,22) | 128 | 3 | get off the ship (objective 3)
   "IRIS|The barrier's down. Escape bay ahead. The ship is shaking itself apart, Marsh. Run."
-IRIS_411 | MAP04 observation gallery (secret), over the Earth (157,95) | 192 | - | quiet moment
+IRIS_411 | MAP06 observation gallery (secret), over the Earth (157,95) | 192 | - | quiet moment
   "IRIS|That's home. From up here you can't see any of it burning."

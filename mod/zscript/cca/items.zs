@@ -154,3 +154,8 @@ class NavShard : CCAObjectiveItem
 	Default { CCAObjectiveItem.ObjectiveId 1; Inventory.PickupMessage "$C51_GOT_SHARD"; }
 	States { Spawn: OSHD AB 8 Bright; Loop; }
 }
+class InvasionPlans : CCAObjectiveItem
+{
+	Default { CCAObjectiveItem.ObjectiveId 1; Inventory.PickupMessage "$C51_GOT_PLANS"; }
+	States { Spawn: OPLN AB 10; Loop; }
+}

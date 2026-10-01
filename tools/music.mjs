@@ -106,8 +106,10 @@ const made = [
   compose({ name: 'title', root: 57, bpm: 72, bars: 32, prog: [0, 5, 3, 4], drums: 0, bassStyle: 'drone', s: 11 }),                            // A minor, slow
   compose({ name: 'story', root: 52, bpm: 66, bars: 16, prog: [0, 3, 5, 4], drums: 0, lead: false, bassStyle: 'drone', choir: true, s: 22 }),   // E minor, intermission
   compose({ name: 'map01', root: 50, bpm: 96, bars: 48, prog: [0, 0, 5, 6, 3, 4], drums: 1, bassStyle: 'pulse', s: 33 }),                     // D minor, tension → pulse
-  compose({ name: 'map02', root: 55, bpm: 112, bars: 48, prog: [0, 6, 5, 4], drums: 2, bassStyle: 'funk', leadProg: P.brass, padProg: P.polysynth, s: 44 }), // G minor, seedy city
-  compose({ name: 'map03', root: 53, bpm: 84, bars: 48, prog: [0, 5, 2, 4], drums: 1, bassStyle: 'drone', leadProg: P.ocarina, padProg: P.atmos, s: 55 }), // F minor, forest
-  compose({ name: 'map04', root: 49, bpm: 120, bars: 64, prog: [0, 1, 5, 4, 0, 6, 3, 4], drums: 2, choir: true, bassStyle: 'pulse', padProg: P.sweep, s: 66 }), // C# minor, mothership
+  compose({ name: 'map02', root: 45, bpm: 100, bars: 48, prog: [0, 0, 6, 5, 0, 0, 3, 4], drums: 1, bassStyle: 'pulse', leadProg: P.brass, padProg: P.strings, s: 77 }), // A minor, Dulce: the raid (march)
+  compose({ name: 'map03', root: 55, bpm: 112, bars: 48, prog: [0, 6, 5, 4], drums: 2, bassStyle: 'funk', leadProg: P.brass, padProg: P.polysynth, s: 44 }), // G minor, seedy D.C.
+  compose({ name: 'map04', root: 52, bpm: 128, bars: 56, prog: [0, 3, 6, 5, 0, 3, 4, 4], drums: 2, bassStyle: 'pulse', leadProg: P.organ, padProg: P.polysynth, s: 88 }), // E minor, Chicago burning
+  compose({ name: 'map05', root: 53, bpm: 84, bars: 48, prog: [0, 5, 2, 4], drums: 1, bassStyle: 'drone', leadProg: P.ocarina, padProg: P.atmos, s: 55 }), // F minor, forest
+  compose({ name: 'map06', root: 49, bpm: 120, bars: 64, prog: [0, 1, 5, 4, 0, 6, 3, 4], drums: 2, choir: true, bassStyle: 'pulse', padProg: P.sweep, s: 66 }), // C# minor, mothership
 ];
 console.log('music:', made.join(', '), '→ mod/music');

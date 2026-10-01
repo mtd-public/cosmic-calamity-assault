@@ -162,7 +162,7 @@ export function battery() {
   const g = new THREE.Group();
   const t = labelTex('batt', 256, 128, (x, w, h) => { x.fillStyle = '#141414'; x.fillRect(0, 0, w, h); x.fillStyle = '#c8901a'; x.fillRect(0, 0, w * 0.32, h); x.fillStyle = '#e8e0c8'; x.font = 'bold 30px sans-serif'; x.fillText('ALKALINE', w * 0.38, 56); x.font = 'bold 40px sans-serif'; x.fillText('D  1.5V', w * 0.4, 104); });
   for (let i = 0; i < 2; i++) {
-    const r = group(g, [0, 0.017, -0.02 + i * 0.04], [0, 0.2 * i, Math.PI / 2]);
+    const r = group(g, [-0.019 + i * 0.038, 0.0325, i * 0.01], [0, 0.6 + i * 0.5, 0]);
     put(r, new THREE.Mesh(new THREE.CylinderGeometry(0.0165, 0.0165, 0.058, 32, 1, true), new THREE.MeshStandardMaterial({ map: t, roughness: 0.45, metalness: 0.2 })));
     put(r, new THREE.Mesh(latheY([[0.0001, 0.029], [0.0165, 0.029], [0.0165, 0.03], [0.005, 0.031], [0.005, 0.0325], [0.0001, 0.0325]], 24), mat('steel')));
     put(r, new THREE.Mesh(latheY([[0.0001, -0.03], [0.0165, -0.03], [0.0165, -0.029]], 24), mat('steel')));
@@ -257,5 +257,36 @@ export function shard(on = false) {
   crystal(0.14, 0.025, 0.04, 0.02, 0.3, -0.45);
   crystal(0.11, 0.02, -0.04, -0.01, -0.2, 0.55);
   put(g, new THREE.Mesh(latheY([[0.0001, 0], [0.06, 0], [0.05, 0.02], [0.0001, 0.025]], 8), mat('alienShell', { c: 0x3a2a4a })));
+  return g;
+}
+// The plans (MAP02 objective): a black binder stamped MAJESTIC-12 with a
+// blueprint tube strapped across it; glint = a star of light on the tube cap.
+export function plans(glint = false) {
+  const g = new THREE.Group();
+  const t = labelTex('mj12', 256, 288, (x, w, h) => {
+    x.fillStyle = '#141416'; x.fillRect(0, 0, w, h); grunge(x, w, h, 700, 0.25, 31);
+    x.strokeStyle = '#b8a060'; x.lineWidth = 3; x.strokeRect(18, 18, w - 36, h - 36);
+    x.fillStyle = '#d8c070'; x.font = 'bold 30px serif'; x.textAlign = 'center'; x.fillText('MAJESTIC', w / 2, 96); x.font = 'bold 54px serif'; x.fillText('12', w / 2, 152);
+    x.font = 'bold 14px monospace'; x.fillText('TOP SECRET / MAJIC', w / 2, 190); x.fillText('EYES ONLY', w / 2, 210);
+    x.save(); x.translate(w / 2, 248); x.rotate(-0.12); x.strokeStyle = '#b01c16'; x.lineWidth = 3; x.strokeRect(-70, -16, 140, 32); x.fillStyle = '#b01c16'; x.font = 'bold 18px sans-serif'; x.fillText('RESTRICTED', 0, 7); x.restore();
+  });
+  const vinyl = mat('polymer', { c: 0x111113, rough: 0.45 });
+  put(g, new THREE.Mesh(rbox(0.26, 0.045, 0.3, 0.008), vinyl), [0, 0.0225, 0]);
+  put(g, new THREE.Mesh(rbox(0.24, 0.038, 0.29, 0.002), mat('white', { c: 0xece6d4 })), [0.012, 0.0225, 0]);
+  put(g, new THREE.Mesh(new THREE.PlaneGeometry(0.25, 0.29), new THREE.MeshStandardMaterial({ map: t, roughness: 0.45 })), [0, 0.0452, 0], [-Math.PI / 2, 0, 0]);
+  put(g, new THREE.Mesh(rbox(0.03, 0.048, 0.3, 0.012), vinyl), [-0.128, 0.024, 0]);
+  // blueprint tube strapped diagonally across
+  const tube = group(g, [0.0, 0.068, 0.01], [0, 0.55, 0]);
+  put(tube, new THREE.Mesh(cylZ(0.022, 0.022, -0.2, 0.2, 28), mat('white', { c: 0x2a4a8a, rough: 0.6 })));
+  for (const z of [-0.2, 0.2]) put(tube, new THREE.Mesh(cylZ(0.0235, 0.0235, z - 0.012, z + 0.012, 28), mat('steel')));
+  put(tube, new THREE.Mesh(rbox(0.05, 0.004, 0.36, 0.002), mat('white', { c: 0xd8d0b8 })), [0, 0.0225, 0]);
+  for (const z of [-0.09, 0.09]) put(g, new THREE.Mesh(rbox(0.3, 0.008, 0.02, 0.003), mat('leatherBrown', { c: 0x2a1a10 })), [0, 0.05, z * 0.9], [0, 0.55, 0]);
+  if (glint) {
+    const s = group(tube, [0.016, 0.018, 0.2]);
+    put(s, new THREE.Mesh(new THREE.PlaneGeometry(0.2, 0.014), glow(0xffffff, 1.4)), [0, 0, 0], [0, 0, 0]);
+    put(s, new THREE.Mesh(new THREE.PlaneGeometry(0.014, 0.2), glow(0xffffff, 1.4)));
+    put(s, new THREE.Mesh(sphere(0.014, 10, 8), glow(0xffffff, 1.5)));
+    s.lookAt(0, 3, 10);
+  }
   return g;
 }

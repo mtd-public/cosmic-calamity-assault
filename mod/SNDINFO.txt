@@ -114,6 +114,17 @@ world/fire             WOFIRE
 world/spark            WOSPARK
 world/neonbuzz         WONEON
 world/drumboom         WODRUM
+weapons/silenced       WPSILENC
+mib/sight              MIBSIGHT
+mib/active             MIBACT
+mib/pain               MIBPAIN
+mib/death              MIBDEATH
+npc/thanks             NPTHANKS
+npc/screamf            NPSCRMF
+npc/painf              NPPAINF
+npc/deathf             NPDEATHF
+world/helirotor        WOHELI
+world/heliboard        WOHELIBD
 
 $limit weapons/smg 2
 $limit weapons/plasmasmg 2

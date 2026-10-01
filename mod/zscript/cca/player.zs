@@ -233,7 +233,7 @@ class CCAPlayer : PlayerPawn
 			if (pressed && CountInv(ammo) > 0 && meleeTics <= 0)
 			{
 				cooking = true; cookTics = 0;
-				SetHands(6, grenType == 0 ? "GrenCook" : "DetCook");
+				if (grenType == 0) SetHands(6, "GrenCook"); else SetHands(6, "DetCook");
 				A_StartSound(grenType == 0 ? "weapons/grenpin" : "weapons/detarm", CHAN_AUTO);
 			}
 			return;
@@ -252,7 +252,7 @@ class CCAPlayer : PlayerPawn
 		{
 			cooking = false;
 			A_TakeInventory(ammo, 1);
-			SetHands(6, grenType == 0 ? "GrenThrow" : "DetThrow");
+			if (grenType == 0) SetHands(6, "GrenThrow"); else SetHands(6, "DetThrow");
 			A_StartSound("weapons/grenthrow", CHAN_AUTO);
 			class<Actor> pt = grenType == 0 ? "CCAFragThrown" : "CCADetonatorThrown";
 			let g = Spawn(pt, pos + (0, 0, player.viewheight - 8) + (AngleToVector(angle, 12), 0));
@@ -293,10 +293,11 @@ class CCAPlayer : PlayerPawn
 	}
 
 	// A left-hand / overlay animation from CCAHands (no action functions in them).
-	void SetHands(int layer, String lbl)
+	// statelabel, not String: FindStateByString needs GZDoom 4.12 (web build is 4.11).
+	void SetHands(int layer, statelabel lbl)
 	{
 		let def = GetDefaultByType("CCAHands");
-		State st = def.FindStateByString(lbl);
+		State st = def.FindState(lbl);
 		if (st) player.SetPSprite(layer, st);
 	}
 }

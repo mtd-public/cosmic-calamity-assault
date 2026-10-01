@@ -33,7 +33,10 @@ Frames are listed by letter. "8" means 8 rotations; "0" means one image for all 
 | `SCI2` | Lab tech: blue scrubs, cap | as SCI1 |
 | `GRDW` | Downed guard sitting against a wall (tan BDU, bloodied) | A-B breathe (8), C wave/talk (8), D revive-rise (8), E-H death slump (0) |
 | `GRDA` | Guard ally (revived guard, standing, pistol) | A-D walk (8), E aim (8), F fire (8), G pain (8), H-L death (0) |
-| `DEDB` | Corpses | A dead guard, B dead scientist, C dead lab tech, D dead soldier (all 0) |
+| `DEDB` | Corpses | A dead guard, B dead scientist, C dead lab tech, D dead soldier, E dead office worker (man), F dead office worker (woman) (all 0) |
+| `MIBK` | Man in Black (MAP02 Dulce, MAP04): black suit, white shirt, thin black tie, sunglasses, earpiece, silenced pistol; human, collaborating | as THRL |
+| `OFC1` | Office worker (man), 1997 Chicago: white shirt, loosened tie, grey slacks, lanyard badge | A-D run (8), E-F cower / hands up (8), G pain (8), H-L death (0), M-N thank you / wave (8) |
+| `OFC2` | Office worker (woman): navy 90s pantsuit with shoulder pads, blouse, low heels | as OFC1 |
 
 The IRIS avatar goes in `mod/graphics/iris/`, at 64×64 PNGs: a green CRT wireframe face with scanlines, not cute.
 | Lump | State |
@@ -138,6 +141,8 @@ Per gun, the right-hand viewmodel. Hip is **off to the right, one-handed**. The 
 | `SHEL` | red shotgun shell (A-D) |
 | `TELF` | teleport fog / alien warp-in (A-F) |
 
+**Added for MAP02 / MAP04:** `OPLN` = the plans (MAP02 objective): a black binder stamped MAJESTIC-12 with a blueprint tube strapped to it, A-B glint, about 16 units wide, `grAb` centre-bottom.
+
 ## 4. Props (`mod/sprites/props/`, rotation `0` unless noted)
 **Lab:**
 | Lump | Prop |
@@ -197,6 +202,29 @@ Per gun, the right-hand viewmodel. Hip is **off to the right, one-handed**. The 
 | `DPLR` | alien pillar |
 | `DHVC` | hive conduit (A-C pulse) |
 
+**Dulce base (MAP02, Dark Forces' Secret Base in the New Mexico desert):**
+| Lump | Prop |
+|---|---|
+| `DHEL` | the black helicopter: unmarked matte-black UH-60-style, doors open, on the roof pad. **8 rotations**, A-B rotor (blurred disc) and C-D idle (slow, visible blades). Rendered at **32 texels per metre**; the actor uses `Scale 1.0` |
+| `DHPD` | helipad marking: a yellow H in a circle on concrete, seen from above (a floor decal, `+FLATSPRITE`), about 12 m across at 32 texels per metre |
+| `DRAD` | radar dish on a lattice mount (large, A-B turning) |
+| `DANT` | antenna mast with red light (A-B blink) |
+| `DBRR` | concrete jersey barrier |
+
+**Office tower and the Loop (MAP04, Chicago):**
+| Lump | Prop |
+|---|---|
+| `DCUB` | cubicle section: fabric partitions, desk, CRT, chair (A intact, B-E on fire) |
+| `DCPY` | photocopier |
+| `DWCL` | water cooler (A upright, B knocked over and leaking) |
+| `DPLT` | potted ficus |
+| `DPBN` | pile of burning papers and binders (A-D) |
+| `DDBN` | office desk on fire (A-D) |
+| `DVND` | vending machine (A-B lit flicker) |
+| `DTXI` | yellow Checker-style taxi wreck (A-C flames) |
+| `DBUS` | CTA city bus wreck, white with a blue/red stripe (**8 rotations**, large) |
+| `DPIC` | the Daley Plaza Picasso: a 15 m rust-brown Cor-Ten steel abstract head sculpture (**8 rotations**). Rendered at 32 texels per metre, `Scale 1.0` |
+
 **Dynamic:**
 - `CURT` (curtain, A-F flowing in and out) is a wall sprite placed in a window.
 - `FIRE` is shared with FX.
@@ -234,7 +262,23 @@ Per gun, the right-hand viewmodel. Hip is **off to the right, one-handed**. The 
 - Walls: `SHIPRIB1`, `SHIPRIB2` (organic-mechanical ribs), `SHIPPNL1`, `SHIPPNL2` (sleek dark panels with cyan strips), `SHIPGLOW` (light strip), `SHIPDOOR`, `SHIPCONS`, `SHIPPOD`, `SW1SHIP`/`SW2SHIP`.
 - Flats: `SHIPFLR1`, `SHIPFLR2`, `SHIPCEIL`, `SHIPGRAT`, `SHIPLITE`, and animated goo `GOO1`-`GOO4`.
 
-**Skies:** `SKYA51` (desert night, stars, distant lights and a hovering craft), `SKYCITY` (burning skyline, a mothership with a beam), `SKYFRST` (night sky with smoke and treeline glow), `SKYSPACE` (space with Earth below).
+**Dulce base (MAP02, Dark Forces' Secret Base: a desert mesa outside, a deep industrial base below):**
+- Walls:
+  - `MESAWALL` (red sandstone strata, mesa cliffs), `BUNKWALL` (board-formed concrete, stencilled), `BUNKDOOR` (heavy bunker door)
+  - `SHAFTWAL` (ribbed concrete shaft wall with caged lamps), `MACHWALL` (turbine and pipe machinery), `RUSTMETL` (rusted riveted plates)
+  - `DULCSIGN` ("DULCE - LEVEL 3 - AUTHORIZED PERSONNEL ONLY" style sign), `SW1DULC`/`SW2DULC`
+- Flats: `MESAFLR` (red sand and rock), `BUNKFLR` (stained concrete with painted lines), `ROOFGRVL` (gravel roof).
+
+**Chicago, the Loop and the office tower (MAP04, 1997):**
+- Walls:
+  - `OFFCWALL` (beige office drywall with a chair rail), `OFFCWIN` (office window wall with blinds), `OFFCBRK` (blown-out window: frame with jagged glass, alpha, mid)
+  - `CUBEWALL` (grey-blue fabric cubicle partition), `ELEVLOBY` (brass elevator doors), `SCORCH` (fire-blackened office wall)
+  - `LTRACK` (the "L": riveted green steel lattice structure, alpha, mid), `LTRAIN` (a CTA "L" car side with windows)
+  - `GRANITE` (Loop granite facade), `TERRACTA` (white glazed terracotta facade, Wrigley Building style), `TOWERWIN` (dark glass curtain wall)
+  - `CHITHEA` (the Chicago Theatre marquee and its vertical orange "C-H-I-C-A-G-O" sign), `SW1OFFC`/`SW2OFFC`
+- Flats: `OFFCCARP` (grey-blue office carpet), `OFFCCEIL` (drop-ceiling tiles), `OFFCLITE` (fluorescent panel), `PLAZAFLR` (granite plaza), `LTRKFLR` (L track bed: ties and rails).
+
+**Skies:** `SKYMESA` (New Mexico night: mesa silhouettes, the Milky Way, a low moon, a black helicopter's lights far off), `SKYCHI` (Chicago at night from the Loop, burning: Sears Tower with its twin antennas, the John Hancock Center with X-braces, Marina City's corn-cob towers, Lake Michigan, saucers with beams over the lake), `SKYA51` (desert night, stars, distant lights and a hovering craft), `SKYCITY` (burning skyline, a mothership with a beam), `SKYFRST` (night sky with smoke and treeline glow), `SKYSPACE` (space with Earth below).
 
 ## 6. Sounds
 `mod/sounds/*.wav`, made by `tools/sfx.mjs`. Logical names are in `SNDINFO`, grouped `weapons/*`, `monsters/*`, `npc/*`, `iris/*`, `items/*` and `world/*`.

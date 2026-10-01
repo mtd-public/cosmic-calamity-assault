@@ -37,17 +37,19 @@ export default async function (F) {
     const fireAmt = 1 - sstep(0.3, 0.85, k), smokeAmt = sstep(0.25, 0.7, k) * (1 - sstep(0.85, 1.0, k) * 0.7);
     R.each((x, y) => {
       const u = x / S - 0.5, v = y / S - 0.5 + k * 0.06;
-      const r = Math.hypot(u, v), a = Math.atan2(v, u);
-      const n = fbm(Math.cos(a) * 2 + 5 + k * 1.5, Math.sin(a) * 2 + 5 + r * 6, 16, 5, 41 + i);
-      const edge = rad * (0.75 + 0.5 * n);
-      const inside = sstep(edge, edge * 0.7, r);
+      const r = Math.hypot(u, v);
+      // billowing edge from 2D noise (no angular streaks), rising with time
+      const n = fbm(u * 3 + 5.3, v * 3 + 5.1 + k * 0.8, 8, 5, 41 + i);
+      const n2 = fbm(u * 7 + 1.1, v * 7 + 2.3 + k * 1.5, 16, 3, 47 + i);
+      const edge = rad * (0.72 + 0.55 * n);
+      const inside = sstep(edge, edge * 0.72, r);
       if (inside <= 0.01) return null;
-      const core = sstep(edge * 0.8, 0, r);
-      const heat = clamp((core * 1.1 + n * 0.3) * fireAmt + (k < 0.15 ? 0.6 : 0));
+      const core = sstep(edge * 0.85, 0, r);
+      const heat = clamp((core * 1.15 + (n2 - 0.5) * 0.5 + 0.38) * fireAmt + (k < 0.15 ? 0.6 : 0));
       const fire = ramp(FIRE_RAMP, heat);
-      const sm = 40 + 40 * n;
+      const sm = 36 + 50 * n2;
       const c = [lerp(sm, fire[0], clamp(heat * 1.3)), lerp(sm, fire[1], clamp(heat * 1.3)), lerp(sm * 1.02, fire[2], clamp(heat * 1.3))];
-      const alpha = inside * clamp(heat * 1.5 + smokeAmt * 0.85);
+      const alpha = inside * clamp(heat * 1.5 + smokeAmt * (0.7 + 0.3 * n2));
       return [c[0], c[1], c[2], alpha];
     });
     const img = R.img('coverage');

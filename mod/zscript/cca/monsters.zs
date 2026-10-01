@@ -65,6 +65,61 @@ class Thrall : CCAMonster
 	}
 }
 
+// ---------------------------------------------------------------- Man in Black (Zombieman+)
+// The Committee's own security (MAP02 Dulce on): human collaborators in black
+// suits and sunglasses. 45 HP, quick silenced-pistol pairs 2 x 3*random(1,4),
+// fast strafing. Red blood: they are people.
+class ManInBlack : CCAMonster
+{
+	Default
+	{
+		Health 45; Radius 16; Height 56; Speed 10; PainChance 160; Mass 100;
+		BloodType "CCARedBlood";
+		SeeSound "mib/sight"; PainSound "mib/pain"; DeathSound "mib/death"; ActiveSound "mib/active";
+		Obituary "$C51_OB_MIB";
+		DropItem "Ammo9mmMag", 200;
+		Tag "$C51_TAG_MIB";
+		MinMissileChance 160;
+		+AVOIDMELEE
+	}
+	States
+	{
+	Spawn:
+		MIBK AB 10 A_Look;
+		Loop;
+	See:
+		MIBK AABBCCDD 3 A_Chase;
+		Loop;
+	Missile:
+		MIBK E 8 A_FaceTarget;
+		MIBK F 4 Bright { A_CustomBulletAttack(5.6, 0, 1, 3 * random(1, 4), "CCABulletPuff", 0, CBAF_NORANDOM); A_StartSound("weapons/silenced", CHAN_WEAPON); }
+		MIBK E 4 A_FaceTarget;
+		MIBK F 4 Bright { A_CustomBulletAttack(5.6, 0, 1, 3 * random(1, 4), "CCABulletPuff", 0, CBAF_NORANDOM); A_StartSound("weapons/silenced", CHAN_WEAPON); }
+		MIBK E 6;
+		Goto See;
+	Pain:
+		MIBK G 3;
+		MIBK G 3 A_Pain;
+		Goto See;
+	Death:
+		MIBK H 5;
+		MIBK I 5 A_Scream;
+		MIBK J 5 A_NoBlocking;
+		MIBK K 5 A_SpawnItemEx("CCABloodPool");
+		MIBK L -1;
+		Stop;
+	XDeath:
+		MIBK M 5;
+		MIBK N 5 A_XScream;
+		MIBK O 5 A_NoBlocking;
+		MIBK P -1;
+		Stop;
+	Raise:
+		MIBK LKJIH 5;
+		Goto See;
+	}
+}
+
 // ---------------------------------------------------------------- Thrall Trooper (Shotgun guy)
 class ThrallTrooper : Thrall
 {
@@ -389,7 +444,7 @@ class OverseerLance : Actor
 	}
 }
 
-// ---------------------------------------------------------------- Hive Mind (boss, MAP04)
+// ---------------------------------------------------------------- Hive Mind (boss, MAP06)
 // Shielded until the virus upload completes (objective args[0], default 1).
 // Spawns Greys and Probes around itself, fires beam salvos; its death lowers
 // tag 666 (the exit barrier) and completes objective args[1] (default 2).

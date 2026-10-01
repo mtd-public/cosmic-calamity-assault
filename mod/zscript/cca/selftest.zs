@@ -97,8 +97,18 @@ class CCASelfTest : EventHandler
 			if (!allOpen) { Say2("FAIL: exit gate still closed"); wstep = 99; return; }
 			wstep = 5; wwait = 70; return;   // let the door open
 		}
-		case 5:   // the exit line
+		case 5:   // the exit: the roof helicopter, else the exit line
 		{
+			let hi = ThinkerIterator.Create("Helicopter");
+			let heli = Helicopter(hi.Next());
+			if (heli)
+			{
+				p.SetOrigin(heli.pos + (heli.AngleToVector(heli.angle + 90, heli.radius + 40), 0), false);
+				heli.TryBoard(p);
+				Say2(heli.boarded ? "boarded the helicopter" : "FAIL: helicopter refused boarding");
+				wstep = heli.boarded ? 6 : 99; wwait = 140;
+				return;
+			}
 			for (int i = 0; i < Level.Lines.Size(); i++)
 			{
 				Line ln = Level.Lines[i];
@@ -124,7 +134,10 @@ class CCASelfTest : EventHandler
 	void StepSpawnAll(Actor p)
 	{
 		static const Name classes[] = {
-			'Thrall', 'ThrallTrooper', 'Grey', 'Hybrid', 'CCAStalker', 'Probe', 'Overseer',
+			'Thrall', 'ThrallTrooper', 'Grey', 'Hybrid', 'CCAStalker', 'Probe', 'Overseer', 'ManInBlack',
+			'OfficeWorker', 'OfficeWorkerF', 'DeadOfficeWorker', 'SafeZone', 'Helicopter', 'HelipadMark',
+			'PropCubicle', 'PropCopier', 'PropWaterCooler', 'PropPlant', 'PropBurningPapers', 'PropBurningDesk', 'PropVending',
+			'PropTaxi', 'PropBus', 'PropPicasso', 'PropRadarDish', 'PropAntenna', 'PropBarrier',
 			'Scientist', 'LabTech', 'DownedGuard', 'GuardAlly', 'DeadGuard', 'DeadScientist',
 			'HackTerminal', 'WaveSpot', 'ObjectiveMarker', 'IrisTrigger', 'ExitGate', 'Curtain', 'RandomFire',
 			'PropDesk', 'PropTank', 'ExplosiveDrum', 'PropHiveConduit', 'LightLamp', 'LightAlarm', 'LightNeon',
@@ -213,6 +226,24 @@ class CCASelfTest : EventHandler
 		let dg = DownedGuard(Actor.Spawn("DownedGuard", p.pos + (p.AngleToVector(p.angle + 180, 96), 0)));
 		Check(dg != null, "downed guard spawns");
 		if (dg) { dg.args[0] = 1; dg.reviver = p; dg.Revive(); Check(p.FindInventory("CCABlueCard") != null, "revived guard hands over the blue card"); }
+		// rescue: an office worker next to you with no hostile in sight is saved
+		let ow = OfficeWorker(Actor.Spawn("OfficeWorker", p.pos + (p.AngleToVector(p.angle + 180, 64), 0)));
+		Check(ow != null, "office worker spawns");
+		if (ow)
+		{
+			int before = ev.civSaved;
+			if (ow.Threatened())   // a live hostile can see them: no rescue yet
+			{
+				Check(!ow.CheckRescue(), "office worker not saved while a hostile is in sight");
+				Check(ev.civSaved == before, "civilians-saved counter unchanged");
+			}
+			else
+			{
+				Check(ow.CheckRescue(), "office worker is saved when reached");
+				Check(ev.civSaved == before + 1, "civilians-saved counter");
+			}
+			ow.Destroy();
+		}
 		// objectives (if the map defines any)
 		if (ev.objText.Size() > 0)
 		{

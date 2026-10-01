@@ -1,4 +1,4 @@
-; MAP04 "Mothership" (GAME_DESIGN.md §9)
+; MAP06 "Mothership" (GAME_DESIGN.md §9)
 ; Flow: the docking bay (ID4 scale: racks of attack craft, gantries, 768 high) -> abduction bays (pods,
 ; goo channels with grate bridges; YELLOW glyph under an Overseer in the operating theatre) -> yellow
 ; door -> the sleek cyan corridors (Perfect Dark: SHIPPNL + SHIPGLOW strips; data vault, goo
@@ -9,7 +9,7 @@
 ; Tag 666 is reserved for the exit barrier (HiveMind death: Floor_LowerToLowest(666,16)).
 ; Secrets: pod storage behind the abduction bay's NW pods (a spare Singularity), the observation
 ; gallery over the Earth, the security node's crawlspace.
-map MAP04 "Mothership"
+map MAP06 "Mothership"
 sky SKYSPACE
 tag @hivedoor 101
 defaults floor=0 ceil=160 ff=SHIPFLR1 cf=SHIPCEIL wall=SHIPPNL1 light=144 track=SHIPGLOW frame=SHIPPNL2

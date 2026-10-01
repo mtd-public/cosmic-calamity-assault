@@ -26,7 +26,7 @@ const STRICT = args.includes('--strict');
 // Pack optimisation (source art in mod/ stays truecolour / WAV):
 //   sprites + HUD frames → 256-colour indexed PNGs; sounds → OGG Vorbis (if ffmpeg exists)
 const QUANT = !args.includes('--no-quantize');
-const OGG = !args.includes('--no-ogg') && (() => { try { execFileSync('ffmpeg', ['-hide_banner', '-encoders'], { stdio: 'pipe' }).toString().includes('libvorbis'); return true; } catch { return false; } })();
+const OGG = !args.includes('--no-ogg') && (() => { try { return execFileSync('ffmpeg', ['-hide_banner', '-encoders'], { stdio: 'pipe' }).toString().includes('libvorbis'); } catch { return false; } })();
 const CACHE = join(ROOT, '.gz/cache');
 mkdirSync(CACHE, { recursive: true });
 function cached(kind, data, fn) {
@@ -170,6 +170,20 @@ rep('missing map textures', [...missingTex].sort(), STRICT);
 rep('unknown thing types', [...badThings], true);
 rep('sounds not in SNDINFO', missingSnd.sort(), STRICT);
 
+// While a map is still being built, the episode skips it: each map's Next
+// follows the MAPINFO chain to the next map that has a compiled WAD.
+function chainBuiltMaps(txt) {
+  const have = new Set(existsSync(join(MOD, 'maps')) ? readdirSync(join(MOD, 'maps')).map((f) => f.replace(/\.wad$/i, '').toUpperCase()) : []);
+  const next = {};
+  for (const m of txt.matchAll(/map\s+(\w+)[^{]*\{[^}]*?Next\s*=\s*"(\w+)"/gi)) next[m[1].toUpperCase()] = m[2];
+  return txt.replace(/(map\s+(\w+)[^{]*\{[^}]*?Next\s*=\s*")(\w+)(")/gi, (all, pre, map, nx, post) => {
+    let n = nx, guard = 0;
+    while (/^MAP\d\d$/i.test(n) && !have.has(n.toUpperCase()) && next[n.toUpperCase()] && guard++ < 20) n = next[n.toUpperCase()];
+    if (n !== nx) console.log(`mapinfo: ${map} -> ${n} (${nx} not built yet)`);
+    return pre + n + post;
+  });
+}
+
 // ------------------------------------------------------------------ pack
 const entries = [];
 const skip = (r) => r.endsWith('.md') || r.startsWith('.');
@@ -185,6 +199,7 @@ for (const f of files) {
     if (q.length < data.length) data = q;
   }
   if (OGG && r.startsWith('sounds/') && r.endsWith('.wav')) { data = oggOf(data); r = r.replace(/\.wav$/, '.ogg'); }
+  if (r === 'MAPINFO.txt') data = Buffer.from(chainBuiltMaps(data.toString('utf8')));
   entries.push({ name: r, data });
 }
 // the generated files were written after `files` was listed on a first run

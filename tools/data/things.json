@@ -375,5 +375,85 @@
    "b",
    "1 = buzz flicker"
   ]
+ },
+ "ManInBlack": {
+  "ed": 20009
+ },
+ "OfficeWorker": {
+  "ed": 20108
+ },
+ "OfficeWorkerF": {
+  "ed": 20109
+ },
+ "DeadOfficeWorker": {
+  "ed": 20110
+ },
+ "InvasionPlans": {
+  "ed": 20514,
+  "args": [
+   "objective id (0 = 1)"
+  ]
+ },
+ "SafeZone": {
+  "ed": 20606,
+  "args": [
+   "rescued civilians run here and leave the map"
+  ]
+ },
+ "Helicopter": {
+  "ed": 20607,
+  "args": [
+   "objective mask that must be done before you can board (bit 0 = objective 1)",
+   "objective id completed on boarding (0 = none)",
+   "1 = landed with rotors idling slowly (default: full spin)"
+  ]
+ },
+ "HelipadMark": {
+  "ed": 20608
+ },
+ "PropCubicle": {
+  "ed": 20841,
+  "args": [
+   "1 = on fire"
+  ]
+ },
+ "PropCopier": {
+  "ed": 20842
+ },
+ "PropWaterCooler": {
+  "ed": 20843,
+  "args": [
+   "1 = knocked over, leaking"
+  ]
+ },
+ "PropPlant": {
+  "ed": 20844
+ },
+ "PropBurningPapers": {
+  "ed": 20845
+ },
+ "PropBurningDesk": {
+  "ed": 20846
+ },
+ "PropVending": {
+  "ed": 20847
+ },
+ "PropTaxi": {
+  "ed": 20848
+ },
+ "PropBus": {
+  "ed": 20849
+ },
+ "PropPicasso": {
+  "ed": 20850
+ },
+ "PropRadarDish": {
+  "ed": 20881
+ },
+ "PropAntenna": {
+  "ed": 20882
+ },
+ "PropBarrier": {
+  "ed": 20883
  }
 }

@@ -53,10 +53,10 @@ export function loadThings(root) {
 }
 
 // Checker semantics per class (mapc-side only; the actors themselves live in ZScript).
-export const MONSTERS = new Set(['Thrall', 'ThrallTrooper', 'Grey', 'Hybrid', 'Stalker', 'Probe', 'Overseer', 'HiveMind']);
+export const MONSTERS = new Set(['ManInBlack', 'Thrall', 'ThrallTrooper', 'Grey', 'Hybrid', 'Stalker', 'Probe', 'Overseer', 'HiveMind']);
 export const FLYERS = new Set(['Probe', 'Overseer']);
-export const NPCS = new Set(['Scientist', 'LabTech', 'DownedGuard']);
-export const CORPSES = new Set(['DeadGuard', 'DeadScientist', 'DeadLabTech', 'DeadSoldier']);
+export const NPCS = new Set(['Scientist', 'LabTech', 'DownedGuard', 'OfficeWorker', 'OfficeWorkerF']);
+export const CORPSES = new Set(['DeadGuard', 'DeadScientist', 'DeadLabTech', 'DeadSoldier', 'DeadOfficeWorker']);
 export const KEYS = { CCABlueCard: 'blue', CCARedCard: 'red', CCAYellowCard: 'yellow' };
 // default objective id an item completes (override per thing with obj=N)
 export const OBJECTIVE_ITEMS = { Dossier: 1, HDDCache: 2, CaseFile: 1, NavShard: 1 };

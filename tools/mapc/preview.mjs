@@ -50,7 +50,7 @@ export function renderPreview(lv, rep) {
       if (!piece) { if (cell.kind === 'solid' || cell.kind === 'diag') set(x, y, cell.mark ? [240, 220, 60] : [52, 52, 60]); continue; }
       const s = piece.sector;
       set(x, y, colourOf(s));
-      if (s.slab && ((px + py) % 4 === 0)) set(x, y, [235, 235, 235], 0.7);
+      if (s.slabs && s.slabs.length && ((px + py) % (s.slabs.length > 1 ? 2 : 4) === 0)) set(x, y, [235, 235, 235], 0.7);
       if (s.p.secret && s.kind !== 'door' && (px === 0 || py === 0)) set(x, y, [255, 215, 0], 0.8);
       if (rep && rep.walk) {
         const sx = c * 2 + (px >= PX / 2 ? 1 : 0), sy = r * 2 + (py >= PX / 2 ? 1 : 0);
@@ -84,7 +84,7 @@ export function renderPreview(lv, rep) {
     if (t.cls === 'PlayerStart') { col = [255, 255, 255]; r = 3; }
     else if (KEYS[t.cls]) { col = KEYCOL[KEYS[t.cls]]; r = 3; }
     else if (t.meta.key) { col = KEYCOL[t.meta.key]; r = 2; }
-    else if (t.meta.objective || t.cls === 'HackTerminal' || t.cls === 'ExitGate') { col = [255, 0, 255]; r = 3; }
+    else if (t.meta.objective || t.meta.heli || t.cls === 'HackTerminal' || t.cls === 'ExitGate' || t.cls === 'SafeZone') { col = [255, 0, 255]; r = 3; }
     else if (MONSTERS.has(t.cls)) { col = [255, 40, 40]; r = t.cls === 'HiveMind' ? 5 : t.cls === 'Stalker' || t.cls === 'Overseer' ? 3 : 2; }
     else if (NPCS.has(t.cls)) { col = [40, 230, 255]; r = 2; }
     else if (isPickup(t.cls)) { col = /^Pickup/.test(t.cls) ? [255, 160, 0] : [60, 255, 90]; r = /^Pickup/.test(t.cls) ? 2 : 1; }

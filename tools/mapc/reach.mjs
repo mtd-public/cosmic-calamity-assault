@@ -55,7 +55,7 @@ export function checkLevel(lv) {
     const surf = [floor];
     if (lift !== null) surf.push(s.top);
     const slabs = [];
-    if (s.slab) { slabs.push([s.slab.z0, s.slab.z1]); surf.push(s.slab.z1); }
+    for (const sl of s.slabs || []) { slabs.push([sl.z0, sl.z1]); surf.push(sl.z1); }
     surf.sort((a, b) => a - b);
     return { floor, ceil, surf, slabs, lift, damage: !!s.p.damage, scenery: !!s.p.scenery, sid: s.id };
   }
@@ -181,6 +181,7 @@ export function checkLevel(lv) {
     if (m.objective && t.cls !== 'HackTerminal') triggers.push({ ...base, kind: 'item', objective: m.objective });
     if (t.cls === 'HackTerminal') triggers.push({ ...base, kind: 'use', rad: 64, effect: m.effect, objective: m.objective });
     if (m.gate) triggers.push({ ...base, kind: 'use', rad: 128, gate: m.gate });
+    if (m.heli) triggers.push({ ...base, kind: 'use', rad: 128, needMask: m.heli.mask, objective: m.heli.obj, effect: { special: 243, args: [0] } });
     if ((m.effect || m.deathObj) && t.cls !== 'HackTerminal') {
       const boss = t.cls === 'HiveMind';
       triggers.push({ ...base, kind: 'monster', effect: m.effect || null, rad: boss ? 320 : 128, requires: m.shieldObj || 0, objective: m.deathObj || 0 });
@@ -230,6 +231,7 @@ export function checkLevel(lv) {
     if (tr.kind === 'item') return near(at, tr.x, tr.y, tr.z, 24, -16, 56);
     if (tr.kind === 'use') {
       if (tr.needKey && !st.keys.has(tr.needKey)) return false;
+      if (tr.needMask) { for (let b = 0; b < 16; b++) if ((tr.needMask >> b) & 1 && !st.objectives.has(b + 1)) return false; }
       if (tr.gate) { const need = tr.gate.mask; for (let b = 0; b < 16; b++) if ((need >> b) & 1 && !st.objectives.has(b + 1)) return false; }
       return near(at, tr.x, tr.y, tr.z, tr.rad || 48, -24, 72);
     }
@@ -294,9 +296,12 @@ export function checkLevel(lv) {
       const fly = FLYERS.has(t.cls);
       ok = near(at, t.x, t.y, t.z, t.cls === 'HiveMind' ? 256 : 96, fly ? -512 : -96, fly ? 512 : 96);
       if (!ok && near(atC, t.x, t.y, t.z, 96, -96, 96)) { ok = true; clamberOnly = true; }
-    } else if (t.meta.key || t.meta.objective || t.cls === 'HackTerminal' || t.cls === 'ExitGate') {
+    } else if (t.meta.key || t.meta.objective || t.cls === 'HackTerminal' || t.cls === 'ExitGate' || t.cls === 'Helicopter') {
       need = true;
-      ok = near(at, t.x, t.y, t.z, t.cls === 'HackTerminal' ? 64 : t.cls === 'ExitGate' ? 128 : 48, -24, 72);
+      ok = near(at, t.x, t.y, t.z, t.cls === 'HackTerminal' ? 64 : (t.cls === 'ExitGate' || t.cls === 'Helicopter') ? 128 : 48, -24, 72);
+    } else if (t.cls === 'SafeZone') {
+      ok = near(at, t.x, t.y, t.z, 64, -64, 96);
+      if (!ok) warn(`SafeZone at ${pos(t)} is unreachable`);
     } else if (isPickup(t.cls)) {
       ok = near(at, t.x, t.y, t.z, 24, -16, 56);
       if (!ok && near(atC, t.x, t.y, t.z, 24, -16, 56)) { ok = true; clamberOnly = true; }
@@ -392,7 +397,8 @@ export function checkLevel(lv) {
   // ---- lint: 1-cell-wide passages (legal in the engine, miserable to walk through)
   {
     const secAt = (r, c) => { const cell = lv.cells[r] && lv.cells[r][c]; if (cell && cell.kind === 'diag') return { kind: 'door', p: {} }; return cell && cell.pieces && cell.pieces.F ? cell.pieces.F.sector : null; };
-    const open = (a, b) => b && (b.kind === 'door' || b.kind === 'lift' || (b.kind !== 'window' && !b.p.block && Math.abs(b.floor - a.floor) <= 24 && b.ceil - Math.max(a.floor, b.floor) >= 56));
+    const surfs = (x) => [x.floor, ...(x.slabs || []).map((sl) => sl.z1)];
+    const open = (a, b) => b && (b.kind === 'door' || b.kind === 'lift' || (b.kind !== 'window' && !b.p.block && surfs(a).some((fa) => surfs(b).some((fb) => Math.abs(fb - fa) <= 24))));
     const squeezes = [];
     for (let r = 1; r < lv.H - 1; r++) for (let c = 1; c < lv.W - 1; c++) {
       const S = secAt(r, c);

@@ -278,6 +278,7 @@
   // The engine reports when it grabs the mouse (gameplay) or releases it
   // (menus, console). Pointer lock follows it, like the desktop game.
   let selfExit = false;        // we released the lock ourselves (menu opened)
+  let lockChangedAt = 0;       // time of the last pointer-lock change (see fwdMouse)
   let lastEscDown = 0, lastSyntheticEsc = 0;
 
   const isLocked = () => document.pointerLockElement === canvas;
@@ -315,6 +316,7 @@
   }
 
   document.addEventListener('pointerlockchange', () => {
+    lockChangedAt = performance.now();
     const locked = isLocked();
     S.locked = locked;
     if (!locked && !selfExit && S.captured && S.phase === 'running') {
@@ -394,9 +396,18 @@
       bubbles: true, cancelable: true,
     }, extra || {});
   }
+  // Mouse-look deltas only while the pointer is locked, and never the spike
+  // browsers report on the first move after a lock change (Chromium sends
+  // one; it snapped the view to the ceiling when gameplay grabbed the mouse).
+  const MAX_DELTA = 300;
   const fwdMouse = (evType) => (e) => {
     if (S.phase !== 'running') return;
-    post({ type: 'input', target: evType === 'mouseup' ? 'document' : 'canvas', evType, init: mouseInit(e) });
+    const init = mouseInit(e);
+    if (evType === 'mousemove' && (!isLocked() || performance.now() - lockChangedAt < 120 ||
+        Math.abs(init.movementX) > MAX_DELTA || Math.abs(init.movementY) > MAX_DELTA)) {
+      init.movementX = 0; init.movementY = 0;
+    }
+    post({ type: 'input', target: evType === 'mouseup' ? 'document' : 'canvas', evType, init });
     if (evType === 'wheel' || evType === 'mousedown') e.preventDefault();
   };
 

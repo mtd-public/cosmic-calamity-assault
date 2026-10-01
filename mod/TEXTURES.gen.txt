@@ -193,7 +193,7 @@ WallTexture "BRICKDRK", 256, 256 { XScale 2.0 YScale 2.0 WorldPanning Patch "tex
 WallTexture "BRICKRED", 256, 256 { XScale 2.0 YScale 2.0 WorldPanning Patch "texsrc/walls/BRICKRED.png", 0, 0 }
 WallTexture "BUNKDOOR", 256, 256 { XScale 2.0 YScale 2.0 WorldPanning Patch "texsrc/walls/BUNKDOOR.png", 0, 0 }
 WallTexture "BUNKWALL", 512, 256 { XScale 2.0 YScale 2.0 WorldPanning Patch "texsrc/walls/BUNKWALL.png", 0, 0 }
-WallTexture "CHITHEA", 512, 256 { XScale 2.0 YScale 2.0 WorldPanning Patch "texsrc/walls/CHITHEA.png", 0, 0 }
+WallTexture "CHITHEA", 512, 1280 { XScale 2.0 YScale 2.0 WorldPanning Patch "texsrc/walls/CHITHEA.png", 0, 0 }
 WallTexture "CONCWALL", 256, 256 { XScale 2.0 YScale 2.0 WorldPanning Patch "texsrc/walls/CONCWALL.png", 0, 0 }
 WallTexture "CRATEWAL", 256, 256 { XScale 2.0 YScale 2.0 WorldPanning Patch "texsrc/walls/CRATEWAL.png", 0, 0 }
 WallTexture "CUBEWALL", 256, 256 { XScale 2.0 YScale 2.0 WorldPanning Patch "texsrc/walls/CUBEWALL.png", 0, 0 }
@@ -220,7 +220,7 @@ WallTexture "LABSIGN1", 512, 256 { XScale 2.0 YScale 2.0 WorldPanning Patch "tex
 WallTexture "LABWALL1", 256, 256 { XScale 2.0 YScale 2.0 WorldPanning Patch "texsrc/walls/LABWALL1.png", 0, 0 }
 WallTexture "LABWALL2", 256, 256 { XScale 2.0 YScale 2.0 WorldPanning Patch "texsrc/walls/LABWALL2.png", 0, 0 }
 WallTexture "LTRACK", 256, 256 { XScale 2.0 YScale 2.0 WorldPanning Patch "texsrc/walls/LTRACK.png", 0, 0 }
-WallTexture "LTRAIN", 512, 256 { XScale 2.0 YScale 2.0 WorldPanning Patch "texsrc/walls/LTRAIN.png", 0, 0 }
+WallTexture "LTRAIN", 512, 288 { XScale 2.0 YScale 2.0 WorldPanning Patch "texsrc/walls/LTRAIN.png", 0, 0 }
 WallTexture "MACHWALL", 512, 256 { XScale 2.0 YScale 2.0 WorldPanning Patch "texsrc/walls/MACHWALL.png", 0, 0 }
 WallTexture "MARBLE", 256, 256 { XScale 2.0 YScale 2.0 WorldPanning Patch "texsrc/walls/MARBLE.png", 0, 0 }
 WallTexture "MESAWALL", 256, 256 { XScale 2.0 YScale 2.0 WorldPanning Patch "texsrc/walls/MESAWALL.png", 0, 0 }
@@ -232,7 +232,7 @@ WallTexture "NEONLIQ", 256, 128 { XScale 2.0 YScale 2.0 WorldPanning Patch "texs
 WallTexture "NEONMOTL", 256, 128 { XScale 2.0 YScale 2.0 WorldPanning Patch "texsrc/walls/NEONMOTL.png", 0, 0 }
 WallTexture "NEONPAWN", 256, 128 { XScale 2.0 YScale 2.0 WorldPanning Patch "texsrc/walls/NEONPAWN.png", 0, 0 }
 WallTexture "NEONSHOW", 512, 256 { XScale 2.0 YScale 2.0 WorldPanning Patch "texsrc/walls/NEONSHOW.png", 0, 0 }
-WallTexture "OFFCBRK", 256, 256 { XScale 2.0 YScale 2.0 WorldPanning Patch "texsrc/walls/OFFCBRK.png", 0, 0 }
+WallTexture "OFFCBRK", 256, 288 { XScale 2.0 YScale 2.0 WorldPanning Patch "texsrc/walls/OFFCBRK.png", 0, 0 }
 WallTexture "OFFCWALL", 256, 256 { XScale 2.0 YScale 2.0 WorldPanning Patch "texsrc/walls/OFFCWALL.png", 0, 0 }
 WallTexture "OFFCWIN", 256, 256 { XScale 2.0 YScale 2.0 WorldPanning Patch "texsrc/walls/OFFCWIN.png", 0, 0 }
 WallTexture "OFFICEWN", 256, 256 { XScale 2.0 YScale 2.0 WorldPanning Patch "texsrc/walls/OFFICEWN.png", 0, 0 }

@@ -16,7 +16,10 @@ What's left after the six-map alpha and the browser build, roughly in priority o
 - **Older iPads (stuck on iPadOS 26 or earlier) need a non-JSPI build.**
   - The best candidate is github.com/BurkeStrang/gzdoomwebassembly: GZDoom 4.15pre, Asyncify, single-threaded, no SharedArrayBuffer, GPLv3, with a ready GitHub Pages CI.
   - Estimate: 4-6 h, plus a smoke test of our ZScript on 4.15.
-- **Right-stick look tuning** in the gamepad bridge (`site/play/gamepad.js`).
+- **Right-stick look tuning** in the gamepad bridge (`site/play/gamepad.js`). The page slider defaults to 900 px/s.
+- **Capture signal:** under heavy machine load the browser smoke test once missed the engine's "mouse captured" signal (the right stick needs it). The page now drops mouse-look deltas while unlocked and the spike right after a pointer-lock change, which had snapped the view to the ceiling.
+- **Settings:** GZDoom writes its ini only on quit, so browser settings don't persist yet.
+- **GPL:** tomb-engine publishes build scripts and a patch list, but not the patched engine source. Ask the author for it, or move to a 4.14 web build when one exists.
 - **Audio:** the web build stubs 3D positional audio (stereo only).
 - **Rejected:** porting to a Quake engine.
   - FTEQW's web build is the only Quake-family engine with an iPad Safari report (NZ:P on iPadOS 17).

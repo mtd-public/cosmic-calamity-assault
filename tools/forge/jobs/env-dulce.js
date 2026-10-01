@@ -181,7 +181,7 @@ export default async function (F, params = {}) {
     // rotation arrow + stencil
     s.stamp((px, py) => Math.abs(Math.hypot(px - cx, py - cy) - 56) - 2.2, [cx - 60, cy - 60, cx + 60, cy + 60], { fn: (i, cov, t, d, px, py) => { const a = Math.atan2(py - cy, px - cx); if (a > 0.3 && a < 1.9) s.setC(i, DP.white, cov * 0.8); } });
     s.poly([[cx + Math.cos(0.3) * 56 - 7, cy + Math.sin(0.3) * 56 + 3], [cx + Math.cos(0.3) * 56 + 7, cy + Math.sin(0.3) * 56 + 3], [cx + Math.cos(0.12) * 56, cy + Math.sin(0.12) * 56 - 8]], { color: DP.white, alpha: 0.8 });
-    stencil(s, 'TURBINE 2', cx - 30, cy - 46, { size: 12, align: 'center', color: DP.white, seed: 1165, wear: 0.3, spacing: 1 });
+    stencil(s, 'TURBINE 2', cx - 6, cy - 50, { size: 12, align: 'center', color: DP.white, seed: 1165, wear: 0.18, spacing: 1 });
     // plinth with hazard edge
     s.rect(cx - R - 14, h - 26, cx + R + 14, h + 2, { h: 10, bevel: 2, op: 'max', color: DP.conc });
     hazardRect(s, cx - R - 14, h - 26, cx + R + 14, h - 18, { h: 0.6, period: 20, seed: 1166, wear: 0.35 });
@@ -213,7 +213,7 @@ export default async function (F, params = {}) {
     s.rect(398, by1, 404, h - 22, { h: 8, bevel: 2, prof: 'round', op: 'max', color: [70, 72, 70], spec: 0.5 });
     // floor kick plate with hazard stripes
     hazardRect(s, 256, h - 22, w, h, { h: 2, period: 28, seed: 1170, wear: 0.33, op: 'add' });
-    stencil(s, 'DANGER  HIGH PRESSURE', 401, 66, { size: 10, align: 'center', color: DP.yellow, seed: 1171, wear: 0.25, spacing: 1 });
+    stencil(s, 'DANGER HIGH PRESSURE', 401, 67, { size: 9, align: 'center', color: DP.yellow, seed: 1171, wear: 0.2, spacing: 0.5, sx: 0.88 });
     s.grain(0.03, 1172);
     s.edgeWear([186, 186, 178], 0.6, 1, 1173);
     s.streaks(DP.rust, { amount: 0.4, fx: 32, seed: 1174, len: 0.3, start: () => 56 / 256 });
@@ -293,8 +293,8 @@ export default async function (F, params = {}) {
       s.rect(cx - 3, ty - 2, cx + 3, ty + 2, { h: 16, bevel: 1.5, op: 'max', color: [140, 140, 136], spec: 0.9 });
       s.seg(cx, ty, cx, on ? ty + 4 : ty - 4, 3, { h: 18, bevel: 2, prof: 'round', op: 'max', color: [150, 150, 146], spec: 0.9 });
       s.rect(cx - 18, (on ? ty + 4 : ty - 10), cx + 18, (on ? ty + 10 : ty - 4), { h: 22, bevel: 3, prof: 'round', op: 'max', color: [30, 30, 30], spec: 0.6, r: 3 });
-      s.apply(textMask(s, 'OFF', cx + 20, y0 + 66, { font: 'bold 7px "DejaVu Sans", sans-serif', align: 'left' }), { color: [230, 226, 210] });
-      s.apply(textMask(s, 'ON', cx + 20, y1 - 18, { font: 'bold 7px "DejaVu Sans", sans-serif', align: 'left' }), { color: [230, 226, 210] });
+      s.apply(textMask(s, 'OFF', cx - 27, y0 + 72, { font: 'bold 7px "DejaVu Sans", sans-serif', align: 'left' }), { color: [230, 226, 210] });
+      s.apply(textMask(s, 'ON', cx - 27, y1 - 26, { font: 'bold 7px "DejaVu Sans", sans-serif', align: 'left' }), { color: [230, 226, 210] });
       for (const [bx, by] of [[cx - 34, y0 + 4], [cx + 34, y0 + 4], [cx - 34, y1 - 4], [cx + 34, y1 - 4]]) s.bolt(bx, by, 1.8, { h: 1.2, hex: true });
       s.streaks(DP.rust, { amount: 0.4, fx: 8, seed: 1213, len: 0.1, start: () => (y1 + 2) / 256 });
       s.edgeWear([190, 186, 170], 0.5, 1, 1214);
@@ -309,34 +309,40 @@ export default async function (F, params = {}) {
       const rip = Math.sin((u * 3 + v * 4 + warp) * Math.PI * 2) * 0.5 + 0.5, ripA = fbm(u, v, 3, 3, 3, 1302);
       const n = fbm(u, v, 6, 6, 4, 1303), g = hash(x, y, 1304), big = fbm(u, v, 2, 2, 3, 1305);
       s.H[i] = rip * 0.9 * ripA + n * 1.4 + g * 0.5;
-      const k = 0.82 + n * 0.18 + big * 0.12 + (g - 0.5) * 0.16;
-      s.setC(i, mixc([174, 98, 62], [196, 126, 84], big) .map((c) => c * k));
-      // exposed rock slab
-      const slab = fbm(u, v, 3, 3, 4, 1306);
-      if (slab > 0.6) { const kk = 0.85 + n * 0.2; s.setC(i, [150 * kk, 70 * kk, 46 * kk], sstep(0.6, 0.64, slab)); s.H[i] += sstep(0.6, 0.66, slab) * 2.5 + (fbm(u, v, 20, 20, 2, 1307) - 0.5); }
+      const k = 0.82 + n * 0.18 + big * 0.1 + (g - 0.5) * 0.16;
+      s.setC(i, mixc([168, 94, 60], [190, 120, 80], big).map((c) => c * k));
+      // patches of exposed slickrock
+      const slab = fbm(u, v, 5, 5, 4, 1306);
+      if (slab > 0.6) {
+        const a = sstep(0.6, 0.63, slab), kk = 0.82 + n * 0.22 + (fbm(u, v, 24, 24, 2, 1307) - 0.5) * 0.2;
+        s.setC(i, [152 * kk, 74 * kk, 48 * kk], a); s.H[i] += a * 2 + (fbm(u, v, 20, 20, 2, 1307) - 0.5) * a;
+        const [f1, f2] = worley(u, v, 6, 6, 1309); if (f2 - f1 < 0.04 && slab > 0.63) { s.setC(i, [90, 46, 32], 0.6); s.H[i] -= 1; }
+      }
     });
     const r = rng(1308);
-    for (let k = 0; k < 46; k++) { const x = r() * 128, y = r() * 128, rr = 0.7 + Math.pow(r(), 2) * 3.4; s.circle(x, y, rr, { h: rr * 1.1, bevel: rr, prof: 'round', op: 'max', color: mixc([110, 52, 36], [190, 140, 104], r()) }); }
+    for (let k = 0; k < 40; k++) { const x = r() * 128, y = r() * 128, rr = 0.8 + Math.pow(r(), 2) * 2.6; s.circle(x, y, rr, { h: rr * 0.9, bevel: rr, prof: 'round', op: 'max', color: mixc([104, 52, 36], [170, 116, 84], r()) }); }
     for (let k = 0; k < 2; k++) { const x = r() * 128, y = r() * 128; for (let j = 0; j < 7; j++) { const a = r() * 6.28, L = 3 + r() * 6; s.seg(x, y, x + Math.cos(a) * L, y + Math.sin(a) * L, 0.5, { h: 1.2, op: 'max', bevel: 0.5, color: [96, 80, 56] }); } }
-  }, { amb: 0.48, shadow: 4, ...FB });
+  }, { amb: 0.48, shadow: 4, specK: 0.3, ...FB });
 
   await T('BUNKFLR', 'flats', 128, 128, (s) => {
     s.fill(DP.conc, 0.12);
     s.each((u, v, x, y, i) => {
       const n = fbm(u, v, 4, 4, 5, 1311), m = fbm(u, v, 24, 24, 2, 1312), g = hash(x, y, 1313);
-      const k = 0.8 + n * 0.24 + (m - 0.5) * 0.1 + (g - 0.5) * 0.06;
+      const k = 0.78 + n * 0.26 + (m - 0.5) * 0.1 + (g - 0.5) * 0.06 + (hash(x >> 6, y >> 6, 1319) - 0.5) * 0.06;
       s.C[i * 3] *= k * 0.96; s.C[i * 3 + 1] *= k * 0.96; s.C[i * 3 + 2] *= k * 0.95;
       s.H[i] = n * 0.8 + m * 0.3;
-      // saw-cut control joints on a 2 m grid (at the flat edges), with faded painted guide lines alongside
-      const ex = Math.min(x, 127 - x), ey = Math.min(y, 127 - y);
-      if (ex < 1 || ey < 1) { s.H[i] -= 1.6; s.setC(i, [60, 58, 54], 0.85); }
-      const wear = fbm(u, v, 16, 16, 3, 1314);
-      if (x >= 6 && x < 10 && wear > 0.42) s.setC(i, DP.yellow, sstep(0.42, 0.55, wear) * 0.7);
+      // saw-cut joints on a 1 m grid
+      const ex = Math.min(mod(x, 64), 63 - mod(x, 64)), ey = Math.min(mod(y, 64), 63 - mod(y, 64));
+      if (ex < 1 || ey < 1) { s.H[i] -= 1.4; s.setC(i, [64, 62, 58], 0.8); }
+      // a faded painted guide line beside one joint
+      const wear = fbm(u, v, 12, 12, 3, 1314);
+      if (x >= 3 && x < 9) s.setC(i, DP.yellow, sstep(0.36, 0.5, wear) * 0.6);
     });
-    // oil and rust stains, scuffs, tyre marks
+    // oil and rust stains, boot scuffs
     s.grime([46, 42, 36], (u, v) => clamp(0.55 - Math.hypot(u - 0.62, v - 0.4) * 3.2), { seed: 1315, fx: 8, fy: 8 });
     s.grime([110, 70, 40], (u, v) => clamp(0.3 - Math.hypot(u - 0.25, v - 0.8) * 4), { seed: 1316, fx: 10, fy: 10 });
-    s.each((u, v, x, y, i) => { const t = Math.abs(fract((x - 30) / 128 + (y / 128) * 0.15) - 0.5); if (t > 0.45 && hash(x >> 1, y >> 2, 1317) < 0.6) s.setC(i, [50, 48, 44], 0.25); });
+    const r = rng(1317);
+    for (let k = 0; k < 30; k++) { const x = r() * 128, y = r() * 128, L = 2 + r() * 8, a = r() * 6.28; s.seg(x, y, x + Math.cos(a) * L, y + Math.sin(a) * L, 0.5 + r() * 0.5, { color: [62, 60, 56], alpha: 0.25 + r() * 0.25 }); }
     s.grime([60, 56, 50], () => 0.18, { fx: 4, fy: 4, seed: 1318, contrast: 2.2 });
   }, { amb: 0.5, shadow: 3, specK: 0.6, ...FB });
 
@@ -344,16 +350,15 @@ export default async function (F, params = {}) {
     s.fill([58, 54, 50], 0.2);
     // densely packed pebbles: Worley cells as stones, sized and tinted per cell
     s.each((u, v, x, y, i) => {
-      const [f1, f2, id] = worley(u, v, 36, 36, 1321, 0.95);
-      const e = f2 - f1, tint = hash(id, 1, 1322), sz = 0.3 + hash(id, 2, 1323) * 0.2;
-      const stone = e > 0.12;
-      const base = tint < 0.35 ? [150, 144, 134] : tint < 0.65 ? [118, 112, 104] : tint < 0.85 ? [168, 150, 124] : [92, 88, 84];
-      const k = 0.85 + hash(x, y, 1324) * 0.12;
-      if (stone) { s.setC(i, base.map((c) => c * k)); s.H[i] = Math.sqrt(clamp((e - 0.12) / sz)) * 3; s.S[i] = 0.25; }
-      else { s.setC(i, [36, 34, 32]); s.H[i] = 0; }
+      const [f1, f2, id] = worley(u, v, 24, 24, 1321, 0.9);
+      const e = f2 - f1, tint = hash(id, 1, 1322);
+      const base = tint < 0.35 ? [146, 140, 130] : tint < 0.65 ? [124, 118, 110] : tint < 0.88 ? [158, 144, 122] : [100, 96, 92];
+      const k = (0.88 + hash(x, y, 1324) * 0.1) * (0.85 + fbm(u, v, 3, 3, 3, 1327) * 0.25);
+      if (e > 0.05) { const dome = Math.sqrt(clamp(1 - f1 * f1 * 2.2)); s.setC(i, base.map((c) => c * k * (0.85 + dome * 0.2))); s.H[i] = dome * 3 * sstep(0.05, 0.12, e); s.S[i] = 0.3; }
+      else { s.setC(i, [44, 42, 40]); s.H[i] = 0; }
     });
-    // a bald patch of tar membrane
+    // a bald patch of tar membrane and some grime
     s.grime([40, 38, 36], (u, v) => clamp(0.6 - Math.hypot(u - 0.3, v - 0.65) * 5), { seed: 1325, fx: 8, fy: 8, contrast: 2 });
-    s.grime([90, 86, 80], () => 0.1, { fx: 4, fy: 4, seed: 1326, contrast: 2 });
-  }, { amb: 0.45, shadow: 4, ...FB });
+    s.grime([80, 76, 70], () => 0.12, { fx: 4, fy: 4, seed: 1326, contrast: 2 });
+  }, { amb: 0.5, shadow: 3, ...FB });
 }

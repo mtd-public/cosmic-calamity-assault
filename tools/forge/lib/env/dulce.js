@@ -44,9 +44,9 @@ export function strata(s, o = {}) {
   const bedAt = (L) => { L = mod(L, h); for (const b of beds) if (L < b.y1) return b; return beds[beds.length - 1]; };
   const amp = o.warp ?? 4;
   s.each((u, v, x, yy, i) => {
-    const warp = (fbm(u, 0.5, 2, 1, 3, seed + 1) - 0.5) * amp * 2 + (fbm(u, v, 16, 16, 3, seed + 2) - 0.5) * 3;
+    const warp = (fbm(u, 0.5, 2, 1, 3, seed + 1) - 0.5) * amp * 2 + (fbm(u, v, 6, 3, 3, seed + 15) - 0.5) * 6 + (fbm(u, v, 16, 16, 3, seed + 2) - 0.5) * 3;
     const L = yy + warp, b = bedAt(L), Lm = mod(L, h);
-    const dTop = Lm - b.y0, dBot = b.y1 - Lm;
+    const dTop = Lm - b.y0, dBot = b.y1 - Lm, above = beds[(b.id + beds.length - 1) % beds.length];
     // irregular blocks: Worley cells, narrow and tall so the fractures run mostly vertically
     const [f1, f2, cid] = worley(u + (fbm(u, v, 8, 8, 2, seed + 12) - 0.5) * 0.03, v, o.cellsX ?? 7, o.cellsY ?? 3, seed + b.id * 3, 1);
     const edge = f2 - f1, blk = hash(cid, b.id, seed + 13);
@@ -56,36 +56,37 @@ export function strata(s, o = {}) {
     const flute = ridged(u, v, 40, 3, 3, seed + 7);
     const soft = 1 - b.hard;
     let k = b.tone * (0.8 + n * 0.24 + (n2 - 0.5) * 0.08 + (g - 0.5) * 0.1 + (blk - 0.5) * 0.1 + (big - 0.5) * 0.3);
-    const top = sstep(0, 2 + b.hard * 3, dTop), bot = sstep(0, 1.5 + soft * 3, dBot);
+    // a step (not a groove) between beds: blend from the bed above over a few texels
+    const top = sstep(0, above.hard > b.hard ? 2.5 : 4 + b.hard * 2, dTop);
     const lump = sstep(0, 0.25, edge);                                      // rounded block edges
-    let H = b.hard * 6 * Math.min(top, bot) + (crackOn ? lump * 2.5 * b.hard : 0) + (blk - 0.5) * 2.5 * b.hard + flute * (0.8 + soft) + n * 2.2 + (g - 0.5) * 0.6;
+    let H = mix(above.hard, b.hard, top) * 7 + (crackOn ? lump * 2.5 * b.hard : 0) + (blk - 0.5) * 2.5 * b.hard + flute * (0.8 + soft) + n * 2.2 + (g - 0.5) * 0.6;
     if (soft > 0.5) H += (fbm(u, v, 24, 24, 3, seed + 9) - 0.5) * 4 * soft;
     let c = [b.c[0] * k, b.c[1] * k, b.c[2] * k];
     if (crackOn && edge < 0.035) c = mixc(c, [84, 46, 34], 0.55 * (1 - edge / 0.035));
-    if (dBot < 2.5 && b.hard > 0.55) c = mixc(c, [92, 50, 38], 0.22 * (1 - dBot / 2.5));
+    if (dTop < 2.5 && above.hard > b.hard + 0.2) c = mixc(c, [92, 50, 38], 0.3 * (1 - dTop / 2.5));
     if (dTop < 3 && b.hard > 0.55) c = mixc(c, [210, 150, 106], (1 - dTop / 3) * 0.35 * (0.5 + n));
     s.setC(i, c); s.H[i] = H;
   });
   // spalls: fresh, paler scoops broken out of the hard beds
   const pr = rng(seed + 10);
-  for (let k = 0; k < (o.spalls ?? 7); k++) {
+  for (let k = 0; k < (o.spalls ?? 0); k++) {
     const x = pr() * w, yy = pr() * h, b = bedAt(yy); if (b.hard < 0.5) continue;
     const rx = 5 + pr() * 12, ry = Math.min(5 + pr() * 6, (b.y1 - b.y0) * 0.45);
     s.stamp((px, py) => (Math.hypot((px - x) / rx, (py - yy) / ry) - 1) * Math.min(rx, ry), [x - rx, yy - ry, x + rx, yy + ry], { h: -3, op: 'add', bevel: 4, prof: 'smooth', fn: (i, cov) => s.setC(i, mixc(s.getC(i), [206, 120, 76], 0.35), cov) });
   }
   // sparse alveolar pockets in the soft beds
-  for (let k = 0; k < (o.pockets ?? 18); k++) {
+  for (let k = 0; k < (o.pockets ?? 10); k++) {
     const x = pr() * w, yy = pr() * h, b = bedAt(yy);
     if (b.hard > 0.5) continue;
     const rr = 1.2 + pr() * 2.2;
-    s.circle(x, yy, rr, { h: -3, op: 'add', bevel: rr, prof: 'round', color: [80, 46, 36], alpha: 0.4 });
+    s.circle(x, yy, rr, { h: -2, op: 'add', bevel: rr, prof: 'round', color: [96, 56, 42], alpha: 0.3 });
   }
   // a couple of long tectonic joints through several beds
   for (let k = 0; k < (o.joints ?? 2); k++) {
     const jx = pr() * w, pts = []; let xx = jx;
     const y0 = pr() * h, len = h * (0.4 + pr() * 0.5);
-    for (let yy = y0; yy <= y0 + len; yy += 6) { xx += (hash(Math.round(jx), Math.round(yy), seed + 11) - 0.5) * 4; pts.push([xx, yy, 0.5 + hash(Math.round(yy), 3, seed) * 0.9]); }
-    s.tube(pts, 1, { h: 4, op: 'sub', bevel: 1.2, color: [70, 40, 32], alpha: 0.75 });
+    for (let yy = y0; yy <= y0 + len; yy += 4) { xx += (hash(Math.round(jx), Math.round(yy), seed + 11) - 0.5) * 5; pts.push([xx, yy, 0.5 + hash(Math.round(yy), 3, seed) * 0.9]); }
+    s.tube(pts, 1, { h: 2.5, op: 'sub', bevel: 1.2, color: [84, 46, 36], alpha: 0.5 });
   }
   return { beds, bedAt };
 }

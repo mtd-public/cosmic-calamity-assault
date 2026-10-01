@@ -1,563 +1,572 @@
-; MAP02 "Night of the Harvest" - Washington, D.C. (GAME_DESIGN.md §9)
-; Flow: the neon strip (bar, pawn shop w/ assault rifle, liquor store, the LATE SHOW cinema, arcade;
-; motel + diner on the south side) -> side alley by the arcade -> back alleys (fire escape to a
-; rooftop secret) -> the plaza under the beams (holdout: 60 s police-uplink terminal opens the
-; subway gate; Scatter in the news van) -> subway ticket hall (battle rifle in the security office),
-; platforms, stalled train, the first Overseer + BLUE card -> service tunnel -> HQ sub-basement (blue
-; door) -> stairs up to the marble lobby (YELLOW card from the downed agent / behind the desk) ->
-; yellow door, stairs down -> the basement office (case file obj 1; 60 s upload obj 2 opens the
-; executive lift) -> lift up to the roof -> helipad exit.
-; Secrets: pawn-shop stash, the fire-escape rooftop, the cinema projection booth.
-; Facades: storefront blocks (floor 136, STOREFRx as their lower face) with neon blocks (floor 200,
-; NEONxxx lower face, 64 tall) behind them, so the signs sit above the shop windows.
-map MAP02 "Night of the Harvest"
-sky SKYCITY
-defaults floor=0 ceil=128 ff=CARPETR cf=LABCEIL wall=BRICKRED light=128 track=SUPPORT frame=WINFRAME
+; MAP02 "Dulce Base" - below Archuleta Mesa, New Mexico (Dark Forces' Secret Base, X-Files lore)
+; Flow: the canyon under the mesa (start; ledge + secret cave) -> the fenced compound (towers, radar
+; dish, antenna masts, barriers, floodlights) -> topside building (lobby, security, elevator hall) ->
+; main elevator down to LEVEL 3 (z -384: security office with the BLUE card from a downed guard and
+; the battle rifle in the armory locker; labs) -> the bridge across the great shaft -> blue door ->
+; lift down to LEVEL 6 (z -768: Nightmare Hall - tanks, pods, goo, the loose Stalker; RED card in
+; the control room) -> the Level 6 bridge back across the shaft -> red door -> lift down to LEVEL 7
+; (z -1024): 75 s holdout terminal opens the vault -> the plans (obj 1). Stepping onto the pedestal
+; sounds the alarm (Door_Open @alarm): the vault's back door and the tunnel closets open. The deep
+; service tunnel runs north to the freight elevator (1024 units up) -> topside service bay -> service
+; stairs -> the roof (the whole topside roof is walkable) -> the black helicopter (obj 2, ends the map).
+; Anyone who falls into the shaft lands in the sump and climbs out into Level 7.
+; Topside building: sky ceiling + a 3D-slab roof at 240..256 over every room, walls are roof blocks
+; at 256, so the roof is one walkable surface; inside it there are open doorways, not doors.
+; Secrets: the canyon cave, the Level 3 vent crawl, the Level 6 specimen locker.
+map MAP02 "Dulce Base"
+sky SKYMESA
+defaults floor=0 ceil=128 ff=BUNKFLR cf=LABCEIL wall=BUNKWALL light=136 track=SUPPORT frame=WINFRAME
 
 legend
 #  solid
-%  solid tex=LABCOMP
-$  solid tex=GRAFFIT1
-&  solid tex=GRAFFIT2
-; ---- street
-_  room floor=0 ceil=384 sky ff=ASPHALT wall=BRICKRED light=128
-=  room floor=0 ceil=384 sky ff=ASPHLINE wall=BRICKRED light=128
-,  room floor=8 ceil=384 sky ff=SIDEWALK wall=BRICKRED lower=SIDEWALK light=136
-[  room floor=136 ceil=384 sky ff=ROOFTAR wall=BRICKRED lower=STOREFR1 light=136
-]  room floor=136 ceil=384 sky ff=ROOFTAR wall=BRICKRED lower=STOREFR2 light=136
-b  room floor=200 ceil=384 sky ff=ROOFTAR wall=BRICKRED lower=BRICKRED light=128
-1  room floor=200 ceil=384 sky ff=ROOFTAR wall=BRICKRED lower=NEONBAR light=176 color=#ff80d0
-2  room floor=200 ceil=384 sky ff=ROOFTAR wall=BRICKRED lower=NEONPAWN light=176 color=#80d8ff
-3  room floor=200 ceil=384 sky ff=ROOFTAR wall=BRICKRED lower=NEONLIQ light=176 color=#a0ff80
-4  room floor=264 ceil=384 sky ff=ROOFTAR wall=BRICKRED lower=NEONSHOW light=192 color=#ffe080
-5  room floor=200 ceil=384 sky ff=ROOFTAR wall=BRICKRED lower=NEONARCD light=176 color=#c080ff
-6  room floor=200 ceil=384 sky ff=ROOFTAR wall=BRICKRED lower=NEONMOTL light=176 color=#ff6060
-q  room floor=8 ceil=132 ff=SIDEWALK cf=METLFLR wall=BRICKRED upper=BRICKRED light=144
-g  room floor=8 ceil=120 ff=SIDEWALK cf=METLFLR wall=BRICKRED upper=BRICKRED lower=SIDEWALK light=120   ; motel walkway canopy
-D  door tex=ROLLDOOR track=SUPPORT
-S  door tex=WOODPANL secret
-~  window floor=32 ceil=96 glass=GLASSBRK broken frame=WINFRAME pane=N
-; ---- shops (floor 8)
-k  room floor=8 ceil=128 ff=CARPETR cf=LABCEIL wall=WOODPANL light=136 color=#ffb070   ; bar
-K  room floor=48 ceil=128 ff=METLFLR cf=LABCEIL wall=WOODPANL lower=WOODPANL light=136    ; counters
-p  room floor=8 ceil=128 ff=CONCFLR cf=LABCEIL wall=POSTERS light=120                     ; pawn shop
-y  room floor=8 ceil=112 ff=CONCFLR cf=LABCEIL wall=BRICKDRK light=96 secret              ; pawn stash
-o  room floor=8 ceil=128 ff=LABTIL2 cf=LABLITE wall=STOREFR2 light=144                    ; liquor store
-c  room floor=8 ceil=128 ff=CARPETR cf=LABCEIL wall=WOODPANL light=128 color=#ffd0a0      ; cinema lobby
-j  room floor=8 ceil=112 ff=CARPETR cf=LABCEIL wall=BRICKDRK light=96 secret              ; projection booth
-A  room floor=8 ceil=224 ff=CARPETR cf=LABCEIL wall=WOODPANL light=96 color=#c0a0ff       ; auditorium
-W  stairs dir=S floor=8 top=96 ceil=224 ff=CARPETR riser=WOODPANL wall=WOODPANL light=96 color=#c0a0ff
-V  solid tex=POSTERS
-a  room floor=8 ceil=128 ff=CARPETR cf=LABCEIL wall=BRICKDRK light=112 color=#b090ff      ; arcade
-m  room floor=8 ceil=128 ff=CARPETR cf=LABCEIL wall=WOODPANL light=120 color=#ffa0a0      ; motel office
-r  room floor=8 ceil=112 ff=CARPETR cf=LABCEIL wall=WOODPANL light=104                    ; motel rooms
-h  room floor=8 ceil=128 ff=LABTILE cf=LABCEIL wall=STOREFR1 light=112                    ; diner
-; ---- alleys, plaza
--  room floor=0 ceil=384 sky ff=ASPHALT wall=BRICKDRK light=116
-e  room floor=0 ceil=384 sky ff=ASPHALT wall=BRICKDRK light=116 slab=128..136 slabtop=GRATEFLR slabbot=METLFLR slabside=SUPPORT
-E  stairs dir=E floor=0 top=128 ceil=384 sky ff=GRATEFLR riser=SUPPORT wall=BRICKDRK light=116 ; fire escape stairs
-R  room floor=136 ceil=384 sky ff=ROOFTAR wall=BRICKDRK lower=BRICKDRK light=112 secret
-P  room floor=0 ceil=448 sky ff=SIDEWALK wall=MARBLE light=136
-F  room floor=16 ceil=448 sky ff=MARBFLR wall=MARBLE lower=MARBLE light=144               ; fountain rim
-w  room floor=0 ceil=448 sky ff=SUBFLR wall=MARBLE lower=MARBLE light=144 color=#a0c0ff  ; fountain basin
-M  room floor=96 ceil=448 sky ff=MARBFLR wall=MARBLE lower=MARBLE light=144               ; plinth / HQ podium
-Q  room floor=40 ceil=448 sky ff=GRASSFLR wall=MARBLE lower=MARBLE light=128              ; planters
-C  room floor=-24 ceil=448 sky ff=ASPHALT wall=MARBLE lowerself=CONCWALL light=120        ; blast crater
-s  stairs dir=N floor=0 top=96 ceil=448 sky ff=MARBFLR riser=MARBLE wall=MARBLE light=136
-; ---- subway
-G  door tex=ROLLDOOR track=HAZSTRIP remote tag=@subgate blast
-u  room floor=0 ceil=128 ff=SUBFLR cf=LABCEIL wall=SUBWAYTL light=112
-U  stairs dir=W floor=-160 top=-8 headroom=128 ff=STEPTOP riser=SUBWAYTL wall=SUBWAYTL light=112
-T  room floor=-160 ceil=-32 ff=SUBFLR cf=LABCEIL wall=SUBWAYTL light=120
-B  room floor=-120 ceil=-32 ff=METLFLR cf=LABCEIL wall=SUBWAYTL lower=METLPANL light=120    ; turnstile barrier
-9  room floor=-160 ceil=-48 ff=LABTIL2 cf=LABCEIL wall=LABWALL2 light=144
-i  stairs dir=E floor=-208 top=-160 ceil=-32 ff=STEPTOP riser=CONCWALL wall=SUBWAYTL light=96
-f  stairs dir=W floor=-208 top=-160 ceil=-32 ff=STEPTOP riser=CONCWALL wall=SUBWAYTL light=96
-t  room floor=-208 ceil=-32 ff=SUBFLR cf=LABCEIL wall=SUBWAYTL lowerself=CONCWALL light=96
-X  room floor=-160 ceil=-80 ff=METLFLR cf=LABLITE wall=METLPANL upper=METLPANL lower=METLPANL light=144   ; stalled train car
-n  room floor=-160 ceil=-48 ff=CONCFLR cf=METLFLR wall=PIPEWALL light=96
-; ---- Bureau HQ
-Z  door tex=BLSTDOOR track=HAZSTRIP lock=blue blast
-H  stairs dir=W floor=-160 top=32 headroom=128 ff=STEPTOP riser=MARBLE wall=CONCWALL light=112
-L  room floor=32 ceil=160 ff=MARBFLR cf=LABCEIL wall=MARBLE light=144
-d  room floor=72 ceil=288 ff=MARBFLR wall=MARBLE lower=WOODPANL light=160
-|  solid tex=MARBLE
-l  room floor=32 ceil=288 ff=MARBFLR cf=LABLITE wall=MARBLE light=160
-Y  door tex=BLSTDOOR track=HAZSTRIP lock=yellow blast
-I  stairs dir=E floor=-96 top=32 headroom=128 ff=STEPTOP riser=WOODPANL wall=MARBLE light=120
-x  room floor=-96 ceil=32 ff=CARPETR cf=LABCEIL wall=WOODPANL light=112
-N  door tex=ELEVDOOR track=SUPPORT remote tag=@exec
-J  lift top=288 tex=ELEVDOOR wall=METLWALL ceil=416 ff=METLFLR cf=LABLITE light=144 speed=64
-0  room floor=288 ceil=640 sky ff=ROOFTAR wall=BRICKDRK light=128
-v  room floor=336 ceil=640 sky ff=ROOFTAR wall=BRICKDRK lower=VENTWALL light=128
-z  room floor=288 ceil=640 sky ff=ROOFTAR wall=BRICKDRK light=160 enter=Exit_Normal(0)
+M  solid tex=MESAWALL
+m  solid tex=MACHWALL
+!  solid tex=DULCSIGN
+; ---- canyon (sky)
+-  room floor=0 ceil=768 sky ff=MESAFLR wall=MESAWALL light=128
+_  room floor=0 ceil=768 sky ff=DIRTFLR wall=MESAWALL light=136
+1  room floor=64 ceil=768 sky ff=MESAFLR wall=MESAWALL lower=MESAWALL light=128
+u  stairs dir=W floor=0 top=64 ceil=768 sky ff=MESAFLR riser=MESAWALL wall=MESAWALL light=128
+y  room ceil=112 ff=MESAFLR cf=MESAFLR wall=MESAWALL light=88 secret
+Y  door tex=MESAWALL secret
+; ---- compound (sky)
+c  room floor=0 ceil=448 sky ff=TARMAC wall=CONCWALL light=136
+I  window floor=8 ceil=448 sky glass=FENCEMID frame=FENCEPOL broken nowrap pegbottom pane=E
+t  room floor=128 ceil=448 sky ff=METLFLR wall=BUNKWALL lower=SUPPORT light=144
+T  stairs dir=N floor=0 top=128 ceil=448 sky ff=STEPTOP riser=RUSTMETL wall=BUNKWALL light=136
+V  stairs dir=S floor=0 top=128 ceil=448 sky ff=STEPTOP riser=RUSTMETL wall=BUNKWALL light=136
+p  room floor=16 ceil=448 sky ff=CONCFLR wall=BUNKWALL lower=HAZSTRIP light=144
+k  room floor=0 ceil=448 sky ff=BUNKFLR wall=BUNKWALL light=136
+; ---- topside building (rooms under a walkable slab roof; walls are roof blocks)
+w  room floor=256 ceil=448 sky ff=ROOFGRVL wall=MESAWALL lower=BUNKWALL light=128
+h  room floor=256 ceil=448 sky ff=CONCFLR wall=MESAWALL lower=BUNKWALL light=144
+r  room floor=0 ceil=448 sky ff=BUNKFLR wall=BUNKWALL light=144 slab=240..256 slabtop=ROOFGRVL slabbot=LABCEIL slabside=BUNKWALL slablight=136
+R  room floor=0 ceil=448 sky ff=LABTILE wall=LABWALL1 light=152 slab=240..256 slabtop=ROOFGRVL slabbot=LABCEIL slabside=BUNKWALL slablight=144
+S  stairs dir=N floor=0 top=256 ceil=448 sky ff=STEPTOP riser=RUSTMETL wall=BUNKWALL light=136
+L  lift top=0 tex=RUSTMETL wall=SHAFTWAL ceil=448 sky ff=METLFLR light=136 slab=240..256 slabtop=ROOFGRVL slabbot=METLFLR slabside=BUNKWALL slablight=128
+F  lift top=0 tex=RUSTMETL wall=SHAFTWAL ceil=448 sky ff=GRATEFLR light=136 speed=64 slab=240..256 slabtop=ROOFGRVL slabbot=METLFLR slabside=BUNKWALL slablight=128
+; ---- Level 3 (z -384)
+3  room floor=-384 ceil=-224 ff=BUNKFLR cf=LABCEIL wall=BUNKWALL light=136
+o  room floor=-384 ceil=-224 ff=LABTIL2 cf=LABLITE wall=LABWALL2 light=152
+a  room floor=-384 ceil=-224 ff=METLFLR cf=LABCEIL wall=METLPANL light=136
+l  room floor=-384 ceil=-224 ff=LABTILE cf=LABLITE wall=LABWALL1 light=152
+v  room floor=-384 ceil=-288 ff=GRATEFLR cf=METLFLR wall=VENTWALL light=96 secret
+Q  door tex=VENTWALL secret
+D  door tex=BUNKDOOR track=HAZSTRIP blast
+; ---- the great shaft
+~  room floor=-1152 ceil=0 ff=GOO1 cf=METLFLR wall=SHAFTWAL lowerself=SHAFTWAL light=104 damage=5 dmgtype=Slime color=#ffd8b0
+b  room floor=-1152 ceil=0 ff=GOO1 cf=METLFLR wall=SHAFTWAL lowerself=SHAFTWAL light=104 damage=5 dmgtype=Slime color=#ffd8b0 slab=-400..-384 slabtop=GRATEFLR slabbot=RUSTMETL slabside=RUSTMETL slablight=96
+B  room floor=-1152 ceil=0 ff=GOO1 cf=METLFLR wall=SHAFTWAL lowerself=SHAFTWAL light=104 damage=5 dmgtype=Slime color=#ffd8b0 slab=-784..-768 slabtop=GRATEFLR slabbot=RUSTMETL slabside=RUSTMETL slablight=96
+e  stairs dir=E floor=-1152 top=-1024 ceil=0 ff=GRATEFLR riser=RUSTMETL wall=SHAFTWAL light=112
+4  room floor=-384 ceil=-224 ff=METLFLR cf=METLFLR wall=RUSTMETL light=128
+U  door tex=BUNKDOOR track=HAZSTRIP lock=blue blast
+W  lift top=-384 tex=RUSTMETL wall=SHAFTWAL ceil=-224 ff=GRATEFLR cf=METLFLR light=136
+; ---- Level 6 (z -768)
+6  room floor=-768 ceil=-544 ff=BUNKFLR cf=METLFLR wall=RUSTMETL light=120 color=#c8ffd0
+g  room floor=-792 ceil=-544 ff=GOO1 cf=METLFLR wall=RUSTMETL lowerself=RUSTMETL light=144 color=#a0ffb0 damage=5 dmgtype=Slime
+n  room floor=-768 ceil=-544 ff=LABTIL2 cf=LABLITE wall=LABWALL2 light=144
+j  room floor=-768 ceil=-640 ff=METLFLR cf=METLFLR wall=PIPEWALL light=96 secret
+Z  door tex=RUSTMETL secret
+; ---- Level 7 (z -1024)
+5  room floor=-768 ceil=-608 ff=METLFLR cf=METLFLR wall=RUSTMETL light=128
+X  door tex=BUNKDOOR track=HAZSTRIP lock=red blast
+N  lift top=-768 tex=RUSTMETL wall=SHAFTWAL ceil=-608 ff=GRATEFLR cf=METLFLR light=136
+7  room floor=-1024 ceil=-864 ff=BUNKFLR cf=METLFLR wall=SHAFTWAL light=128
+H  room floor=-1024 ceil=-800 ff=BUNKFLR cf=LABLITE wall=MACHWALL light=136
+f  room floor=-1024 ceil=-896 ff=METLFLR cf=METLFLR wall=BUNKWALL light=136
+K  door tex=BUNKDOOR track=HAZSTRIP remote tag=@vault blast
+O  room floor=-1024 ceil=-896 ff=LABTILE cf=LABLITE wall=BUNKWALL light=160
+P  room floor=-1008 ceil=-896 ff=METLFLR cf=LABLITE wall=BUNKWALL lower=HAZSTRIP light=192 enter=Door_Open(@alarm,16)
+A  door tex=BUNKDOOR track=HAZSTRIP remote tag=@alarm blast
+z  room floor=-1024 ceil=-896 ff=GRATEFLR cf=METLFLR wall=SHAFTWAL light=112
+q  room floor=-1024 ceil=-896 ff=METLFLR cf=METLFLR wall=RUSTMETL light=96 color=#ffb0b0
 end
 
 marks
-@  PlayerStart angle=E
+@  PlayerStart angle=N
 end
 
 grid
-;         1         2         3         4         5         6         7         8         9         0         1         2         3         4         5         6       
-;12345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567
+;         1         2         3         4         5         6         7         8         9         0         1         2         3         4         5         6         7         8         9         
+;1234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789
 
- #################################
- #0000000000000000000000000000000#        ###########################################        ##########################################################################
- #0000000000000000000000000000000#       ##/xxxxxxxxxxxxxxxx##xxxxxxxxxxxxxxxxxxxxxx#        #llllllllllllllllllllllllllllllllllLLLLLLHHHHHHHHHn##nnnnnnnnnnnnnnnnnnnn#
- #000000000000000000vvvvv00000000#       #/xxxxxxxxxxxxxxxxx##xxxxxxxxxxxxxxxxxxxxxx#        #llllllllllllllllllllllllllllllllllLLLLLLHHHHHHHHHnZZnnnnnnnnnnnnnnnnnnnn#
- #000000000000000000vvvvv00000000#       #xxxxxxxxxxxxxxxxxx##xxxxxxxxxxxxxxxxxxxxxx#        #lllll||lll||lllllllllll||lll||llllLLLLLLHHHHHHHHHnZZnnnnnnnnnnnnnnnnnnnn#
- #0000zzzzzzzzz00000vvvvv00000000####### #xxxxxxxxxxxxxxxxxx##xxxxxxxxxxxxxxxxxxxxxx#      ###lllll||lll||lllllllllll||lll||llllLLLLLLHHHHHHHHHn##nnnnnnnnnnnnnnnnnnnn#
- #0000zzzzzzzzz00000vvvvv00000000JJJJJJ###xxxxxxxxxxxxxxxxxx##xxxxxxxxxxxxxxxxxxxxxxIIIIIIIIYYLlllllllllllllllllllllllllllllllll##################nnnnnnnnnnnnnnnnnnnn#
- #0000zzzzzzzzz00000vvvvv00000000JJJJJJxNNxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxIIIIIIIIYYLlllllllllllllllllllllllllllllllll#                ###############nnnnnn#
- #0000zzzzzzzzz000000000000000000JJJJJJxNNxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxIIIIIIIIYYLlllllllllllllllllllllllllllllllll#                              #nnnnnn#
- #0000zzzzzzzzz000000000000000000JJJJJJxNNxxxxxxxxxxxxxxxxxx##xxxxxxxxxxxxxxxxxxxxxxIIIIIIIIYYLlllllllllllddddddddddllllllllllll#                              #nnnnnn#
- #0000zzzzzzzzz000000000000000000JJJJJJxNNxxxxxxxxxxxxxxxxxx##xxxxxxxxxxxxxxxxxxxxxx#      ###lllllllllllldlllllllldllllllllllll#                              #nnnnnn#
- #0000zzzzzzzzz000000000000000000JJJJJJ###xxxxxxxxxxxxxxxxxx##xxxxxxxxxxxxxxxxxxxxxx#        #lllllllllllldlllllllldllllllllllll#                              #nnnnnn#
- #0000zzzzzzzzz000000000000000000####### #\xxxxxxxxxxxxxxxxx##xxxxxxxxxxxxxxxxxxxxxx#        #llllllllllllllllllllllllllllllllll#                              #nnnnnn#
- #0000zzzzzzzzz0000000vvvvvvv0000#       ##\xxxxxxxxxxxxxxxx##xxxxxxxxxxxxxxxxxxxxxx#        #llllllllllllllllllllllllllllllllll#                              #nnnnnn#
- #00000000000000000000vvvvvvv0000#        #######################################################################################                              #nnnnnn#
- #00000000000000000000vvvvvvv0000#         #MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM#                                                   #nnnnnn#
- #00000000000000000000vvvvvvv0000#         #MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM#                                                   #nnnnnn#
- #00000000000000000000vvvvvvv0000#         #MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM#                                                   #nnnnnn#
- #0000000000000000000000000000000#         #MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM#                                         ###########nnnnnn#
- #0000000000000000000000000000000#         #################sssssssssssssssssssssssssssssss#################                                         #nnnnnnnnnnnnnnnn#
- #0000000000000000000000000000000#                         #sssssssssssssssssssssssssssssss#                                                         #nnnnnnnnnnnnnnnn#
- #################################                         #sssssssssssssssssssssssssssssss#                                                         #nnnnnnnnnnnnnnnn#
-                                       #####################sssssssssssssssssssssssssssssss#####################                                     #nnnnnnnnnnnnnnnn#
-                                       #PPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP#                                     #nnnnnnnnnnnnnnnn#
-   ########                            #PPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP#                                     ###########nnnnnn#
-   #------#                            #PPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP#                                               #nnnnnn#
-   #------#                            #PPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP#                                               #nnnnnn#
-   #------#                            #PPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP#                                               #nnnnnn#
-   #------#                            #PPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP#                                               #nnnnnn#
-   #------#                            #PPPPPPQQQQQPPPPPP/CCC\PPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPQQQQQPPPPPP#                                               #nnnnnn#
-   #------#                            #PPPPPPQQQQQPPPPP/CCCCC\PPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPQQQQQPPPPPP#                                               #nnnnnn#
-   #------#                            #PPPPPPQQQQQPPPPPCCCCCCCPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPQQQQQPPPPPP#                                               #nnnnnn#
-   #------#                            #PPPPPPQQQQQPPPPPCCCCCCCPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPQQQQQPPPPPP#                                               #nnnnnn#
-   #------#                            #PPPPPPQQQQQPPPPP\CCCCC/PPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPQQQQQPPPPPP#                                               #nnnnnn#
-   #------#                            #PPPPPPPPPPPPPPPPP\CCC/PPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP#                                               #nnnnnn#
-   #------#                            #PPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP#                                               #nnnnnn#
-   #------#                            #PPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP#          ##################                   #nnnnnn#
-   #------#                            #PPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP#          #TTTTTTTTTTTTTTTT########            #nnnnnn#
-   #------#                            #PPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP#          #TTTTTTTTTTTTTTTT%999999#            #nnnnnn#
-   #------#                            #PPPPPPPPPPPPPPPPPPPPPPPPPPPPPP/FFFFFFFFF\PPPPPPPPPPPPPPPPPPPPPPPPPPPPPP#          #TTTTTTTTTTTTTTTT%999999#            #nnnnnn#
-   #------#                            #PPPPPPPPPPPPPPPPPPPPPPPPPPPPP/FFFFFFFFFFF\PPPPPPPPPPPPPPPPPPPPPPPPPPPPP#          #TTTTTTTTTTTTTTTTD999999#            #nnnnnn#
-   #------#                            #PPPPPPPPPPPPPPPPPPPPPPPPPPPP/FFFFFFFFFFFFF\PPPPPPPPPPPPPPPPPPPPPPPPPPPP#          #TTTTTTTTTTTTTTTTD999999#            #nnnnnn#
-   #------#                            #PPPPPPPPPPPPPPPPPPPPPPPPPPPPFFFF/wwwww\FFFFPPPPPPPPPPPPPPPPPPPPPPPPPPPP############TTTTTTTTTTTTTTTT#999999#            #nnnnnn#
-   #------#                            #PPPPPPPPPPPPPPPPPPPPPPPPPPPPFFF/wwwwwww\FFFPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPuGuUUUUUUUTTTTTTTTTTTTTTTT#########           #nnnnnn#
-   #------#                            #PPPPPPPPPPPPPPPPPPPPPPPPPPPPFFFwwwMMMwwwFFFPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPuGuUUUUUUUTTTTTTTTTTTTTTTTTTTTTTTT#           #nnnnnn#
-   #------#                            #PPPPPPPPPPPPPPPPPPPPPPPPPPPPFFFwwwMMMwwwFFFPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPuGuUUUUUUUTTTTTTTBTTBBTTBTTTTTTTTT#           #nnnnnn#
-   #------#                            #PPPPPPPPPPPPPPPPPPPPPPPPPPPPFFFwwwMMMwwwFFFPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPuGuUUUUUUUTTTTTTTTTTTTTTTTTTTTTTTT#           #nnnnnn#
-   #------#                            #PPPPPPPPPPPPPPPPPPPPPPPPPPPPFFF\wwwwwww/FFFPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPuGuUUUUUUUTTTTTTTTTTTTTTTTTTTTTTTT#           #nnnnnn#
-   #------#                            #PPPPPPPPPPPPPPPPPPPPPPPPPPPPFFFF\wwwww/FFFFPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPuGuUUUUUUUTTTTTTTTTTTTTTTTTTTTTTTT#           #nnnnnn#
-   #------#                            #PPPPPPPPPPPPPPPPPPPPPPPPPPPP\FFFFFFFFFFFFF/PPPPPPPPPPPPPPPPPPPPPPPPPPPPPPuGuUUUUUUUTTTTTTTTTTTTTTTTTTTTTTTT#           #nnnnnn#
-   #------#                            #PPPPPPPPPPPPPPPPPPPPPPPPPPPPP\FFFFFFFFFFF/PPPPPPPPPPPPPPPPPPPPPPPPPPPPP############TTTTTTTTTTTTTTTTTTTTTTTT#           #nnnnnn#
-   #------#                            #PPPPPPPPPPPPPPPPPPPPPPPPPPPPPP\FFFFFFFFF/PPPPPPPPPPPPPPPPPPPPPPPPPPPPPP#          #TTTTTTTTTTTTTTTTTTTTTTTT#           #nnnnnn#
-   #------#                            #PPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP#          #TTTTTTTTTTTTTTTTTTTTTTTT#           #nnnnnn#
-   #------#                            #PPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP#          #TTTTTTTTTTTTTTTTTTTTTTTT#############nnnnnn##
-   #------#                            #PPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP#          #TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT#
-   #------#                            #PPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP#          #TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT#
-   #------#                            #PPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP#          #TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT#
-   #------#                            #PPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPQQQQQPPPPPPPPPPPP#          #TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT#
-   #------##############################PPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPQQQQQPPPPPPPPPPPP#          #TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT#
-   #------------------------------------PPPPPPQQQQQPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPQQQQQPPPPPPPPPPPP#          #TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT#
-   #------------------------------------PPPPPPQQQQQPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPQQQQQPPPPPPPPPPPP#          #fffftXXXXXXXXXXXXXXXXXXXXXXXttttttttttttiiii#
-   #------------------------------------PPPPPPQQQQQPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPQQQQQPPPPPPPPPPPP#          #fffftXXXXXXXXXXXXXXXXXXXXXXXttttttttttttiiii#
-   #------------------------------------PPPPPPQQQQQPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP#          #fffftXXXXXXXXXXXXXXXXXXXXXXXttttttttttttiiii#
-   #------------------------------------PPPPPPQQQQQPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP#          #fffftXXXXXXXXXXXXXXXXXXXXXXXttttttttttttiiii#
-   #------##############################PPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP#          #fffftXXXXXXXXXXXXXXXXXXXXXXXttttttttttttiiii#
-   #------#        #RRRRRRRRRRRRRRRRR# #\PPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP/#          #fffftXXXXXXXXXXXXXXXXXXXXXXXttttttttttttiiii#
-   #------#        #RRRRRRRRRRRRRRRRR# ##\PPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP/##          #TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT#
-   #------#        #RRRRRRRRRRRRRRRRR#  ##\PPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP/##           #TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT#
-   #------#        #RRRRRRRRRRRRRRRRR#   ##\PPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP/##            #TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT#
-   #------#        #RRRRRRRRRRRRRRRRR#    ##\PPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP/##             #TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT#
-   #------#        #RRRRRRRRRRRRRRRRR#     #########------###VVVVVVVVVVVVVVVVVVV##########------############              #TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT#
-   #------#        #RRRRRRRRRRRRRRRRR#             #------##AAAAAAAAAAAAAAAAAAAAA#jjjjj# #------#                         ##############################################
-   #------#        #RRRRRRRRRRRRRRRRR#       #######------##AAAAAAAAAAAAAAAAAAAAASjjjjj# #------#
-   #------#  #######RRRRRRRRRRRRRRRRR#       #-----#------##AAAAAAAAAAAAAAAAAAAAASjjjjj# #------#  #########
-   #------#  #EEEEEEeeeeeeeeeeeeeeeee#       #-----#------##AAAAAAAAAAAAAAAAAAAAA#jjjjj# #------#  #-------#
-   #------####EEEEEEeeeeeeeeeeeeeeeee#########-----#------##AAAAWWWWWWWWWWWWWAAAA#jjjjj# #------#  #-------#
-   #-------------------------------------------------------#AAAAWWWWWWWWWWWWWAAAA#########------####-------#####
-   #-------------------------------------------------------#AAAAWWWWWWWWWWWWWAAAA#-----------------------------#
-   #-------------------------------------------------------#AAAAWWWWWWWWWWWWWAAAA#-----------------------------#
-   #-------------------------------------------------------#AAAAWWWWWWWWWWWWWAAAA#-----------------------------#
-   #-------------------------------------------------------#AAAAWWWWWWWWWWWWWAAAA#-----------------------------#
-   #-------------------------------------------------------#AAAAWWWWWWWWWWWWWAAAA#-----------------------------#
-   #-------------------------------------------------------#AAAAWWWWWWWWWWWWWAAAA#-----------------------------#
-   ################qq#######################################AAAAWWWWWWWWWWWWWAAAA#-----------------------------#
-     ##############DD##  #yyyyyyyy#                        #AAAAWWWWWWWWWWWWWAAAA##################----#########
-     #kkkkkkkkkkkkkkkk#  #yyyyyyyy#                        #AAAA#############AAAA#                #----#
-     #kkkkkkkkkkkkkkkk# #####SS#######              ########AAAA#############AAAA# ################----#
-     #kkkkkkkkkkkkkkkk# #pppppppppppp#              #cccccccccccccccccccccccccccc# #aaaaaaaaaaaaaa#----#
-     #kkkkkkkkkkkkkkkk# #pppppppppppp# ############ #cccccccccccccccccccccccccccc# #aaaaaaaaaaaaaa#----#
-     #kkKKKKKKKKKKkkkk# #pppppppppppp# #oooooooooo# #cccccccccccccccccccccccccccc# #aaaaaaaaaaaaaa#----#
-     #kkKkkkkkkkkkkkkk# #pppppppppppp# #oooooooooo# #cccccccccccccccccccccccccccc# #aaaaaaaaaaaaaa#----#
-     #kkKkkkkkkkkkkkkk# #pppppppppppp# #oooooooooo# #cccccccccccccccccccccccccccc# #aaaaaaaaaaaaaa#----#
-     #kkKkkkkkkkkkkkkk# #KKKKKppKKKKK# #oooooooooo# #cccccccccccccccccccccccccccc# #aaaaaaaaaaaaaa#----#
-     #kkKkkkkkkkkkkkkk# #pppppppppppp# #oooooooooo# #cccccccccccccccccccccccccccc# #aaaaaaaaaaaaaa#----#
-     #kkkkkkkkkkkkkkkk# #pppppppppppp# #oooooooooo# #cccccccccccccccccccccccccccc# #aaaaaaaaaaaaaa#----#
-     #kkkkkkkkkkkkkkkk# #pppppppppppp# #oooooooooo# #cccccccccccccccccccccccccccc# #aaaaaaaaaaaaaa#----#
-     #kkkkkkkkkkkkkkkk# #pppppppppppp# #oooooooooo# #cccccccccccccccccccccccccccc# #aaaaaaaaaaaaaa#----#
-     #kkkkkkkkkkkkkkkk# #pppppppppppp# #oooooooooo# #cccccccccccccccccccccccccccc# #aaaaaaaaaaaaaa#----#
-     ########kk######## ######pp###### #####oo##### #######cc#####cc############## #######aa#######----#
-     #b1111bbDDbb1111b# #b2222DD2222b# #3333DD3333# #b44444DD4bbbbDDbbbb44444444b# #b5555bDDb5555b#----#
- #####[[[[[[[qq[[[[[[[###]]]]]qq]]]]]###[[[[qq[[[[###]]]]]]qq]]]]]qq]]]]]]]]]]]]]###[[[[[[qq[[[[[[#----################################################################
- #,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,#
- #,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,#
- #,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,#
- #,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,#
- #____________________________________________________________________________________________________________________________________________________________________#
- #____________________________________________________________________________________________________________________________________________________________________#
- #______@_____________________________________________________________________________________________________________________________________________________________#
- #====================================================================================================================================================================#
- #====================================================================================================================================================================#
- #____________________________________________________________________________________________________________________________________________________________________#
- #____________________________________________________________________________________________________________________________________________________________________#
- #____________________________________________________________________________________________________________________________________________________________________#
- #,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,#
- #,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,#
- #,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,#
- #,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,#
- #######[[[[[[[qq[[[##-------------------------------------###---------------------------------------###]]]]]]]]]]]]]]]]]qq]]]]]]]]]]]]]]]]]]##########################
-       #bb66666DD6bb##-------------------------------------# #---------------------------------------# #bb1111bbbbbbbbbbbDDbbbbbbbbbbb3333bbb#
-       ########mm#####-------------------------------------# #---------------------------------------# ##################hh###################
-       #mmmmmmmmmmmm##-------------------------------------# #---------------------------------------# #hhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh#
-       #mmmmmmmmmmmm##ggggggggggggggggggggggggggggggggggggg# #---------------------------------------# #hhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh#
-       #mmmmmmmmmmmm###DD#~~#DD#~~#DD#~~#DD#~~#DD#~~#DD#~~## #---------------------------------------# #hhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh#
-       #mmmmmmmmmmmm# #rrrrr#rrrrr#rrrrr#rrrrr#rrrrr#rrrrr#  #---------------------------------------# #hhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh#
-       #mmmmmmmmmmmm# #rrrrr#rrrrr#rrrrr#rrrrr#rrrrr#rrrrr#  #---------------------------------------# #hhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh#
-       #mmmmmmmmmmmm# #rrrrr#rrrrr#rrrrr#rrrrr#rrrrr#rrrrr#  #---------------------------------------# #hhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh#
-       #mmmmmmmmmmmm# #rrrrr#rrrrr#rrrrr#rrrrr#rrrrr#rrrrr#  #---------------------------------------# #hhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh#
-       ############## #rrrrr#rrrrr#rrrrr#rrrrr#rrrrr#rrrrr#  ######################################### #######################################
-                      #####################################
+                                                                  ######################################################################################################################################
+                   ###########                                    #Iccccccccccccccccccccccccccccccccccccccccccccccccccccwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwhhhhhhhhhhhhhhhhhhhhhhhhhhh#
+                   #yyyyyyyyy#                                    #Iccccccccccccccccccccccccccccccccccccccccccccccccccccwwwwwwrrrrrrrrrrrrrrrwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwhhhhhhhhhhhhhhhhhhhhhhhhhhh#
+                   #yyyyyyyyy#                                    #IcccctttttcccccccccccccccccccccccccccccccccccccccccccwwwwwwrrrrrrrrrrrrrrrwwwwwwwRRRRRRRRRRRRRRRRRRRRRwwwhhhhhhhhhhhhhhhhhhhhhhhhhhh#
+                   #yyyyyyyyy#                                    #IcccctttttcccccccccccccccccccccccccccccccccccccccccccwwwwwwrrrrrrrrrrrrrrrwwwwwwwRRRRRRRRRRRRRRRRRRRRRwwwhhhhhhhhhhhhhhhhhhhhhhhhhhh#
+                   #yyyyyyyyy#                                    #Icccctttttccccccccccccc/ppppp\cccccccccccccccccccccccwwwwwwrrrrrrrrrrrrrrrwwwwwwwRRRRRRRRRRRRRRRRRRRRRwwwhhhhhhhhhhhhhhhhhhhhhhhhhhh#
+                   #yyyyyyyyy#                                    #Icccctttttcccccccccccc/ppppppp\ccccccccccccccccccccccwwwwwwrrrrrrrrrrrrrrrwwwwwwwRRRRRRRRRRRRRRRRRRRRRwwwhhhhhhhhhhhhhhhhhhhhhhhhhhh#
+       ################YY##########################################Icccctttttccccccccccc/ppppppppp\cccccccccccccccccccccwwwwwwrrrrrrrrrrrrrrrwwwwwwwRRRRRRRRRRRRRRRRRRRRRwwwhhhhhhhhhhhhhhhhhhhhhhhhhhh#
+      ##/----------------------------------------------------------IccccccTTccccccccccccpppppppppppcccccccccccccccccccccwwwwwwrrrrrrrrrrrrrrrwwwwwwwRRRRRRRRRRRRRRRRRRRRRwwwhhhhhhhhhhhhhhhhhhhhhhhhhhh#
+     ##/-----------------------------------------------------------IccccccTTccccccccccccpppppppppppcccccccccccccccccccccwwwwwwwwwwwwrrwwwwwwwwwwwwwwRRRRRRRRRRRRRRRRRRRRRwwwwwwwwwwwwwwwwwwwwwwwSSSSSww#
+    ##/------------------------------------------------------------IccccccTTccccccccccccpppppppppppcccccccccccccccccccccwwwwwwwwwwwwrrwwwwwwwwwwwwwwRRRRRRRRRRRRRRRRRRRRRwwwwwwwwwwwwwwwwwwwwwwwSSSSSww#
+   ##/-------------------------------------------------------------IccccccTTccccccccccccpppppppppppcccccccccccccccccccccwwrrrrrrrrrrrrrrrrrrrrrrrrrwRRRRRRRRRRRRRRRRRRRRRwwwwwwwwwwwwwwwwwwwwwwwSSSSSww#
+  ##/--------------------------------------------------------------IccccccTTccccccccccccpppppppppppcccccccccccccccccccccwwrrrrrrrrrrrrrrrrrrrrrrrrrwRRRRRRRRRRRRRRRRRRRRRwwwwwwwwwwwwwwwwwwwwwwwSSSSSww#
+ ##/------------------------------------/MM\-----------------------IccccccTTcccccccccccc\ppppppppp/cccccccccccccccccccccwwrrrrrrrrrrrrrrrrrrrrrrrrrRRRRRRRRRRRRRRRRRRRRRRwwwwwwwwwwwwwwwwwwwwwwwSSSSSww#
+ #/-------------------------------------MMMM-----------------------Iccccccccccccccccccccc\ppppppp/ccccccccccccccccccccccwwrrrrrrrrrrrrrrrrrrrrrrrrrRRRRRRRRRRRRRRRRRRRRRRwwwwwwwwwwwwwwwwwwwwwwwSSSSSww#
+ #--------------------------------------\MM/-----------------------Icccccccccccccccccccccc\ppppp/cccccccccccccccccccccccwwrrrrrrrrrrrrrrrrrrrrrrrrrRRRRRRRRRRRRRRRRRRRRRRwwwwwwwwwwwwwwwwwwwwwwwSSSSSww#
+ #-----------------------------------------------------------------IccccccccccccccccccccccccccccccccccccccccccccccccccccwwrrrrrrrrrrrrrrrrrrrrrrrrrwRRRRRRRRRRRRRRRRRRRRRwwwwwwwwwwwwwwwwwwwwwwwSSSSSww#
+ #-----------------------------------------------------------------_ccccccccccccccccccccccccccccccccccccccccccccccccccccwwrrrrrrrrrrrrrrrrrrrrrrrrrwRRRRRRRRRRRRRRRRRRRRRwwwwwwwwwwwwwwwwwwwwwwwSSSSSww#
+ #------------______________________________________________________ccccccccccccccccccccccccccccccccccccccccccccccccccccwwrrrrrrrrrrrrrrrrrrrrrrrrrwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwSSSSSww#
+ #------------______________________________________________________ccccccccccccccccccccccccccccccccccccccccccccccccccccrrrrrrrrrrrrrrrrrrrrrrrrrrrwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwSSSSSww#
+ #------------______________________________________________________ccccccccccccccccccccccccccccccccccccccccccccccccccccrrrrrrrrrrrrrrrrrrrrrrrrrrrwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwSSSSSww#
+ #------------______________________________________________________ccccccccccccccccccccccccccccccccccccccccccccccccccccrrrrrrrrrrrrrrrrrrrrrrrrrrrwrrrrrrrrrrrrrrrrrrrrrrrwwwwwwwwwwwwwwwwwwwwwSSSSSww#
+ #------------______________________________________________________ccccccccccccccccccccccccccccccccccccccccccccccccccccrrrrrrrrrrrrrrrrrrrrrrrrrrrwrrrrrrrrrrrrrrrrrrrrrrrwwwwwwwwwwwwwwwwwwwwwSSSSSww#
+ #------------_____------------------------------------------------_ccccccccccccccccccccccccccccccccccccccccccccccccccccrrrrrrrrrrrrrrrrrrrrrrrrrrrwrrrrrrrrrrrrrrrrrrrrrrrwwwwwwwwwwwwwwwwwwwwwSSSSSww#
+ #------------_____------------------------------------------------Iccccccccccccccccccccccccccccccccccccccccccccccccccccwwrrrrrrrrrrrrrrrrrrrrrrrrrwrrrrrrrrrrrrrrrrrrrrrrrwrrrrrrrrrrrrrrrrrrrrrrrrrrr#
+ #1111111\----_____------------------------------------------------Iccccccccccccccccccccccccccccccccccccccccccccccccccccwwrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrwrrrrrrrrrrrrrrrrrrrrrrrrrrr#
+ #11111111\---_____------------------------------------------------Iccccccccccccccccccccccccccccccccccccccccccccccccccccwwrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrwrrrrrrrrrrrrrrrrrrrrrrrrrrr#
+ #111111111---_____------------------------------------------------IccccccVVccccccccccccccccccccccccccccccccccccccccccccwwrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrwrrrrrrrrrrrrrrrrrrrrrrrrrrr#
+ #111111111---_____------------------------------------------------IccccccVVccccccccccccccccccccccccccccccccccccccccccccwwrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrwrrrrrrrrrrrrrrrrrrrrrrrrrrr#
+ #111111111---_____-------------------------------/MM\-------------IccccccVVcccccccccccccccccccccccckkkkkkkkkkkkkcccccccwwrrrrrrrrrrrrrrrrrrrrrrrrrwrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr#
+ #111111111---_____-------------------------------MMMM-------------IccccccVVcccccccccccccccccccccccckkkkkkkkkkkkkcccccccwwrrrrrrrrrrrrrrrrrrrrrrrrrwrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr#
+ #111111111---_____-------------------------------\MM/-------------IccccccVVcccccccccccccccccccccccckkkkkkkkkkkkkcccccccwwrrrrrrrrrrrrrrrrrrrrrrrrrwrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr#
+ #111111111---_____------------------------------------------------IccccccVVcccccccccccccccccccccccckkkkkkkkkkkkkcccccccwwrrrrrrrrrrrrrrrrrrrrrrrrrwrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr#
+ #111111111uuu_____------------------------------------------------Icccctttttccccccccccccccccccccccckkkkkkkkkkkkkcccccccwwwwwwwwwwwwwwwwwwwwwwwwwwwwrrrrrrrrrrrrrrrrrrrrrrrwrrrrrrrrrrrrrrrrrrrrrrrrrrr#
+ #111111111uuu_____------------------------------------------------Icccctttttccccccccccccccccccccccckkkkkkkkkkkkkcccccccwwwwwwwwwwwwwwwwwwwwwwwwwwwwrrrrrrrrrrrrrrrrrrrrrrrwrrrrrrrrrrrrrrrrrrrrrrrrrrr#
+ #111111111uuu_____------------------------------------------------Icccctttttccccccccccccccccccccccckkkkkkkkkkkkkcccccccwwwwwwwwwwwwwwwwwwwwwwwwwwwwrrrrrrrrrrrrrrrrrrrrrrrwrrrrrrrrrrrrrrrrrrrrrrrrrrr#
+ #111111111uuu_____------------------------------------------------IcccctttttccccccccccccccccccccccckkkkkkkkkkkkkcccccccwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwLLLLLLwwwwwwwwwwwwwwwwrrrrrrrrrrrrrrrrrrrrrrrrrrr#
+ #111111111---_____------------------------------------------------IcccctttttccccccccccccccccccccccckkkkkkkkkkkkkcccccccwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwLLLLLLwwwwwwwwwwwwwwwwrrrrrrrrrrrrrrrrrrrrrrrrrrr#
+ #111111111---_____------------------------------------------------IccccccccccccccccccccccccccccccccccccccccccccccccccccwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwLLLLLLwwwwwwwwwwwwwwwwrrrrrrrrrrrrrrrrrrrrrrrrrrr#
+ #111111111---_____-----------/MM\---------------------------------IccccccccccccccccccccccccccccccccccccccccccccccccccccwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwLLLLLLwwwwwwwwwwwwwwwwrrrrrrrrrrrrrrrrrrrrFFFFFFr#
+ #111111111---_____-----------MMMM---------------------------------IccccccccccccccccccccccccccccccccccccccccccccccccccccwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwLLLLLLwwwwwwwwwwwwwwwwrrrrrrrrrrrrrrrrrrrrFFFFFFr#
+ #111111111---_____-----------\MM/---------------------------------IccccccccccccccccccccccccccccccccccccccccccccccccccccwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwLLLLLLwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwFFFFFFw#
+ #111111111---_____------------------------------------------------#####################################################wwwwwwwwwwwwwwwwwwwwwwwwwwwwwwLLLLLLwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwFFFFFFw#
+ #111111111---_____------------------------------------------------#                                                   #############################3333333333############################wwwwwwFFFFFFw#
+ #111111111---_____------------------------------------------------#             ###################################################################3333333333############################wwwwwwFFFFFFw#
+ #111111111---_____---------------------------------------/MM\-----#             #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~##aaaaaa#oooooooooooooooooo#3333333333##333333333333333333333333333333##zzzzzzz#
+ #11111111/---_____---------------------------------------MMMM-----#             #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~##aaaaaa#oooooooooooooooooo#3333333333##333333333333333333333333333333##zzzzzzz#
+ #1111111/----_____---------------------------------------\MM/-----#             #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~##aaaaaaDoooooooooooooooooo#3333333333##333333333333333333333333333333##zzzzzzz#
+ #------------_____------------------------------------------------#             #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~##aaaaaaDoooooooooooooooooo#3333333333##333333333333333333333333333333##zzzzzzz#
+ #------------_____------------------------------------------------#             #~~~~~~/mm\~~~~~~~~~~~~~~~~~~~~~~~~~~~~##aaaaaa#oooooooooooooooooo###333333####333333333333333333333333333333##zzzzzzz#
+ #------------_____------------------------------------------------#             #~~~~~~mmmm~~~~~~~~~~~~~~~~~~~~~~~~~~~~#########oooooooooooooooooo# #333333#  #333333333333333333333333333333##zzzzzzz#
+ #------------_____------------------------------------------------#             #~~~~~~mmmm~~~~~~~~~~~~~~~~~~~~~~~~~~~~##ooooooooooooooooooooooooo# #333333#  #333333333333333333333333333333##zzzzzzz#
+ #------------_____------------------------------------------------#             #~~~~~~\mm/~~~~~~~~~~~~~~~~~~~~~~~~~~~~##ooooooooooooooooooooooooo# #333333#  #333333333333333333333333333333##zzzzzzz#
+ #------------_____------------------------------------------------#             #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~##ooooooooooooooooooooooooo# #DDDDDD#  #333333333333333333333333333333##zzzzzzz#
+ #------------_____------------------------------------------------#             #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~##ooooooooooooooooooooooooo# #333333#  #333333333333333333333333333333##zzzzzzz#
+ #------------_____---------------------------/MM\-----------------#             #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~##ooooooooooooooooooooooooo# #333333#  #333333333333333333333333333333##zzzzzzz#
+ #------------_____---------------------------MMMM-----------------###############~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~##ooooooooooooooooooooooooo# #333333#  #333333333333333333333333333333##zzzzzzz#
+ #------------_____---------------------------\MM/-----------------#44444444444444~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~##ooooooooooooooooooooooooo# #333333#  #333333333333333333333333333333##zzzzzzz#
+ #------------_____------------------------------------------------#44444444444444~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~##########!#DD################333333####!##############DD#########!#####zzzzzzz#
+ #------------_____------------------------------------------------#44444444444444bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb3333333333333333333333333333333333333333333333333333333333333333333333##zzzzzzz#
+ #------------_____------------------------------------------------#44444444444444bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb3333333333333333333333333333333333333333333333333333333333333333333333##zzzzzzz#
+ #------------_____-------/MM\-------------------------------------#44444444444444bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb3333333333333333333333333333333333333333333333333333333333333333333333##zzzzzzz#
+ #------------_____-------MMMM-------------------------------------#44444444444444bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb3333333333333333333333333333333333333333333333333333333333333333333333##zzzzzzz#
+ #------------_____-------\MM/-------------------------------------#44444444444444~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~################DD################################DD####################zzzzzzz#
+ #------------_____------------------------------------------------#44444444444444~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~##lllllllllllllllllllllllllllll# #llllllllllllllllllllllllllllllllllll##zzzzzzz#
+ #------------_____------------------------------------------------#44444444444444~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~##lllllllllllllllllllllllllllll# #llllllllllllllllllllllllllllllllllll##zzzzzzz#
+ #------------_____------------------------------------------------#44444444444444~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~##lllllllllllllllllllllllllllll# #llllllllllllllllllllllllllllllllllll##zzzzzzz#
+ #\-----------_____------------------------------------------------#44444444444444~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~##lllllllllllllllllllllllllllll# #llllllllllllllllllllllllllllllllllll##zzzzzzz#
+ ##\----------_____------------------------------------------------#44444444444444~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~##lllllllllllllllllllllllllllll# #llllllllllllllllllllllllllllllllllll##zzzzzzz#
+  ##\---------_____------------------------------------------------#####UUUU######~~~~~~~~~~~~~~~~~~~~~~~~~~/mm\~~~~~~~~##lllllllllllllllllllllllllllll# #llllllllllllllllllllllllllllllllllll##zzzzzzz#
+   ##\--------_____------------------------------------------------#  ##4444##   #~~~~~~~~~~~~~~~~~~~~~~~~~~mmmm~~~~~~~~##lllllllllllllllllllllllllllll# #llllllllllllllllllllllllllllllllllll##zzzzzzz#
+    ##\-------__@__------------------------------------------------#  #WWWWWW#   #~~~~~~~~~~~~~~~~~~~~~~~~~~mmmm~~~~~~~~##lllllllllllllllllllllllllllll# #llllllllllllllllllllllllllllllllllll##zzzzzzz#
+     ##\------_____------------------------------------------------#  #WWWWWW#   #~~~~~~~~~~~~~~~~~~~~~~~~~~\mm/~~~~~~~~##lllllllllllllllllllllllllllll# #llllllllllllllllllllllllllllllllllll##zzzzzzz#
+      ##\----------------------------------------------------------#  #WWWWWW#   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~##lllllllllllllllllllllllllllll# #llllllllllllllllllllllllllllllllllll##zzzzzzz#
+       #############################################################  #WWWWWW#   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~##lllllllllllllllllllllllllllll# #llllllllllllllllllllllllllllllllllll##zzzzzzz#
+                                                                      #WWWWWW#   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~##lllllllllllllllllllllllllllll# #llllllllllllllllllllllllllllllllllll##zzzzzzz#
+      #################################################################WWWWWW#####~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~##lllllllllllllllllllllllllllll# #llllllllllllllllllllllllllllllllllll##zzzzzzz#
+     ##/6666666666666666666666666666666666666666666666666666666666666666666666666#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~##lllllllllllllllllllllllllllll# #llllllllllllllllllllllllllllllllllll##zzzzzzz#
+    ##/66666666666666666666666666666666666666666666666666666666666666666666666666#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~##lllllllllllllllllllllllllllll# #llllllllllllllllllllllllllllllllllll##zzzzzzz#
+   ##/666666666666666666666666666666666666666666666666666666666666666666666666666#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~##lllllllllllllllllllllllllllll# #llllllllllllllllllllllllllllllllllll##zzzzzzz#
+   #/6666666666666666666666666666666666666666666666666666666666666666666666666666#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~##lllllllllllllllllllllllllllll# #llllllllllllllllllllllllllllllllllll##zzzzzzz#
+   #66666666666666666666666666666666666666666666666666666666666666666666666666666#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~##\llllllllllllllllllllllllllll# #lllllllllllllllllllllllllllllllllll/##zzzzzzz#
+   #66666666666666666666666666666666666666666666666666666666666666666666666666666#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~###\lllllllllllllllllllllllllll# #llllllllllllllllllllllllllllllllll/###zzzzzzz#
+   #66666666666666666666666666666666666666666666666666666666666666666666666666666#~~~~~~~~/mm\~~~~~~~~~~~~~~~~~~~~~~~~~~# ##\llllllllllllllllllllllllll# #lllllllllllllllllllllllllllllllll/## #zzzzzzz#
+   #66666666666666666666666666666666666666666666666666666666666666666666666666666#~~~~~~~~mmmm~~~~~~~~~~~~~~~~~~~~~~~~~~#  ############################# #####################QQ#############  #zzzzzzz#
+   #66666666666666666666666666666666666666666666666666666666666666666666666666666#~~~~~~~~mmmm~~~~~~~~~~~~~~~~~~~~~~~~~~#                                              #vvvvvvvvvvvvvvv#       #zzzzzzz#
+   #66666666666666666666666666666666666666666666666666666666666666666666666666666#~~~~~~~~\mm/~~~~~~~~~~~~~~~~~~~~~~~~~~#                                              #vvvvvvvvvvvvvvv#       #zzzzzzz#
+   #66666666666666666666666666666666666666666666666666666666666666666666666666666#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#                                              #vvvvvvvvvvvvvvv#       #zzzzzzz#
+   #6666gggggggggggg666ggggggggggggggg666ggggggggggggggg666gggggggg66666666666666#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#                                              #vvvvvvvvvvvvvvv#       #zzzzzzz#
+   #6666gggggggggggg666ggggggggggggggg666ggggggggggggggg666gggggggg66666666666666#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#                                              #vvvvvvvvvvvvvvv#       #zzzzzzz#
+   #6666gggggggggggg666ggggggggggggggg666ggggggggggggggg666gggggggg66666666666666#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#                                              #vvvvvvvvvvvvvvv# #######zzzzzzz#
+   #66666666666666666666666666666666666666666666666666666666666666666666666666666#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#                                              ################# #qqqqq#zzzzzzz#
+   #66666666666666666666666666666666666666666666666666666666666666666666666666666#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#                                                                #qqqqqAzzzzzzz#
+   #66666666666666666666666666666666666666666666666666666666666666666666666666666#~~~~~~~~~~~~~~~~~~~~~~~~~~~~/mm\~~~~~~#                                                                #qqqqqAzzzzzzz#
+   #66666666666666666666666666666666666666666666666666666666666666666666666666666#~~~~~~~~~~~~~~~~~~~~~~~~~~~~mmmm~~~~~~#                                                                #qqqqqAzzzzzzz#
+   #66666666666666666666666666666666666666666666666666666666666666666666666666666#~~~~~~~~~~~~~~~~~~~~~~~~~~~~mmmm~~~~~~#                                                                #qqqqq#zzzzzzz#
+   #66666666666666666666666666666666666666666666666666666666666666666666666666666#~~~~~~~~~~~~~~~~~~~~~~~~~~~~\mm/~~~~~~#                                                                #######zzzzzzz#
+   #\6666666666666666666666666666666666666666666666666666666666666666666666666666#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#                                                                      #zzzzzzz#
+   ##\666666666666666666666666666666666666666666666666666666666666666666666666666#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~############                                                           #zzzzzzz#
+    ##\66666666666666666666666666666666666666666666666666666666666666666666666666#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~55555555555#                                                           #zzzzzzz#
+     ##\6666666666666666666666666666666666666666666666666666666666666666666666666#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~55555555555#                                                           #zzzzzzz#
+      ########DD###########################DD###################666666666666666666~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~55555555555#                                                           #zzzzzzz#
+     #########DD########## ################DD################# #666666666666666666~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~55555555555#                                                           #zzzzzzz#
+     #nnnnnnnnnnnnnnnnnnn# #666666666666666666666666666666666# #666666666666666666BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB55555555555#                                                           #zzzzzzz#
+     #nnnnnnnnnnnnnnnnnnn# #666666666666666666666666666666666# #666666666666666666BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB55555555555#                                                     #######zzzzzzz#
+     #nnnnnnnnnnnnnnnnnnn# #666666666666666666666666666666666# #666666666666666666BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB55555555555#                                                     #qqqqq#zzzzzzz#
+     #nnnnnnnnnnnnnnnnnnn# #666666666666666666666666666666666# #666666666666666666BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB55555555555#                                                     #qqqqqAzzzzzzz#
+     #nnnnnnnnnnnnnnnnnnn# #666666666666666666666666666666666# #######ZZ##########~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~55555555555#                                                     #qqqqqAzzzzzzz#
+     #nnnnnnnnnnnnnnnnnnn# #666666666666666666666666666666666# #jjjjjjjjjjjjjjjjj#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~55555555555#                                                     #qqqqqAzzzzzzz#
+     #nnnnnnnnnnnnnnnnnnn# #666666666666666666666666666666666# #jjjjjjjjjjjjjjjjj#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~55555555555#                                                     #qqqqq#zzzzzzz#
+     #nnnnnnnnnnnnnnnnnnn# #666666666666666666666666666666666# #jjjjjjjjjjjjjjjjj#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~##XXXXXX####                                                     #######zzzzzzz#
+     #nnnnnnnnnnnnnnnnnnn# #666666666666666666666666666666666# #jjjjjjjjjjjjjjjjj#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~##555555#                                                              #zzzzzzz#
+     #nnnnnnnnnnnnnnnnnnn# #666666666666666666666666666666666# #jjjjjjjjjjjjjjjjj#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~##NNNNNN#                                                              #zzzzzzz#
+     #nnnnnnnnnnnnnnnnnnn# #666666666666666666666666666666666# #jjjjjjjjjjjjjjjjj#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~##NNNNNN#                                                              #zzzzzzz#
+     #nnnnnnnnnnnnnnnnnnn# #666666666666666666666666666666666# #jjjjjjjjjjjjjjjjj#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~##NNNNNN#                                                              #zzzzzzz#
+     #nnnnnnnnnnnnnnnnnnn# #666666666666666666666666666666666# #jjjjjjjjjjjjjjjjj#~~~~~~~~~~/mm\~~~~~~~~~~~~~~~~~~~~~~~~##NNNNNN#                                                              #zzzzzzz#
+     ##################### ################################### ###################~~~~~~~~~~mmmm~~~~~~~~~~~~~~~~~~~~~~~~##NNNNNN#                                                              #zzzzzzz#
+                                                                                 #~~~~~~~~~~mmmm~~~~~~~~~~~~~~~~~~~~~~~~##NNNNNN##############                                           #######zzzzzzz#
+                                                                                 #~~~~~~~~~~\mm/~~~~~~~~~~~~~~~~~~~~~~~~777777777777777777777#                                           #qqqqq#zzzzzzz#
+                                                                                 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~eeeeeeee777777777777777777777#                                           #qqqqqAzzzzzzz#
+                                                                                 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~eeeeeeee777777777777777777777#    #######################                #qqqqqAzzzzzzz#
+                                                                                 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~eeeeeeee777777777777777777777#   ##/HHHHHHHHHHHHHHHHHHH\##               #qqqqqAzzzzzzz#
+                                                                                 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~eeeeeeee777777777777777777777#  ##/HHHHHHHHHHHHHHHHHHHHH\##              #qqqqq#zzzzzzz#
+                                                                                 #~~~~~~~~~~~~~~~~~~~~~~/mm\~~~~eeeeeeee777777777777777777777# ##/HHHHHHHHHHHHHHHHHHHHHHH\##             #######zzzzzzz#
+                                                                                 #~~~~~~~~~~~~~~~~~~~~~~mmmm~~~~eeeeeeee777777777777777777777# #/HHHHHHHHHHHHHHHHHHHHHHHHH\# ###################zzzzzzz#
+                                                                                 #~~~~~~~~~~~~~~~~~~~~~~mmmm~~~~~~~~~~~~777777777777777777777# #HHHHHHHHHHHHHHHHHHHHHHHHHHH# #OOOOOOOOOOOOOOOOO#zzzzzzz#
+                                                                                 #~~~~~~~~~~~~~~~~~~~~~~\mm/~~~~~~~~~~~~777777777777777777777###HHHHHHHHHHHHHHHHHHHHHHHHHHH# #OOOOOOOOOOOOOOOOO#zzzzzzz#
+                                                                                 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~777777777777777777777777HHHHHHHHHHHHHHHHHHHHHHHHHHH# #OOOOOOOOOOOOOOOOO#zzzzzzz#
+                                                                                 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~777777777777777777777777HHHHHHHHHHHHHHHHHHHHHHHHHHH# #OOOOOOOOOOOOOOOOO#zzzzzzz#
+                                                                                 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~777777777777777777777777HHHHHHHHHHHHHHHHHHHHHHHHHHH# #OOOOOOOOOOOOOOOOO#zzzzzzz#
+                                                                                 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~777777777777777777777777HHHHHHHHHHHHHHHHHHHHHHHHHHH# #OOOOOOOOOOOOOOOOO#zzzzzzz#
+                                                                                 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~777777777777777777777###HHHHHHHHHHHHHHHHHHHHHHHHHHH###OOOOOOOOOOOOOOOOO#zzzzzzz#
+                                                                                 #######################################777777777777777777777# #HHHHHHHHHHHHHHHHHHHHHHHHHHHfKfOOOOOOPPPPPOOOOOOAzzzzzzz#
+                                                                                                                       #777777777777777777777# #HHHHHHHHHHHHHHHHHHHHHHHHHHHfKfOOOOOOPPPPPOOOOOOAzzzzzzz#
+                                                                                                                       ####################### #HHHHHHHHHHHHHHHHHHHHHHHHHHHfKfOOOOOOPPPPPOOOOOOAzzzzzzz#
+                                                                                                                                               #HHHHHHHHHHHHHHHHHHHHHHHHHHHfKfOOOOOOPPPPPOOOOOOAzzzzzzz#
+                                                                                                                                               #HHHHHHHHHHHHHHHHHHHHHHHHHHH###OOOOOOPPPPPOOOOOO#zzzzzzz#
+                                                                                                                                               #HHHHHHHHHHHHHHHHHHHHHHHHHHH# #OOOOOOOOOOOOOOOOO#zzzzzzz#
+                                                                                                                                               #HHHHHHHHHHHHHHHHHHHHHHHHHHH# #OOOOOOOOOOOOOOOOO#zzzzzzz#
+                                                                                                                                               #HHHHHHHHHHHHHHHHHHHHHHHHHHH# #OOOOOOOOOOOOOOOOO#zzzzzzz#
+                                                                                                                                               #HHHHHHHHHHHHHHHHHHHHHHHHHHH# #OOOOOOOOOOOOOOOOO#zzzzzzz#
+                                                                                                                                               #HHHHHHHHHHHHHHHHHHHHHHHHHHH# #OOOOOOOOOOOOOOOOO#zzzzzzz#
+                                                                                                                                               #\HHHHHHHHHHHHHHHHHHHHHHHHH/# #OOOOOOOOOOOOOOOOO#zzzzzzz#
+                                                                                                                                               ##\HHHHHHHHHHHHHHHHHHHHHHH/## #OOOOOOOOOOOOOOOOO#zzzzzzz#
+                                                                                                                                                ##\HHHHHHHHHHHHHHHHHHHHH/##  ###################zzzzzzz#
+                                                                                                                                                 ##\HHHHHHHHHHHHHHHHHHH/##                     #zzzzzzz#
+                                                                                                                                                  #######################                      #########
+
+
+
 
 end
 
 things
-; --- the neon strip ---
-IrisTrigger 10,108 args=IRIS_201,160
-PropCarWreck 5,111 angle=0
-RandomFire 5,111 args=1
-PropCarWreck 162,108 angle=90
-RandomFire 162,108 args=2
-PropCarWreck 163,112 angle=100
-RandomFire 163,112 args=1
-PropCarWreck 40,112 angle=200
-RandomFire 40,112 args=1
-PropCarWreck 118,107 angle=30
-RandomFire 118,107 args=1
-PropCarWreck 80,122 angle=0
-PropCarWreck 88,125 angle=90
-RandomFire 88,125 args=2
-PropCarWreck 70,120 angle=45
-PropStreetLamp 12,102.5
-PropStreetLamp 22,116
-PropStreetLamp 34,102.5
-PropStreetLamp 44,116
-PropStreetLamp 58,102.5
-PropStreetLamp 68,116
-PropStreetLamp 82,102.5
-PropStreetLamp 92,116
-PropStreetLamp 106,102.5
-PropStreetLamp 116,116
-PropStreetLamp 130,102.5
-PropStreetLamp 140,116
-PropStreetLamp 154,102.5
-PropStreetLamp 164,116
-PropHydrant 24,103
-PropHydrant 100,116
-PropNewsBox 38,103
-PropNewsBox 52,116
-PropPhoneBooth 50,103
-PropTrash 46,104
-PropTrash 122,104
-PropTrash 60,116
-PropBench 70,116
-PropTrafficLight 102,105
-PropTrafficLight 150,114
-PropBurningBarrel 64,115
-PropBurningBarrel 110,104
-PropDumpster 145,104
-LightNeon 9,101.5 args=192,255,40,160,1
-LightNeon 28,101.5 args=192,40,200,255,1
-LightNeon 45,101.5 args=192,120,255,60,1
-LightNeon 67,101.5 args=192,255,210,60,1
-LightNeon 91,101.5 args=192,160,60,255,1
-LightNeon 12,117.5 args=192,255,60,60,1
-Thrall 30,110 angle=W
-Thrall 55,104 angle=W
-Grey 75,111 angle=W
-Grey 96,108 angle=W
-ThrallTrooper 120,112 angle=W
-Grey 140,104 angle=W skill=345
-Thrall 150,110 angle=W
-Hybrid 110,115 angle=W skill=345
-Probe 90,111 angle=W skill=2345
-Ammo9mmMag 20,104
-AmmoShells 48,115
-Stim 64,104
-Ammo9mmMag 99,104
-AmmoShells 133,115
-Medkit 157,104
-PropDesk 12,95
-PropChair 11,96
-PropChair 14,96
-PropDesk 18,95
-PropChair 18,97
-Thrall 12,88 angle=S
-DeadGuard 16,93
-PropBloodPool 16,94
-AmmoShells 7,88
-Medkit 20,88
-LightLamp 12,92 args=160,255,120,60,1
-PickupAssaultRifle 30.5,90
-Ammo556Mag 27,90
-Ammo556Mag 34,90
-PropCabinet 26,89
-PropCabinet 35,89
-Grey 32,96 angle=S
-LightLamp 30,92 args=128,60,200,255
-TacticalArmor 28,85
-Ammo556Box 31,85
-Stim 32,85
-PropCabinet 41,91
-PropCabinet 48,91
-Stim 44,92
-Ammo9mmBox 47,94
-Thrall 45,93 angle=S skill=345
-IrisTrigger 66,96 args=IRIS_202,160
-PropBench 56,94
-PropBench 76,94
-PropTrash 63,93
-Grey 60,92 angle=S
-Grey 72,92 angle=S
-Hybrid 70,73 angle=S
-Grey 62,74 angle=S skill=345
-Grey 78,74 angle=S
-ThrallTrooper 70,82 angle=N
-Ammo556Mag 61,80
-AmmoShellBox 79,82
-Medkit 70,72.5
-AlienEnergyCell 83,73
-Ammo556Box 85,73
-Medkit 84,75
-FragPickup 86,75
-PropConsole 85,89
-PropConsole 85,97
-PropConsole 88,89
-PropConsole 88,97
-PropConsole 91,89
-PropConsole 91,97
-PropConsole 94,89
-PropConsole 94,97
-Thrall 90,93 angle=S
-Ammo9mmMag 86,93
-LightNeon 90,93 args=160,160,60,255,1
-PropDesk 12,124
-PropChair 12,126
-DeadGuard 16,125
-Ammo9mmBox 9,126
-LightNeon 13,123 args=160,255,60,60,1
-Curtain 26.5,123 angle=N args=1
-Curtain 32.5,123 angle=N args=1
-Thrall 31,126 angle=N ambush
-Curtain 38.5,123 angle=N args=1
-Medkit 37,127
-Curtain 44.5,123 angle=N args=1
-DeadScientist 43,126
-Ammo556Mag 42,127
-Curtain 50.5,123 angle=N args=1
-Grey 49,126 angle=N ambush skill=345
-Curtain 56.5,123 angle=N args=1
-AmmoShells 55,127
-Stim 56,125
-PropCarWreck 30,120 angle=0
-PropCarWreck 48,120 angle=180
-RandomFire 48,120 args=1
-Grey 40,121 angle=N
-Thrall 54,121 angle=N
-PropDesk 112,124
-PropDesk 118,124
-PropChair 112,126
-PropDesk 130,124
-Stim 138,126
-Ammo556Mag 106,126
-Hybrid 125,125 angle=N ambush skill=345
-Thrall 132,122 angle=N
-; --- back alleys ---
-IrisTrigger 100,82 args=IRIS_203,160
-PropDumpster 48,75
-PropDumpster 103,76
-PropDumpster 7,50
-PropDumpster 8,70
-PropTrash 30,82
-PropTrash 52,82
-PropTrash 95,80
-PropTrash 6,40
-PropTrash 20,62
-PropBurningBarrel 50,80
-PropBurningBarrel 7,30
-PropBurningBarrel 28,62
-Grey 88,80 angle=E
-Grey 40,79 angle=E
-Thrall 20,80 angle=E
-Stalker 7,45 angle=S
-Hybrid 30,62 angle=E skill=345
-Grey 8,64 angle=S
-Ammo556Mag 86,82
-Ammo9mmMag 25,78
-AmmoShells 8,35
-Stim 44,83
-Medkit 10,62
-AlienImplant 30,70
-Ammo556Box 24,68
-AlienEnergyCell 34,68
-LightLamp 50,80 args=160,255,140,40,1
-; --- the plaza ---
-IrisTrigger 55,68 args=IRIS_204,192
-HackTerminal 64,55 angle=E args=60,1,Door_Open,@subgate,0
-PropCarWreck 61,55 angle=90
-IrisTrigger 64,58 args=IRIS_205,128
-WaveSpot 44,28 args=1,0
-WaveSpot 106,28 args=1,3
-WaveSpot 44,50 args=1,2
-WaveSpot 106,55 args=1,0
-WaveSpot 75,32 args=1,4
-PickupScatter 75,55
-AlienEnergyCell 73,56
-AlienEnergyCell 77,56
-PropBench 48,44
-PropBench 102,44
-PropBench 60,64
-PropBench 90,66
-PropStreetLamp 44,38
-PropStreetLamp 106,38
-PropStreetLamp 44,58
-PropStreetLamp 106,64
-PropPhoneBooth 92,26
-PropNewsBox 58,26
-PropNewsBox 96,68
-PropTrafficLight 41,25
-PropTrafficLight 109,25
-PropCarWreck 90,36 angle=45
-RandomFire 90,36 args=2
-PropCarWreck 52,50 angle=120
-RandomFire 52,50 args=1
-RandomFire 59,32 args=1
-RandomFire 100,50 args=0
-PropBurningBarrel 85,60
-Grey 70,36 angle=S
-Grey 85,45 angle=W
-Hybrid 95,40 angle=S
-Hybrid 55,42 angle=E skill=345
-Thrall 80,64 angle=N
-ThrallTrooper 104,60 angle=W
-Probe 75,30 angle=S
-Probe 60,40 angle=E skill=345
-Stalker 100,26 angle=S skill=2345
-Ammo556Mag 50,40
-Ammo556Mag 100,40
-AmmoShells 70,60
-Medkit 45,26
-Medkit 105,67
-KevlarVest 75,38 skill=123
-Ammo556Box 48,62
-Stim 98,30
-FragPickup 64,66
-AmmoShellBox 92,50
-; --- subway station and tunnel ---
-IrisTrigger 118,47 args=IRIS_206,128
-LightLamp 130,42 args=192,200,220,255,1
-LightLamp 145,58 args=192,200,220,255
-LightLamp 130,69 args=192,200,220,255,1
-PickupBattleRifle 143,41
-Ammo762Mag 144,42
-Ammo762Mag 141,40
-DeadGuard 142,42
-PropBench 128,57
-PropBench 140,57
-PropBench 155,69
-PropNewsBox 125,70
-PropTrash 135,58
-CCABlueCard 160,69
-Overseer 150,69 angle=W
-IrisTrigger 140,69 args=IRIS_207,192
-Thrall 128,42 angle=E
-Thrall 135,50 angle=N
-Grey 145,58 angle=W
-Hybrid 160,57 angle=W
-Grey 140,63 angle=E z=-160
-Stalker 162,30 angle=S
-Grey 162,15 angle=S skill=345
-Hybrid 155,22 angle=S
-Scientist 126,68 angle=E
-DeadScientist 146,69
-PropBloodPool 147,69
-Ammo762Mag 125,57
-AmmoShells 164,59
-Medkit 124,40
-Ammo556Mag 150,67
-Stim 162,40
-AlienEnergyCell 152,22
-Medkit 156,23
-Ammo556Box 158,24
-; --- Bureau HQ ---
-IrisTrigger 150,5 args=IRIS_208,128
-IrisTrigger 125,8 args=IRIS_209,192
-DownedGuard 110,13 angle=N args=3
-CCAYellowCard 111,12
-PropDesk 108,11
-PropMonitor 108,11
-PropChair 110,12
-PropDesk 113,11
-Hybrid 102,9 angle=E
-Hybrid 118,13 angle=W skill=345
-Grey 96,12 angle=E
-ThrallTrooper 112,5 angle=S
-Thrall 126,12 angle=W
-Probe 110,8 angle=S skill=2345
-Medkit 95,4
-Ammo556Mag 126,4
-AmmoShells 102,13
-Ammo762Mag 119,4
-LightLamp 110,8 args=320,255,240,210
-Ammo9mmBox 150,4
-Stim 164,6
-IrisTrigger 80,9 args=IRIS_210,160,1
-CaseFile 50,6
-ObjectiveMarker 50,6 args=1
-HackTerminal 70,8 angle=W args=60,2,Door_Open,@exec,2
-ObjectiveMarker 70,8 args=2
-IrisTrigger 68,10 args=IRIS_211,128,2
-WaveSpot 63,4 args=2,3
-WaveSpot 80,13 args=2,2
-WaveSpot 44,12 args=2,0
-WaveSpot 56,13 args=2,1
-PropDesk 50,5
-PropChair 50,7
-PropDesk 54,5
-PropMonitor 54,5
-PropCabinet 44,4
-PropCabinet 45,4
-PropCabinet 58,4
-PropPapers 52,9
-PropPapers 47,11
-PropLabLamp 57,7
-LightLamp 50,8 args=160,255,220,160,1
-Grey 66,12 angle=W
-Hybrid 76,5 angle=W
-Medkit 82,4
-Ammo556Box 82,13
-AmmoShellBox 62,13
-AlienEnergyPod 46,8
-FragPickup 72,13
-IrisTrigger 30,10 args=IRIS_212,160,3
-ObjectiveMarker 10,10 args=3
-Probe 18,12 angle=E
-Hybrid 26,11 angle=E
-Grey 10,18 angle=N skill=345
-PropFloodlight 5,5
-PropFloodlight 15,15
-Medkit 30,19
-AlienEnergyCell 4,19
+; --- the canyon below Archuleta Mesa ---
+IrisTrigger 16,69 args=IRIS_501,192
+ManInBlack 7,40 angle=S
+ManInBlack 30,21 angle=W
+Thrall 45,35 angle=S
+Thrall 20,55 angle=E
+ManInBlack 55,20 angle=W skill=345
+Grey 36,60 angle=W skill=2345
+PropJeep 22,64 angle=80
+RandomFire 22,64 args=1
+DeadSoldier 20,66
+PropRocks 20,30
+PropRocks 52,64
+PropBush 35,70
+PropBush 60,34
+PropRocks 8,60
+Ammo9mmMag 16,50
+AmmoShells 30,23
+Stim 24,66
+FlashlightBattery 5,34
+Medkit 6,31
+Ammo9mmBox 8,44
+KevlarVest 24,5
+AmmoShellBox 21,4
+FragPickup 27,6
+; --- the fenced compound ---
+IrisTrigger 70,21 args=IRIS_502,192
+PropRadarDish 93,11
+PropAntenna 106,6
+PropAntenna 112,12
+PropAntenna 84,38
+PropBarrier 69,16 angle=90
+PropBarrier 69,26 angle=90
+PropBarrier 72,17 angle=90
+PropBarrier 72,25 angle=90
+PropBarrier 116,18 angle=90
+PropBarrier 116,26 angle=90
+PropBarrier 103,22 angle=90
+PropFloodlight 70,3
+PropFloodlight 70,41
+PropFloodlight 117,3
+PropFloodlight 117,41
+PropFloodlight 100,21
+PropJeep 104,34 angle=0
+PropJeep 110,34 angle=0
+PropCrate 101,31
+PropCrate 102,32
+ExplosiveDrum 112,37
+LightAlarm 68,17 args=160
+LightAlarm 68,25 args=160
+ManInBlack 74,6 angle=S
+ThrallTrooper 74,36 angle=N
+ManInBlack 85,22 angle=W
+ManInBlack 100,14 angle=W
+Thrall 108,26 angle=W
+ManInBlack 114,30 angle=W skill=345
+Probe 95,30 angle=W skill=345
+Ammo9mmMag 80,22
+AmmoShells 96,24
+Stim 112,6
+Ammo9mmMag 75,7
+Medkit 106,40
+; --- topside building: rooms under a walkable slab roof ---
+IrisTrigger 125,22 args=IRIS_503,160
+PropDesk 130,16
+PropMonitor 130,15
+PropChair 130,18
+PropDesk 138,16
+PropCabinet 144,13
+PropPlant 123,13
+ManInBlack 135,26 angle=W
+ManInBlack 140,18 angle=W
+Thrall 127,30 angle=E
+PropDesk 152,8
+PropMonitor 152,7
+PropDesk 160,8
+PropMonitor 160,7
+PropConsole 166,6
+PropCabinet 149,5
+ManInBlack 158,12 angle=S
+DeadGuard 164,15
+Ammo9mmBox 150,16
+AmmoShells 166,16
+IrisTrigger 152,34 args=IRIS_504,128
+ManInBlack 160,28 angle=W skill=345
+PropCrate 168,24
+Stim 149,23
+PropCabinet 127,3
+PropCabinet 129,3
+PropCabinet 131,3
+PropDesk 136,6
+PropPapers 134,7
+Medkit 139,3
+PropCrate 175,28
+PropCrate 176,29
+PropCrate 185,38
+PropGenerator 180,39
+PropCylinders 174,39
+ManInBlack 182,30 angle=S ambush
+ManInBlack 178,36 angle=E ambush skill=345
+Ammo762Mag 188,27
+IrisTrigger 194,26 args=IRIS_505,128
+HelipadMark 185,5.5
+Helicopter 185,5.5 angle=W args=1,2,0
+ObjectiveMarker 185,5.5 args=2
+IrisTrigger 194,10 args=IRIS_506,192,2
+ManInBlack 176,6 angle=E ambush
+ManInBlack 160,20 angle=E ambush
+Hybrid 140,28 angle=E ambush z=top skill=345
+Probe 175,30 angle=S skill=2345
+Medkit 197,4
+Ammo762Mag 173,8
+; --- Level 3 (z -384): security and labs ---
+IrisTrigger 152.5,47 args=IRIS_507,160
+ManInBlack 152.5,57 angle=N
+ManInBlack 140,62 angle=E
+ManInBlack 180,61 angle=W
+DownedGuard 144,56 angle=W args=1
+CCABlueCard 140,47
+IrisTrigger 138,55 args=IRIS_508,128
+PropDesk 134,50
+PropMonitor 134,49
+PropChair 134,52
+PropDesk 140,50
+PropMonitor 140,49
+PropCabinet 145,47
+ManInBlack 132,53 angle=S
+Thrall 142,52 angle=W skill=345
+PickupBattleRifle 124.5,48
+Ammo762Mag 126,47
+Ammo762Mag 126,49
+IrisTrigger 125,50 args=IRIS_509,64
+PropDesk 163,48
+PropDesk 167,48
+PropDesk 171,48
+PropDesk 175,48
+PropDesk 179,48
+PropDesk 183,48
+PropDesk 187,48
+ThrallTrooper 170,52 angle=S
+Thrall 182,55 angle=W
+Medkit 187,57
+AmmoShells 162,57
+IrisTrigger 136,67 args=IRIS_510,128
+PropDesk 126,70
+PropMonitor 126,70
+PropDesk 132,70
+PropMonitor 132,70
+PropDesk 138,70
+PropMonitor 138,70
+PropDesk 144,70
+PropMonitor 144,70
+PropDesk 126,78
+PropMonitor 126,78
+PropDesk 132,78
+PropMonitor 132,78
+PropDesk 138,78
+PropMonitor 138,78
+PropDesk 144,78
+PropMonitor 144,78
+Scientist 130,74 angle=E
+LabTech 146,80 angle=N
+Grey 140,74 angle=W
+Grey 128,82 angle=N skill=345
+DeadScientist 135,82
+PropBloodPool 136,82
+Ammo9mmMag 124,67
+Stim 148,67
+PropTank 158,70
+PropTank 164,70
+PropTank 170,70
+PropTank 176,70
+PropTank 182,70
+PropTankBroken 164,80
+GlassShards 165,81
+Hybrid 176,77 angle=W
+Grey 160,78 angle=E
+Scientist 186,82 angle=W
+AlienEnergyCell 186,67
+AmmoShells 156,83
+AlienImplant 175,88
+Ammo762Mag 170,89
+AlienEnergyCell 180,89
+; --- the great shaft ---
+IrisTrigger 116,61.5 args=IRIS_511,192
+ManInBlack 100,61.5 angle=E z=top
+Probe 96,65 angle=E
+Probe 100,109 angle=W skill=345
+LightLamp 100,61.5 args=256,255,200,140,1
+LightLamp 100,105.5 args=256,255,200,140,1
+Stim 74,60
+Ammo9mmMag 78,67
+ManInBlack 70,64 angle=E
+AmmoShells 115,122
+Medkit 116,124
+; --- Level 6 (z -768): hybrid experiments ---
+IrisTrigger 73.5,80 args=IRIS_512,192
+PropTank 8,81
+PropPod 8,99
+PropTank 14,81
+PropPod 14,99
+PropTank 20,81
+PropPod 20,99
+PropTank 26,81
+PropPod 26,99
+PropTank 32,81
+PropPod 32,99
+PropTank 38,81
+PropPod 38,99
+PropTank 44,81
+PropPod 44,99
+PropTank 50,81
+PropPod 50,99
+PropTank 56,81
+PropPod 56,99
+PropTank 62,81
+PropPod 62,99
+PropTank 68,81
+PropPod 68,99
+PropTank 74,81
+PropPod 74,99
+PropTankBroken 11,86
+PropTankBroken 23,86
+PropTankBroken 35,86
+PropTankBroken 47,86
+PropTankBroken 59,86
+Stalker 30,84 angle=E
+Hybrid 50,95 angle=E
+Hybrid 62,84 angle=W
+Grey 12,95 angle=E
+Grey 40,80 angle=S
+ThrallTrooper 70,96 angle=W skill=345
+LabTech 22,84 angle=E
+DeadLabTech 44,86
+PropBloodPool 44,87
+LightLamp 30,90 args=256,90,255,120,1
+LightLamp 60,90 args=256,90,255,120,1
+AlienEnergyCell 26,96
+AmmoShells 52,82
+Stim 74,93
+Ammo762Mag 8,80
+IrisTrigger 15,106 args=IRIS_513,128
+DownedGuard 20,114 angle=N args=2
+CCARedCard 9,114
+PropConsole 8,106
+PropMonitor 12,106
+PropDesk 17,108
+ManInBlack 18,110 angle=W
+Medkit 23,106
+PropPod 30,106
+PropPod 30,115
+PropPod 34,106
+PropPod 34,115
+PropPod 38,106
+PropPod 38,115
+PropPod 42,106
+PropPod 42,115
+PropPod 46,106
+PropPod 46,115
+PropPod 50,106
+PropPod 50,115
+PropPod 54,106
+PropPod 54,115
+PropPod 58,106
+PropPod 58,115
+Hybrid 44,110 angle=N
+Grey 34,110 angle=E skill=345
+AlienEnergyCell 58,110
+AlienEnergyPod 66,112
+TacticalArmor 72,114
+Medkit 78,112
+; --- Level 7 (z -1024): the vault ---
+IrisTrigger 124.5,105 args=IRIS_514,160
+Hybrid 126,102 angle=W
+ManInBlack 128,108 angle=N
+Ammo762Mag 121,101
+IrisTrigger 130,122 args=IRIS_515,160
+ManInBlack 135,125 angle=N
+ManInBlack 138,131 angle=W
+Thrall 124,132 angle=N
+HackTerminal 157,134 angle=E args=75,1,Door_Open,@vault,0
+IrisTrigger 152,134 args=IRIS_516,128
+WaveSpot 148,125 args=1,3
+WaveSpot 166,125 args=1,1
+WaveSpot 148,143 args=1,2
+WaveSpot 166,143 args=1,3
+WaveSpot 157,124 args=1,4
+PropServer 150,130
+PropServer 164,130
+PropServer 150,138
+PropServer 164,138
+Medkit 146,134
+Ammo762Mag 168,134
+AmmoShellBox 157,145
+AlienEnergyCell 157,123
+Ammo9mmBox 146,127
+InvasionPlans 182,135 args=1
+ObjectiveMarker 182,135 args=1
+IrisTrigger 177,135 args=IRIS_517,128,1
+PropCabinet 176,128
+PropCabinet 188,128
+PropCabinet 176,142
+PropCabinet 188,142
+PropConsole 182,128
+LightLamp 182,135 args=192,255,230,180
+LightAlarm 190,130 args=192
+LightAlarm 190,140 args=192
+IrisTrigger 195,135 args=IRIS_518,160,2
+ManInBlack 188,94 angle=E
+ManInBlack 187,93 angle=E skill=345
+LightAlarm 195,94 args=160
+ManInBlack 188,108 angle=E
+Hybrid 187,107 angle=E skill=345
+LightAlarm 195,108 args=160
+ManInBlack 188,121 angle=E
+ManInBlack 187,120 angle=E skill=345
+LightAlarm 195,121 args=160
+ThrallTrooper 195,80 angle=S
+ManInBlack 195,60 angle=S
+Grey 196,112 angle=S
+Ammo762Mag 194,100
+Medkit 197,70
+AmmoShells 194,55
+Stim 196,118
+IrisTrigger 195,48 args=IRIS_519,96
 end

@@ -254,7 +254,7 @@ function commonAnchors(root, b, o) {
   const s = o.scale || 1;
   const a = {};
   a.R = gripAnchor(root, b.gTop, b.gBot, { t: 0.3, halfW: 0.017 * s, halfD: 0.025 * s, roll: 0.2, palm: 0.0105, along: -0.078, sink: 0.002, shift: [0, 0, 0.004] });
-  const tun = [0, -0.0165 - o.foreR, -0.088];
+  const tun = [0.004, -0.031 - o.foreR, -0.088];
   a.L = fistAnchor(root, { at: o.fore, axis: [0, 0, -1], back: [0.26, -0.97, 0], side: -1, tunnel: tun, swing: o.swing ?? 0.8 });
   a.magwell = group(root, [o.magTop.x, o.magTop.y, o.magTop.z]);
   a.muzzle = group(root, [0, o.bore, o.muzzle]);

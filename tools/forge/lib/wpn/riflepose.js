@@ -15,7 +15,7 @@ export async function renderRifle(F, gun, o) {
   const ADS = o.ads ?? { p: [0, -gun.sightY, -(o.adsDist ?? 0.3)], r: [0, 0, 0] };
   const Rh = { at: 'R', grip: 'pistol', elbow: o.elbowHip ?? [0.3, -0.5, -0.1] };
   const Ra = { at: 'R', grip: 'pistol', elbow: o.elbowAdsR ?? [0.2, -0.4, 0.0] };
-  const La = { at: 'L', grip: 'pump', elbow: o.elbowAdsL ?? [-0.18, -0.42, -0.28] };
+  const La = { at: 'L', grip: o.supportGrip ?? 'cradle', elbow: o.elbowAdsL ?? [-0.2, -0.45, -0.15] };
   const REL = o.rel ?? { p: [0.07, -0.05, -0.45], r: [0.3, 0.15, -0.8] };
   const hold = (prop) => ({ at: { prop }, off: gun.magHold, grip: 'pinch', elbow: [-0.2, -0.5, -0.1] });
   const magAt = (d, dp) => (dp ? { at: { cam: { mix: ['magwell', 'magwell', 0], }, dp } } : { at: 'magwell', off: { p: [0, -d, 0] } });
@@ -39,7 +39,7 @@ export async function renderRifle(F, gun, o) {
     M: { gun: { p: add(ADS.p, [0, 0.003, 0.02 * kick]), r: add(ADS.r, [0.05 * kick, 0, 0.01]) }, state: { trigger: 1, bolt: 1, scoped: !!o.scope }, R: { ...Ra, grip: 'pistolFire' }, L: La, light: 1 },
     N: { gun: { p: add(ADS.p, [0, 0.001, 0.007 * kick]), r: add(ADS.r, [0.015 * kick, 0, 0.003]) }, state: { bolt: 0.3, scoped: !!o.scope }, R: Ra, L: La },
     O: { gun: o.mid ?? { p: [HIP.p[0] * 0.45, (HIP.p[1] + ADS.p[1]) / 2, (HIP.p[2] + ADS.p[2]) / 2], r: [HIP.r[0] * 0.5, HIP.r[1] * 0.45, HIP.r[2] * 0.5] }, R: Rh,
-      L: { at: { mix: [{ cam: 'L', dp: [-0.04, -0.08, 0.04] }, 'L', 0.65] }, grip: 'pump', elbow: [-0.22, -0.48, -0.22] } },
+      L: { at: { mix: [{ cam: 'L', dp: [-0.04, -0.08, 0.04] }, 'L', 0.65] }, grip: o.supportGrip ?? 'cradle', elbow: [-0.22, -0.5, -0.12] } },
     P: { gun: o.low ?? { p: add(HIP.p, [0.03, -0.07, 0.03]), r: [-0.5, HIP.r[1] + 0.4, 0.45] }, R: { ...Rh, elbow: [0.32, -0.45, 0.0] } },
   };
   if (o.override) o.override(P, { HIP, ADS, REL, Rh, Ra, La, add });

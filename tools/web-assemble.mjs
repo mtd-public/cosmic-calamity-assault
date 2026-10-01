@@ -36,11 +36,32 @@ if (!existsSync(pk3Site)) {
 mkdirSync(join(PLAY, 'engine'), { recursive: true });
 const sums = readFileSync(join(ENGINE, 'SHA256SUMS'), 'utf8').trim().split('\n').map((l) => l.split(/\s+/));
 for (const [sum, name] of sums) {
-  const got = createHash('sha256').update(readFileSync(join(ENGINE, name))).digest('hex');
+  const data = readFileSync(join(ENGINE, name));
+  const got = createHash('sha256').update(data).digest('hex');
   if (got !== sum) die(`web/engine/${name}: sha256 mismatch (${got})`);
-  copyFileSync(join(ENGINE, name), join(PLAY, 'engine', name));
+  if (name === 'gzdoom.wasm') {
+    const n = silenceTraces(data);
+    console.log(`  gzdoom.wasm: silenced ${n} debug trace strings`);
+  }
+  writeFileSync(join(PLAY, 'engine', name), data);
 }
 copyFileSync(join(ENGINE, 'LICENSE'), join(PLAY, 'engine/LICENSE'));
+
+// The prebuilt engine still Printf()s porting traces ("[trace] FShader::Bind
+// ...") that GZDoom shows on screen as notify messages. Blank each one by
+// turning its first byte into NUL (an empty format string prints nothing).
+// Only data-segment bytes change, never the length, so the module stays
+// valid; a string that is a shared suffix of a trace keeps working.
+function silenceTraces(buf) {
+  let n = 0;
+  for (const tag of ['[trace]', '[creg-walk]']) {
+    const needle = Buffer.from(tag);
+    for (let i = buf.indexOf(needle); i >= 0; i = buf.indexOf(needle, i + 1)) {
+      if (i > 0 && buf[i - 1] === 0) { buf[i] = 0; n++; }
+    }
+  }
+  return n;
+}
 
 copyFileSync(IWAD, join(PLAY, 'freedoom2.wad'));
 const fdLicense = ['/usr/share/doc/freedoom/copyright', join(dirname(IWAD), 'COPYING.txt')].find(existsSync);

@@ -390,6 +390,7 @@
     if (inputAttached) return;
     inputAttached = true;
     window.addEventListener('keydown', onKey, true);
+    window.addEventListener('keypress', onKey, true);   // text input: console, save names
     window.addEventListener('keyup', onKey, true);
     canvas.addEventListener('mousedown', (e) => {
       ensureAudio();
@@ -421,6 +422,12 @@
   let padIndex = null, padLast = 0, padLoop = false;
   const padOpts = () => ({ sensitivity: +(readPref('padSens') || 1), invertY: readPref('padInvert') === '1' });
 
+  // Synthetic pointer events sit at the canvas centre (backbuffer pixels).
+  function padMouse(extra) {
+    return Object.assign({ clientX: W / 2, clientY: H / 2, screenX: W / 2, screenY: H / 2, offsetX: W / 2, offsetY: H / 2,
+      movementX: 0, movementY: 0, button: 0, buttons: 0, deltaX: 0, deltaY: 0, deltaZ: 0, deltaMode: 0,
+      shiftKey: false, ctrlKey: false, altKey: false, metaKey: false, bubbles: true, cancelable: true }, extra);
+  }
   function sendPadEvent(ev) {
     if (ev.type === 'keydown' || ev.type === 'keyup') {
       post({ type: 'input', target: 'window', evType: ev.type, init: {
@@ -428,12 +435,12 @@
         shiftKey: false, ctrlKey: false, altKey: false, metaKey: false, location: 0, bubbles: true, cancelable: true } });
     } else if (ev.type === 'mousedown' || ev.type === 'mouseup') {
       post({ type: 'input', target: ev.type === 'mouseup' ? 'document' : 'canvas', evType: ev.type,
-        init: mouseInit({ clientX: 0, clientY: 0 }, { button: ev.button, buttons: ev.type === 'mousedown' ? (ev.button === 2 ? 2 : 1) : 0 }) });
+        init: padMouse({ button: ev.button, buttons: ev.type === 'mousedown' ? (ev.button === 2 ? 2 : 1) : 0 }) });
     } else if (ev.type === 'wheel') {
-      post({ type: 'input', target: 'canvas', evType: 'wheel', init: mouseInit({ clientX: 0, clientY: 0 }, { deltaY: ev.deltaY, deltaMode: 0 }) });
+      post({ type: 'input', target: 'canvas', evType: 'wheel', init: padMouse({ deltaY: ev.deltaY }) });
     } else if (ev.type === 'mousemove') {
       post({ type: 'input', target: 'canvas', evType: 'mousemove',
-        init: mouseInit({ clientX: 0, clientY: 0 }, { movementX: ev.movementX, movementY: ev.movementY }) });
+        init: padMouse({ movementX: ev.movementX, movementY: ev.movementY }) });
     }
   }
   function tapKey(k, synthetic) {

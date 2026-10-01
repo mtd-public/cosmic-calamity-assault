@@ -140,14 +140,13 @@ try {
     s = await S();
     check('frame rate measured', s.fps > 0, `${s.fps.toFixed(1)} fps, ${s.frameMs.toFixed(1)} ms/frame (headless SwiftShader)`);
 
-    // Keyboard: idle drift vs holding W.
+    // Keyboard: idle drift vs holding S (MAP01 starts facing a door).
     const b = await shot('web-5a-idle');
-    await page.keyboard.down('KeyW'); await sleep(1500); await page.keyboard.up('KeyW');
+    await page.keyboard.down('KeyS'); await sleep(1500); await page.keyboard.up('KeyS');
     await sleep(300);
-    const c = await shot('web-5b-after-W');
+    const c = await shot('web-5b-after-S');
     const idle = diff(a, b), moved = diff(b, c);
-    check('keyboard: W moves the player', moved > Math.max(6, idle * 2), `idle Δ ${idle.toFixed(1)}, W Δ ${moved.toFixed(1)}`);
-    await page.keyboard.down('KeyD'); await sleep(800); await page.keyboard.up('KeyD');
+    check('keyboard: S moves the player', moved > Math.max(6, idle * 2), `idle Δ ${idle.toFixed(1)}, S Δ ${moved.toFixed(1)}`);
 
     // Gamepad (synthetic navigator.getGamepads).
     await page.evaluate(() => { window.__padOn = true; });
@@ -155,10 +154,10 @@ try {
     s = await S();
     check('gamepad detected', !!s.pad, s.pad || 'none');
     const p0 = await shot('web-6a-pad-before');
-    await setPad({ axes: [0, -1, 0, 0] }); await sleep(1500); await setPad({ axes: [0, 0, 0, 0] }); await sleep(300);
+    await setPad({ axes: [-1, 0, 0, 0] }); await sleep(1200); await setPad({ axes: [0, 0, 0, 0] }); await sleep(300);
     const p1 = await shot('web-6b-pad-leftstick');
     const padMove = diff(p0, p1);
-    check('gamepad: left stick moves the player', padMove > Math.max(6, idle * 2), `Δ ${padMove.toFixed(1)}`);
+    check('gamepad: left stick strafes the player', padMove > Math.max(6, idle * 2), `Δ ${padMove.toFixed(1)}`);
     await setPad({ axes: [0, 0, 1, 0] }); await sleep(1000); await setPad({ axes: [0, 0, 0, 0] }); await sleep(300);
     const p2 = await shot('web-6c-pad-rightstick');
     const padTurn = diff(p1, p2);
@@ -179,9 +178,9 @@ try {
     await page.keyboard.type('save websmoke', { delay: 30 });
     await key('Enter'); await sleep(600);
     await key('Backquote');
-    await page.waitForFunction(() => __cca.saves.stored.length > 0, null, { timeout: 15000 }).catch(() => {});
+    await page.waitForFunction(() => __cca.saves.stored.some((p) => /websmoke/.test(p)), null, { timeout: 15000 }).catch(() => {});
     s = await S();
-    check('savegame written to IndexedDB', s.saves.stored.length > 0, s.saves.stored.join(', '));
+    check('savegame written to IndexedDB (typed console command)', s.saves.stored.some((p) => /websmoke/.test(p)), s.saves.stored.join(', '));
     await shot('web-7-after-save');
 
     // Reload: the save must come back.

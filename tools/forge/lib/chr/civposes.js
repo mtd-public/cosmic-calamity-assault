@@ -109,10 +109,11 @@ export function groundTorso(R, eps = 0.005) {
   R.rig.position.y += eps - min; R.sync();
 }
 // Swing a joint (in its parent's frame) about the axis that carries its bone toward the floor,
-// until the lowest point of the distal part (o.measure: the next joint down, so the cap at the
-// pivot, which no swing can lift, never counts) sits at `target`. o.dir: the bone direction.
+// until the lowest point of the distal part sits at `target`. o.measure: object(s) to measure (the
+// next joint down plus anything else hung on the joint, never the bone's own cap at the pivot,
+// which no swing can lift). o.dir: the bone direction in joint space.
 export function settleLimb(R, obj, o = {}) {
-  const target = o.target ?? 0.012, meas = o.measure ?? obj, max = o.max ?? 1.2;
+  const target = o.target ?? 0.012, meas = [].concat(o.measure ?? obj), max = o.max ?? 1.2;
   const base = obj.quaternion.clone();
   obj.parent.getWorldQuaternion(_q).invert();
   const down = V3(0, -1, 0).applyQuaternion(_q);
@@ -121,7 +122,7 @@ export function settleLimb(R, obj, o = {}) {
   if (axis.lengthSq() < 1e-6) return;
   axis.normalize();
   const rot = new THREE.Quaternion();
-  const f = (t) => { obj.quaternion.copy(rot.setFromAxisAngle(axis, t)).multiply(base); return R.lowestOf(meas); };
+  const f = (t) => { obj.quaternion.copy(rot.setFromAxisAngle(axis, t)).multiply(base); return Math.min(...meas.map((m) => R.lowestOf(m))); };
   const f0 = f(0);
   let lo = null, hi = null;
   if (f0 > target) { lo = 0; for (let t = 0.04; t <= max; t += 0.04) { if (f(t) <= target) { hi = t; break; } lo = t; } if (hi === null) { f(lo); return; } }
@@ -151,8 +152,9 @@ export function clampPanels(R) {
 export function settleBody(R) {
   groundTorso(R);
   settleLimb(R, R.neck, { dir: V3(0, 1, 0), measure: R.head, target: 0.01, max: 0.5 });
-  for (const A of R.arms) { settleLimb(R, A.sh, { measure: A.el }); settleLimb(R, A.el, { measure: A.wrist, max: 0.6 }); }
-  for (const L of R.legs) { settleLimb(R, L.hip, { measure: L.knee }); settleLimb(R, L.knee, { measure: L.ankle, max: 0.6 }); }
+  const distal = (j, bone) => j.children.filter((c) => c !== bone.mesh);
+  for (const A of R.arms) { settleLimb(R, A.sh, { measure: distal(A.sh, A.upper) }); settleLimb(R, A.el, { measure: distal(A.el, A.fore), max: 0.6 }); }
+  for (const L of R.legs) { settleLimb(R, L.hip, { measure: distal(L.hip, L.thigh) }); settleLimb(R, L.knee, { measure: distal(L.knee, L.shin), max: 0.6 }); }
   R.noHemClamp = true; R.after?.(); R.noHemClamp = false;
   clampPanels(R);
   R.sync();

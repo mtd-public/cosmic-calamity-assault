@@ -168,6 +168,15 @@ const windowShim = Object.assign(winTarget, {
   cancelAnimationFrame() {},
 });
 
+// emscripten defers pointer-lock / fullscreen requests made outside an input
+// handler unless navigator.userActivation says the page is active. Workers
+// have no userActivation, so SDL's relative-mouse request (entering gameplay)
+// would wait for the next key press; report the page as active instead.
+try {
+  Object.defineProperty(self.navigator, 'userActivation', {
+    configurable: true, value: { isActive: true, hasBeenActive: true } });
+} catch (_) {}
+
 // Install on globalThis so unqualified `document.X` and `window.X` work.
 // NOTE: `self.location` is read-only in a worker (WorkerLocation), so don't
 // reassign it — emscripten reads location.href via the native one, which has

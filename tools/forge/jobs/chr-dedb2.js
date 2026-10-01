@@ -16,9 +16,10 @@ const ELEV = 30;
 
 function setArm(A, x, z, ex = 0, ez = 0) { A.sh.rotation.set(x, 0, -A.side * z); A.el.rotation.set(ex, 0, -A.side * ez); }
 function setLeg(L, x, z, knee, ankle = 0.3, y = 0) { L.hip.rotation.set(x, y, -L.side * z); L.knee.rotation.set(knee, 0, 0); L.ankle.rotation.set(ankle, 0, 0); }
-// A knee fallen outward with the shin flat on the floor: the thigh turned out about its own axis,
-// then abducted, then dipped toward the floor (drop: + on the back, - face down).
-function frogLeg(L, abduct, knee, drop, ankle = 0.4) { L.hip.rotation.set(drop, -L.side * 1.45, -L.side * abduct, 'XZY'); L.knee.rotation.set(knee, 0, 0); L.ankle.rotation.set(ankle, 0, 0); }
+// A knee fallen outward with the shin flat on the floor: the thigh turned out a quarter turn about
+// its own axis (so the knee bends in the floor plane), then abducted, then dipped toward the floor
+// (drop: + on the back, - face down; settleBody finishes the job).
+function frogLeg(L, abduct, knee, drop, ankle = 0.4, turn = Math.PI / 2) { L.hip.rotation.set(drop, -L.side * turn, -L.side * abduct, 'XZY'); L.knee.rotation.set(knee, 0, 0); L.ankle.rotation.set(ankle, 0, 0); }
 function blood(R, part, r = 0.45, off = V3(), seed = 1) {
   R.sync();
   const p = R[part].getWorldPosition(V3()); R.root.worldToLocal(p);
@@ -43,7 +44,7 @@ export default async function (F, params = {}) {
         setArm(R.arms[0], -0.2, 2.3, 0, 0.55);
         setArm(R.arms[1], 0.14, 0.85, 0, 0.35);
         setLeg(R.legs[0], 0.08, 0.1, 0.12, 0.5);
-        frogLeg(R.legs[1], 0.45, 1.3, 0.1);
+        frogLeg(R.legs[1], 0.7, 1.35, 0.1, 0.4);
         R.hands[0].pose(0.35, 0.4); R.hands[1].pose(0.55, 0.2);
         settleBody(R);
         blood(R, 'chest', 0.5, V3(0.05, 0, -0.08), 41);
@@ -71,7 +72,7 @@ export default async function (F, params = {}) {
         setArm(R.arms[0], 0.15, 1.6, 0, 1.4);
         setArm(R.arms[1], -0.18, 0.3, 0, 0.3);
         setLeg(R.legs[0], -0.1, 0.08, 0.1, 0.9);
-        frogLeg(R.legs[1], 0.55, 1.4, -0.1, 0.6);
+        frogLeg(R.legs[1], 0.75, 1.4, -0.1, 0.6);
         R.hands[0].pose(0.4, 0.4); R.hands[1].pose(0.5, 0.2);
         R.coatK = 0.8; R.coatFlare = 0;
         settleBody(R);

@@ -522,13 +522,13 @@ export function paintFlash({ at, dir = [0, -1], len = 120, width = 60, endOn = 0
 // ------------------------------------------------------------------ pickups (world sprites)
 // Renders a model lying on the floor with the forge spriteSet (rot 0) in a lit
 // scene with the studio environment. model.root: feet at origin.
-export async function pickup(F, { prefix, frames = 'A', model, bounds = { w: 1.0, top: 0.5, bottom: -0.05 }, elev = 25, env = 'studio', dir = 'sprites/items', lights, pxPerM = 64, ss = 4 }) {
+export async function pickup(F, { prefix, frames = 'A', model, bounds = { w: 1.0, top: 0.5, bottom: -0.05 }, elev = 25, env = 'studio', dir = 'sprites/items', lights, pxPerM = 64, ss = 4, sink = 1 }) {
   const scene = new THREE.Scene();
   if (env) scene.environment = studioEnv(F.renderer, env);
-  if (lights) lights(scene); else F.lightRig(scene, { hemi: 0.9, key: 2.2, fill: 0.6, rim: 0.9 });
+  if (lights) lights(scene); else F.lightRig(scene, { hemi: 1.5, key: 2.8, fill: 0.9, rim: 1.3 });
   scene.add(model.root);
   const fr = typeof frames === 'string' ? [...frames].map((f) => ({ f, rot: 0 })) : frames.map((f) => (typeof f === 'string' ? { f, rot: 0 } : { rot: 0, ...f }));
-  const r = await F.spriteSet({ prefix, dir, model, frames: fr, rotations: 0, bounds, elev, pxPerM, ss, scene });
+  const r = await F.spriteSet({ prefix, dir, model, frames: fr, rotations: 0, bounds, elev, pxPerM, ss, scene, sink });
   scene.remove(model.root);
   return r;
 }

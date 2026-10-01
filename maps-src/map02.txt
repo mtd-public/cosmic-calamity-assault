@@ -53,9 +53,9 @@ m  room floor=8 ceil=128 ff=CARPETR cf=LABCEIL wall=WOODPANL light=120 color=#ff
 r  room floor=8 ceil=112 ff=CARPETR cf=LABCEIL wall=WOODPANL light=104                    ; motel rooms
 h  room floor=8 ceil=128 ff=LABTILE cf=LABCEIL wall=STOREFR1 light=112                    ; diner
 ; ---- alleys, plaza
--  room floor=0 ceil=384 sky ff=ASPHALT wall=BRICKDRK light=104
-e  room floor=0 ceil=384 sky ff=ASPHALT wall=BRICKDRK light=104 slab=128..136 slabtop=GRATEFLR slabbot=METLFLR slabside=SUPPORT
-E  stairs dir=E floor=0 top=128 ceil=384 sky ff=GRATEFLR riser=SUPPORT wall=BRICKDRK light=104 ; fire escape stairs
+-  room floor=0 ceil=384 sky ff=ASPHALT wall=BRICKDRK light=116
+e  room floor=0 ceil=384 sky ff=ASPHALT wall=BRICKDRK light=116 slab=128..136 slabtop=GRATEFLR slabbot=METLFLR slabside=SUPPORT
+E  stairs dir=E floor=0 top=128 ceil=384 sky ff=GRATEFLR riser=SUPPORT wall=BRICKDRK light=116 ; fire escape stairs
 R  room floor=136 ceil=384 sky ff=ROOFTAR wall=BRICKDRK lower=BRICKDRK light=112 secret
 P  room floor=0 ceil=448 sky ff=SIDEWALK wall=MARBLE light=136
 F  room floor=16 ceil=448 sky ff=MARBFLR wall=MARBLE lower=MARBLE light=144               ; fountain rim

@@ -421,6 +421,10 @@ function makeLines(lv) {
         line.flags.playeruse = true;
         if (!m.props.once) line.flags.repeatspecial = true;
         line.role = 'switch';
+        if (m.props.lock) {
+          if (!(m.props.lock in LOCKS)) lv.err(`switch '${m.char}': lock=${m.props.lock} (blue|red|yellow)`, m.line);
+          else { line.locknumber = LOCKS[m.props.lock]; line.lockKey = String(m.props.lock); }
+        }
         const mid = [(e.a[0] + e.b[0]) / 2, (e.a[1] + e.b[1]) / 2];
         lv.switches.push({ mark: m, cell: sol.cell, special: m.special.special, args: line.args, pos: mid, sector: S, line });
         if (line.args[0] === 0 && !/^Exit_/.test(m.special.special)) lv.err(`switch '${m.char}' runs ${m.special.special} with tag 0 (a switch needs a tag)`, m.line);

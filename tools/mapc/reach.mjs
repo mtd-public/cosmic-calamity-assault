@@ -186,7 +186,7 @@ export function checkLevel(lv) {
       triggers.push({ ...base, kind: 'monster', effect: m.effect || null, rad: boss ? 320 : 128, requires: m.shieldObj || 0, objective: m.deathObj || 0 });
     }
   }
-  for (const sw of lv.switches) triggers.push({ kind: 'use', rad: 40, x: sw.pos[0], y: sw.pos[1], z: sw.sector.floor + 32, effect: { special: sw.line.special, args: sw.args }, name: `switch '${sw.mark.char}'@${sw.cell.c},${sw.cell.r}` });
+  for (const sw of lv.switches) triggers.push({ kind: 'use', rad: 40, x: sw.pos[0], y: sw.pos[1], z: sw.sector.floor + 32, effect: { special: sw.line.special, args: sw.args }, needKey: sw.line.lockKey || null, name: `switch '${sw.mark.char}'@${sw.cell.c},${sw.cell.r}` });
   const enterSectors = new Map();
   for (const l of lv.lines) if (l.role === 'trigger') enterSectors.set(l.trigger.id, l);
   for (const [sid, l] of enterSectors) triggers.push({ kind: 'enter', sid, effect: { special: l.special, args: l.args }, name: `enter '${secById[sid].char}'@${secById[sid].pieces[0].c},${secById[sid].pieces[0].r}` });
@@ -229,6 +229,7 @@ export function checkLevel(lv) {
   function reachedTrigger(tr, at, seen, st) {
     if (tr.kind === 'item') return near(at, tr.x, tr.y, tr.z, 24, -16, 56);
     if (tr.kind === 'use') {
+      if (tr.needKey && !st.keys.has(tr.needKey)) return false;
       if (tr.gate) { const need = tr.gate.mask; for (let b = 0; b < 16; b++) if ((need >> b) & 1 && !st.objectives.has(b + 1)) return false; }
       return near(at, tr.x, tr.y, tr.z, tr.rad || 48, -24, 72);
     }

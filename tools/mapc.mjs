@@ -56,7 +56,7 @@
 //   marks                           single-char stamps used inside the grid
 //     @  PlayerStart angle=N        a thing at the cell centre; the floor under it is inferred from
 //     t  Thrall angle=S skill=345   its neighbours (or on=<char>). Thing keys below.
-//     s  switch Door_Open(@vault,16) tex=SW1LAB [once] [on=<solid char>]
+//     s  switch Door_Open(@vault,16) tex=SW1LAB [once] [on=<solid char>] [lock=blue|red|yellow]
 //                                   a wall cell whose faces are use-switch lines
 //   end
 //

@@ -26,6 +26,7 @@ export function writeTextmap(lv) {
       l.args.forEach((a, i) => { if (a) kv.push(`arg${i} = ${a | 0};`); });
     }
     if (l.id) kv.push(`id = ${l.id};`);
+    if (l.locknumber) kv.push(`locknumber = ${l.locknumber};`);
     lineBlocks.push(`linedef // ${l.role}\n{\n${kv.map((s) => '  ' + s).join('\n')}\n}`);
   }
   verts.forEach((p) => out.push(`vertex { x = ${fmtNum(p[0])}; y = ${fmtNum(p[1])}; }`));

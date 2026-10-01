@@ -4,7 +4,7 @@
 //   waveThanks(R)                standing, waving with an open hand, relieved
 //   waveOn(R)                    pointing the player on ("go, that way"), looking where it points
 //   pointHand(h)                 index finger out, the rest curled
-//   groundTorso(R, parts) / settleLimb(R, joint, o) / settleBody(R, parts)
+//   groundTorso(R) / settleLimb(R, joint, o) / settleBody(R) / clampPanels(R)
 //                                lying bodies: the torso on the floor, then every limb swung down
 //                                until it just touches (no hovering hands, no feet through the floor)
 import * as THREE from 'three';
@@ -90,10 +90,23 @@ export function waveOn(R) {
 
 // ------------------------------------------------------------------ lying bodies
 const _q = new THREE.Quaternion();
-// Drop the rig so the lowest of the given torso meshes rests on the floor.
-export function groundTorso(R, parts, eps = 0.005) {
-  const m = Math.min(...parts.filter(Boolean).map((p) => R.lowestOf(p)));
-  R.rig.position.y += eps - m; R.sync();
+// Drop the rig so the torso (everything on pelvis / spine / chest except the limbs, the head and
+// coat panels: shirt, jacket, lapels, buttons, pads, tie, badge) rests on the floor.
+export function groundTorso(R, eps = 0.005) {
+  const skip = new Set([...R.legs.map((L) => L.hip), ...R.arms.map((A) => A.sh), R.neck, ...Object.values(R.coat || {})]);
+  const v = V3();
+  let min = Infinity;
+  R.sync();
+  const walk = (o) => {
+    if (skip.has(o) || !o.visible) return;
+    if (o.isMesh && !o.userData.noGround) {
+      const p = o.geometry.attributes.position;
+      for (let k = 0; k < p.count; k++) { v.fromBufferAttribute(p, k).applyMatrix4(o.matrixWorld); R.root.worldToLocal(v); if (v.y < min) min = v.y; }
+    }
+    for (const c of o.children) walk(c);
+  };
+  walk(R.pelvis);
+  R.rig.position.y += eps - min; R.sync();
 }
 // Swing a joint (in its parent's frame) about the axis that carries its bone toward the floor,
 // until the lowest point of the distal part (o.measure: the next joint down, so the cap at the
@@ -135,8 +148,8 @@ export function clampPanels(R) {
 }
 // Torso down, then the head (at the neck), arms (shoulder, then elbow) and legs (hip, then knee),
 // then the coat panels re-follow the legs and are kept out of the floor.
-export function settleBody(R, parts) {
-  groundTorso(R, parts);
+export function settleBody(R) {
+  groundTorso(R);
   settleLimb(R, R.neck, { dir: V3(0, 1, 0), measure: R.head, target: 0.01, max: 0.5 });
   for (const A of R.arms) { settleLimb(R, A.sh, { measure: A.el }); settleLimb(R, A.el, { measure: A.wrist, max: 0.6 }); }
   for (const L of R.legs) { settleLimb(R, L.hip, { measure: L.knee }); settleLimb(R, L.knee, { measure: L.ankle, max: 0.6 }); }

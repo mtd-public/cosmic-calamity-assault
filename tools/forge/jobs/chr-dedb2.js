@@ -45,7 +45,7 @@ export default async function (F, params = {}) {
         setLeg(R.legs[0], 0.08, 0.1, 0.12, 0.5);
         frogLeg(R.legs[1], 0.45, 1.3, 0.1);
         R.hands[0].pose(0.35, 0.4); R.hands[1].pose(0.55, 0.2);
-        settleBody(R, [R.pieces.pelvis, R.pieces.spine, R.pieces.chest]);
+        settleBody(R);
         blood(R, 'chest', 0.5, V3(0.05, 0, -0.08), 41);
       } },
     });
@@ -74,7 +74,7 @@ export default async function (F, params = {}) {
         frogLeg(R.legs[1], 0.55, 1.4, -0.1, 0.6);
         R.hands[0].pose(0.4, 0.4); R.hands[1].pose(0.5, 0.2);
         R.coatK = 0.8; R.coatFlare = 0;
-        settleBody(R, [R.pieces.pelvis, R.pieces.spine, R.pieces.chest, R.jacket.spine, R.jacket.chest]);
+        settleBody(R);
         R.sync();
         const fp = L1.ankle.getWorldPosition(V3()); R.root.worldToLocal(fp);
         pump.position.set(fp.x + 0.28, 0.035, fp.z + 0.22);

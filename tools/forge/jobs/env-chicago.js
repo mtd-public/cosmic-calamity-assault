@@ -40,8 +40,8 @@ export default async function (F, params = {}) {
     s.grime([90, 80, 66], (u, v) => sstep(0.9, 1, v) * 0.2, { seed: 2113, fx: 16, fy: 4 });
   }, { amb: 0.55, shadow: 6, specK: 0.9 });
 
-  // ---------------------------------------------------------------- OFFCBRK: blown-out window, frame with jagged tinted glass (alpha, mid)
-  await T('OFFCBRK', 'textures', 256, 256, (s) => {
+  // ---------------------------------------------------------------- OFFCBRK: blown-out window, frame with jagged tinted glass (alpha, mid, 256 x 288)
+  await T('OFFCBRK', 'textures', 256, 288, (s) => {     // 144 units: fills MAP04's window openings
     const { w, h } = s;
     s.fill([44, 54, 58]);
     s.A.fill(0);
@@ -247,17 +247,20 @@ export default async function (F, params = {}) {
     s.A.fill(0);
     const G = CH.lgreen, A1 = { a: 1 };
     // tie ends and the guard timber along the top
+    // the deck edge is solid (the map uses the top 16 units as a 3D-floor side): dark stringer, tie ends, guard timber
+    s.rect(-2, 0, w + 2, 10, { h: 3, bevel: 0.5, op: 'max', color: [34, 28, 24], a: 1 });
     for (let x = 0; x < w; x += 16) s.rect(x + 2, 0, x + 13, 9, { h: 5, bevel: 1.5, op: 'max', color: [74, 56, 42], a: 1 });
     s.rect(-2, 3, w + 2, 7, { h: 6, bevel: 1, op: 'max', color: [62, 48, 36], a: 1 });
     // top and bottom chords
-    riveted(s, -2, 9, w + 2, 24, { h: 7, color: G, pitch: 8, inset: 3.5, a: 1 });
+    riveted(s, -2, 9, w + 2, 32, { h: 7, color: G, pitch: 8, inset: 3.5, a: 1 });
+    s.rect(-2, 18, w + 2, 20, { h: 7.5, bevel: 0.6, op: 'max', color: mixc(G, [0, 0, 0], 0.2), a: 1 });
     riveted(s, -2, 92, w + 2, 106, { h: 7, color: G, pitch: 8, inset: 3.5, a: 1 });
     // lattice web: posts every 64 px, double diagonal lacing
-    for (let x = 0; x <= w; x += 64) riveted(s, x - 5, 24, x + 5, 92, { h: 8, color: CH.lgreenDk, pitch: 9, inset: 2.5, a: 1 });
+    for (let x = 0; x <= w; x += 64) riveted(s, x - 5, 32, x + 5, 92, { h: 8, color: CH.lgreenDk, pitch: 9, inset: 2.5, a: 1 });
     for (let x = 0; x < w; x += 32) {
-      s.seg(x + 2, 26, x + 30, 90, 3, { h: 5, bevel: 1, op: 'max', color: G, a: 1 });
-      s.seg(x + 30, 26, x + 2, 90, 3, { h: 4.5, bevel: 1, op: 'max', color: mixc(G, [0, 0, 0], 0.12), a: 1 });
-      s.bolt(x + 16, 58, 1.8, { h: 1.2, color: G });
+      s.seg(x + 2, 34, x + 30, 90, 3, { h: 5, bevel: 1, op: 'max', color: G, a: 1 });
+      s.seg(x + 30, 34, x + 2, 90, 3, { h: 4.5, bevel: 1, op: 'max', color: mixc(G, [0, 0, 0], 0.12), a: 1 });
+      s.bolt(x + 16, 62, 1.8, { h: 1.2, color: G });
     }
     // lattice column under the girder: two channels with zigzag lacing and batten plates
     const cx = 128;
@@ -282,26 +285,28 @@ export default async function (F, params = {}) {
       s.C[i * 3] *= k; s.C[i * 3 + 1] *= k; s.C[i * 3 + 2] *= k;
       if (r2 > 0.64) s.setC(i, mixc([120, 66, 36], [80, 46, 30], hash(x, y, 2163)), sstep(0.64, 0.72, r2) * 0.85);
     });
-    s.streaks([110, 62, 34], { amount: 0.45, fx: 32, seed: 2164, len: 0.2, start: () => 24 / 256 });
+    s.streaks([110, 62, 34], { amount: 0.45, fx: 32, seed: 2164, len: 0.2, start: () => 32 / 256 });
     s.edgeWear([90, 120, 100], 0.6, 1, 2165);
   }, { ao: [[1.5, 0.25], [4, 0.1]], shadow: 6, shadowK: 0.5, specK: 0.8, amb: 0.5 });
 
-  // ---------------------------------------------------------------- LTRAIN: a CTA "L" car side (512 x 256), lit inside
-  await T('LTRAIN', 'textures', 512, 256, (s) => {
-    const { w, h } = s;
+  // ---------------------------------------------------------------- LTRAIN: a CTA "L" car side (512 x 288 = 144 units, the MAP04 slab sides), lit inside
+  await T('LTRAIN', 'textures', 512, 288, (s) => {
+    const { w, h } = s, dy = 32;              // the extra 16 units go into a taller roof and letterboard
     const steel = [176, 180, 182];
     s.fill([22, 22, 24], 0.2);
     // body shell (car from x = 6 to 486; the gap between cars to 512)
-    const bx0 = 6, bx1 = 486, roof = 10, floor = 206;
+    const bx0 = 6, bx1 = 486, roof = 10, floor = 206 + dy;
     s.rect(bx0, roof, bx1, floor, { h: 8, bevel: 4, op: 'set', color: steel, spec: 0.8, r: 8 });
     s.each((u, v, x, y, i) => {
       if (x < bx0 || x >= bx1 || y < roof || y >= floor) return;
       const b = fbm(u, v, 128, 2, 2, 2171), k = 0.9 + b * 0.12 - (y < roof + 24 ? (roof + 24 - y) * 0.012 : 0);
       s.C[i * 3] *= k; s.C[i * 3 + 1] *= k; s.C[i * 3 + 2] *= k;
-      if (y > 138 && y < floor - 6) { const f = mod(x, 6); s.H[i] += f < 3 ? 1.2 : 0; if (f === 0 || f === 3) { s.C[i * 3] *= 0.85; s.C[i * 3 + 1] *= 0.85; s.C[i * 3 + 2] *= 0.85; } }
+      if (y > 138 + dy && y < floor - 6) { const f = mod(x, 6); s.H[i] += f < 3 ? 1.2 : 0; if (f === 0 || f === 3) { s.C[i * 3] *= 0.85; s.C[i * 3 + 1] *= 0.85; s.C[i * 3 + 2] *= 0.85; } }
     });
     // roof cove, rain gutter, letterboard
     hband(s, roof + 22, roof + 25, { h: 10, bevel: 1, op: 'max', color: [130, 134, 136], spec: 0.8 });
+    hband(s, roof + 50, roof + 52, { h: 9, bevel: 0.8, op: 'max', color: [150, 154, 156], spec: 0.8 });
+    for (let x = 40; x < bx1 - 20; x += 110) s.rect(x, roof + 4, x + 40, roof + 14, { h: 9, bevel: 2, op: 'max', color: [120, 124, 126], spec: 0.6 });   // roof vents
     // interior seen through the windows: lit fluorescent ceiling, seats, poles, a passenger or two
     const interior = (x, y, x0, y0, x1, y1) => {
       const ly = (y - y0) / (y1 - y0);
@@ -316,26 +321,26 @@ export default async function (F, params = {}) {
       s.rect(x0 - 3, y0 - 3, x1 + 3, y1 + 3, { h: 6, bevel: 2, op: 'set', color: [26, 26, 26], r: 5 });
       s.rect(x0, y0, x1, y1, { h: 3, bevel: 1, op: 'set', r: 4, fn: (i, cov, t, d, px, py) => { const c = interior(px, py, x0, y0, x1, y1); s.setC(i, c, cov); s.addE(i, c, cov * 0.45); s.S[i] = 1; } });
     };
-    for (const [x0, x1] of [[24, 98], [106, 180], [296, 370], [378, 452]]) win(x0, 62, x1, 120);
+    for (const [x0, x1] of [[24, 98], [106, 180], [296, 370], [378, 452]]) win(x0, 62 + dy, x1, 120 + dy);
     // the doors (bi-parting) with their windows and an indicator light
     const d0 = 196, d1 = 278;
-    s.rect(d0 - 4, 40, d1 + 4, floor, { h: 5, bevel: 2, op: 'set', color: [40, 40, 42] });
+    s.rect(d0 - 4, 40 + dy, d1 + 4, floor, { h: 5, bevel: 2, op: 'set', color: [40, 40, 42] });
     for (const [x0, x1] of [[d0, (d0 + d1) / 2 - 1], [(d0 + d1) / 2 + 1, d1]]) {
-      s.rect(x0, 44, x1, floor - 2, { h: 7, bevel: 1.5, op: 'set', color: mixc(steel, [0, 0, 0], 0.06), spec: 0.8 });
-      win(x0 + 6, 62, x1 - 6, 126);
+      s.rect(x0, 44 + dy, x1, floor - 2, { h: 7, bevel: 1.5, op: 'set', color: mixc(steel, [0, 0, 0], 0.06), spec: 0.8 });
+      win(x0 + 6, 62 + dy, x1 - 6, 126 + dy);
     }
-    const lm = s.mask((g) => { g.fillRect((d0 + d1) / 2 - 8, 30, 16, 6); }, { wrap: false });
+    const lm = s.mask((g) => { g.fillRect((d0 + d1) / 2 - 8, 30 + dy, 16, 6); }, { wrap: false });
     s.apply(lm, { h: 9, op: 'set', color: [255, 190, 80], E: [255, 160, 40], eAlpha: 0.8 }); s.glow(lm, [255, 160, 40], 4, 0.4);
     // stripes and lettering
-    hband(s, 128, 132, { op: 'set', h: 8, color: [180, 30, 36] });
-    hband(s, 133, 136, { op: 'set', h: 8, color: [30, 60, 150] });
+    hband(s, 128 + dy, 132 + dy, { op: 'set', h: 8, color: [180, 30, 36] });
+    hband(s, 133 + dy, 136 + dy, { op: 'set', h: 8, color: [30, 60, 150] });
     for (const [x0, x1] of [[bx1, w + 2], [-2, bx0]]) s.rect(x0, 0, x1, h, { h: 0, op: 'set', color: [10, 10, 12] });
     hband(s, 0, roof, { op: 'set', h: 0, color: [12, 12, 14] });
-    s.apply(textMask(s, '2731', 452, 160, { font: font(12), align: 'right' }), { color: [24, 24, 26] });
+    s.apply(textMask(s, '2731', 452, 160 + dy, { font: font(12), align: 'right' }), { color: [24, 24, 26] });
     // route sign in the first window
-    s.rect(30, 66, 92, 82, { h: 4, op: 'set', color: [20, 20, 20] });
-    s.rect(32, 68, 42, 80, { h: 4, op: 'set', color: [120, 72, 40] });
-    const rs = textMask(s, 'LOOP', 68, 79, { font: font(11), align: 'center' }); s.apply(rs, { color: [255, 230, 160], E: [255, 210, 120], eAlpha: 0.7 });
+    s.rect(30, 66 + dy, 92, 82 + dy, { h: 4, op: 'set', color: [20, 20, 20] });
+    s.rect(32, 68 + dy, 42, 80 + dy, { h: 4, op: 'set', color: [120, 72, 40] });
+    const rs = textMask(s, 'LOOP', 68, 79 + dy, { font: font(11), align: 'center' }); s.apply(rs, { color: [255, 230, 160], E: [255, 210, 120], eAlpha: 0.7 });
     // underframe, trucks and wheels
     s.rect(bx0 + 4, floor, bx1 - 4, floor + 18, { h: 5, bevel: 1.5, op: 'set', color: [36, 36, 38] });
     for (const tx of [70, 400]) {
@@ -345,7 +350,7 @@ export default async function (F, params = {}) {
     s.rect(-2, h - 4, w + 2, h, { h: 1, op: 'set', color: [100, 100, 104], spec: 0.9 });          // the running rail
     // grime: road dirt low on the body, streaks from the roof
     s.grime([90, 84, 72], (u, v) => sstep(0.6, 0.82, v) * 0.35, { seed: 2173, fx: 16, fy: 4 });
-    s.streaks([120, 112, 96], { amount: 0.3, fx: 48, seed: 2174, len: 0.3, start: () => 36 / 256 });
+    s.streaks([120, 112, 96], { amount: 0.3, fx: 48, seed: 2174, len: 0.3, start: () => (36 + dy) / h });
   }, { specK: 1.1, shadow: 6, amb: 0.5 });
 
   // ---------------------------------------------------------------- GRANITE: Loop granite ashlar (pink-grey, 2 m x 1 m blocks)
@@ -461,70 +466,107 @@ export default async function (F, params = {}) {
     s.grain(0.015, 2205);
   }, { specK: 1.2, specPow: 30, shadow: 3, amb: 0.6 });
 
-  // ---------------------------------------------------------------- CHITHEA: the Chicago Theatre marquee and its vertical sign (512 x 256)
-  await T('CHITHEA', 'textures', 512, 256, (s) => {
+  // ---------------------------------------------------------------- CHITHEA: the Chicago Theatre, one facade for MAP04's 640-unit wall (512 x 1280,
+  // top-pegged: y = 0 is the wall top at 640, the bottom is the street). The marquee and the doors fill the bottom ~140
+  // units; the six-storey vertical C-H-I-C-A-G-O sign runs up the terracotta front in front of the great arch.
+  await T('CHITHEA', 'textures', 512, 1280, (s) => {
     const { w, h } = s;
-    // terracotta facade with the great arch window behind the sign
+    // cream terracotta blocks
     s.fill([214, 204, 180], 0.4);
     s.each((u, v, x, y, i) => {
-      const n = fbm(u, v, 6, 6, 4, 2211), k = 0.88 + n * 0.14;
+      const n = fbm(u, v, 6, 15, 4, 2211), k = 0.88 + n * 0.14;
       s.C[i * 3] *= k; s.C[i * 3 + 1] *= k; s.C[i * 3 + 2] *= k;
       if (mod(y, 24) === 0 || mod(x + (Math.floor(y / 24) % 2) * 24, 48) === 0) { s.H[i] -= 0.6; s.setC(i, [150, 140, 120], 0.5); }
     });
-    const ax = 256, ay = 150, aR = 170;
-    s.stamp((px, py) => Math.max(Math.hypot(px - ax, py - ay) - aR, py - 200), [ax - aR - 4, 0, ax + aR + 4, 200], { h: -5, bevel: 3, op: 'add', color: [140, 128, 108] });
-    s.stamp((px, py) => Math.max(Math.hypot(px - ax, py - ay) - (aR - 14), py - 200), [ax - aR, 0, ax + aR, 200], {
-      h: -8, bevel: 2, op: 'add', fn: (i, cov, t, d, px, py) => {
-        // mullioned arch glazing, warm-lit
-        const lx = px - ax, ly = py - ay, rr = Math.hypot(lx, ly), a = Math.atan2(ly, lx);
-        const bar = mod(px - ax, 28) < 3 || mod(py, 34) < 3;
-        const c = bar ? [46, 34, 26] : mixc([200, 140, 80], [96, 56, 36], clamp(rr / aR)) .map((q) => q * (0.85 + hash(Math.floor((px - ax) / 28), Math.floor(py / 34), 2213) * 0.3));
-        s.setC(i, c, cov); if (!bar) s.addE(i, c, cov * 0.2);
+    // cornice, dentils and parapet at the top
+    s.rect(-2, 0, w + 2, 30, { h: 6, bevel: 2, op: 'max', color: [222, 212, 188] });
+    s.rect(-2, 30, w + 2, 46, { h: 12, bevel: 3, prof: 'round', op: 'max', color: [230, 220, 196], spec: 0.5 });
+    for (let x = 2; x < w; x += 10) s.rect(x, 46, x + 6, 54, { h: 9, bevel: 1, op: 'max', color: [220, 210, 186] });
+    s.rect(-2, 54, w + 2, 60, { h: 7, bevel: 1, op: 'max', color: [206, 196, 172] });
+    // side bays: a window per storey, lit here and there
+    const bays = [[14, 82], [430, 498]];
+    for (const [x0, x1] of bays) for (let k = 0; k < 5; k++) {
+      const y0 = 110 + k * 180, y1 = y0 + 116, lit = hash(x0, k, 2216) < 0.45;
+      s.rect(x0 - 4, y0 - 4, x1 + 4, y1 + 4, { h: -2, op: 'add', bevel: 2, color: [196, 186, 162] });
+      s.rect(x0, y0, x1, y1, {
+        h: -5, op: 'set', bevel: 1, fn: (i, cov, t, d, px, py) => {
+          const ly = (py - y0) / (y1 - y0), bar = Math.abs(px - (x0 + x1) / 2) < 1.5 || Math.abs(py - (y0 + y1) / 2) < 1.5;
+          const c = bar ? [210, 200, 176] : lit ? mixc([236, 200, 130], [150, 110, 70], ly) : mixc([40, 46, 60], [18, 20, 28], ly);
+          s.setC(i, c, cov); s.S[i] = 1; if (lit && !bar) s.addE(i, c, cov * 0.4);
+        },
+      });
+      s.rect(x0 - 6, y1 + 4, x1 + 6, y1 + 12, { h: 8, bevel: 2, op: 'max', color: [230, 220, 196] });   // sill
+    }
+    // fluted pilasters framing the arch
+    for (const x of [108, 404]) { s.rect(x - 14, 60, x + 14, 1000, { h: 9, bevel: 3, op: 'max', color: [224, 214, 190] }); for (const f of [-8, -2, 4]) s.rect(x + f, 60, x + f + 2, 1000, { h: 1.6, op: 'sub', bevel: 1 }); s.rect(x - 18, 60, x + 18, 84, { h: 12, bevel: 3, op: 'max', color: [230, 220, 196] }); }
+    // the great arch: mullioned glazing, warm-lit, with the round window near the top
+    const ax = 256, ay = 300, aR = 130, aBot = 990;
+    const archD = (px, py) => Math.max(py < ay ? Math.hypot(px - ax, py - ay) - aR : Math.abs(px - ax) - aR, py - aBot);
+    s.stamp((px, py) => archD(px, py) - 12, [ax - aR - 14, ay - aR - 14, ax + aR + 14, aBot], { h: 8, bevel: 3, op: 'max', color: [228, 218, 194] });
+    s.stamp(archD, [ax - aR, ay - aR, ax + aR, aBot], {
+      h: -8, bevel: 2, op: 'set', fn: (i, cov, t, d, px, py) => {
+        const rr = Math.hypot(px - ax, py - 250);
+        let bar = mod(px - ax, 34) < 3 || mod(py, 46) < 3, c;
+        if (rr < 92) { const a = Math.atan2(py - 250, px - ax); bar = rr > 86 || rr < 18 || Math.abs(mod(a * 12 / Math.PI + 0.5, 1) - 0.5) < 0.09; c = bar ? [60, 44, 30] : mixc([255, 214, 140], [210, 120, 60], rr / 92); }
+        else c = bar ? [46, 34, 26] : mixc([196, 136, 76], [92, 54, 34], clamp((py - 120) / 900)).map((q) => q * (0.85 + hash(Math.floor((px - ax) / 34), Math.floor(py / 46), 2213) * 0.3));
+        s.setC(i, c, cov); if (!bar) s.addE(i, c, cov * 0.25);
       },
     });
-    // the round window medallion at the top of the arch
-    s.ring(ax, 34, 26, 8, { h: 6, bevel: 3, prof: 'round', op: 'max', color: [222, 212, 186] });
-    // keystone and pilasters
-    s.poly([[ax - 14, 0], [ax + 14, 0], [ax + 9, 22], [ax - 9, 22]], { h: 8, bevel: 2, op: 'max', color: [226, 216, 192] });
-    for (const x of [ax - aR - 22, ax + aR + 22]) { s.rect(x - 14, -2, x + 14, h + 2, { h: 8, bevel: 3, op: 'max', color: [222, 212, 188] }); for (const f of [-7, -1, 5]) s.rect(x + f, -2, x + f + 2, h + 2, { h: 1.4, op: 'sub', bevel: 1 }); }
-    // ---- the vertical sign: red-orange panel, chaser bulbs, C-H-I-C-A-G-O in white bulbs
-    const sx0 = 222, sx1 = 290, sy0 = 8, sy1 = 166;
-    s.rect(sx0 - 4, sy0 - 4, sx1 + 4, sy1 + 4, { h: 16, bevel: 3, op: 'max', color: [120, 36, 20], r: 6 });
-    s.rect(sx0, sy0, sx1, sy1, { h: 17, bevel: 1.5, op: 'max', color: [220, 82, 30], r: 4 });
-    s.poly([[sx0 - 2, sy0 + 2], [(sx0 + sx1) / 2, sy0 - 6], [sx1 + 2, sy0 + 2]], { h: 17, bevel: 1, op: 'max', color: [200, 160, 60] });
+    s.ring(ax, 250, 96, 10, { h: 6, bevel: 3, prof: 'round', op: 'max', color: [226, 216, 190] });
+    s.poly([[ax - 18, ay - aR - 16], [ax + 18, ay - aR - 16], [ax + 12, ay - aR + 14], [ax - 12, ay - aR + 14]], { h: 12, bevel: 2, op: 'max', color: [232, 222, 198] });   // keystone
+    // ---- the vertical sign: red-orange, chaser-bulb border, C-H-I-C-A-G-O in white bulbs, a crown on top
+    const sx0 = 200, sx1 = 312, sy0 = 112, sy1 = 990;
+    s.rect(sx0 - 6, sy0 - 6, sx1 + 6, sy1, { h: 18, bevel: 3, op: 'max', color: [120, 36, 20], r: 6 });
+    s.rect(sx0, sy0, sx1, sy1, { h: 19, bevel: 1.5, op: 'max', color: [222, 84, 30], r: 4 });
+    s.poly([[sx0 - 8, sy0 - 4], [sx0 + 10, sy0 - 30], [(sx0 + sx1) / 2, sy0 - 52], [sx1 - 10, sy0 - 30], [sx1 + 8, sy0 - 4]], { h: 19, bevel: 2, op: 'max', color: [206, 160, 60], spec: 0.6 });
+    s.circle((sx0 + sx1) / 2, sy0 - 26, 10, { h: 21, bevel: 4, prof: 'round', op: 'max', color: [230, 70, 30] });
     const bulbs = (draw) => s.mask(draw, { wrap: false });
-    // chaser border
-    const border = bulbs((g) => { for (let y = sy0 + 6; y < sy1 - 2; y += 7) for (const x of [sx0 + 5, sx1 - 5]) { g.beginPath(); g.arc(x, y, 1.9, 0, 7); g.fill(); } for (let x = sx0 + 11; x < sx1 - 6; x += 7) for (const y of [sy0 + 5, sy1 - 5]) { g.beginPath(); g.arc(x, y, 1.9, 0, 7); g.fill(); } });
-    s.apply(border, { h: 18, op: 'max', color: [255, 236, 170], E: [255, 210, 120], eAlpha: 0.9 });
-    s.glow(border, [255, 170, 60], 3, 0.35);
-    // letters: white bulb-studded strokes
-    const letters = 'CHICAGO', lh = (sy1 - sy0 - 16) / 7;
+    const border = bulbs((g) => { for (let y = sy0 + 8; y < sy1 - 4; y += 9) for (const x of [sx0 + 7, sx1 - 7]) { g.beginPath(); g.arc(x, y, 2.4, 0, 7); g.fill(); } for (let x = sx0 + 16; x < sx1 - 8; x += 9) for (const y of [sy0 + 7]) { g.beginPath(); g.arc(x, y, 2.4, 0, 7); g.fill(); } });
+    s.apply(border, { h: 20, op: 'max', color: [255, 236, 170], E: [255, 210, 120], eAlpha: 0.9 });
+    s.glow(border, [255, 170, 60], 4, 0.35);
+    const letters = 'CHICAGO', lh = (sy1 - sy0 - 24) / 7;
     const lm = s.mask((g) => {
-      g.font = `bold ${Math.round(lh * 1.08)}px "DejaVu Sans", sans-serif`; g.textAlign = 'center'; g.textBaseline = 'middle';
-      [...letters].forEach((c, k) => { g.save(); g.translate((sx0 + sx1) / 2, sy0 + 9 + lh * (k + 0.5)); g.scale(1.25, 1); g.fillText(c, 0, 1); g.restore(); });
+      g.font = `bold ${Math.round(lh * 0.86)}px "DejaVu Sans", sans-serif`; g.textAlign = 'center'; g.textBaseline = 'middle';
+      [...letters].forEach((c, k) => { g.save(); g.translate((sx0 + sx1) / 2, sy0 + 16 + lh * (k + 0.5)); g.scale(1.0, 1); g.fillText(c, 0, 3); g.restore(); });
     }, { wrap: false });
-    s.apply(lm, { h: 18, bevel: 1, op: 'max', color: [255, 248, 222], E: [255, 236, 190], eAlpha: 0.8 });
-    // bulb dots on the letters
-    s.each((u, v, x, y, i) => { if (lm[i] > 0.5 && mod(x, 3) === 1 && mod(y, 3) === 1) s.addE(i, [255, 255, 230], 0.5); });
-    s.glow(lm, [255, 200, 120], 5, 0.5);
-    // ---- the marquee: pediment with CHICAGO, a backlit letter board, bulb soffit
-    const my0 = 186, my1 = 236, mx0 = 34, mx1 = 478;
-    s.poly([[mx0 + 120, my0], [256, 166], [mx1 - 120, my0]], { h: 20, bevel: 2, op: 'max', color: [196, 120, 40] });
-    s.rect(mx0, my0, mx1, my1, { h: 20, bevel: 2, op: 'max', color: [150, 96, 40], spec: 0.6 });
-    const ped = textMask(s, 'CHICAGO', 256, 183, { font: font(12), align: 'center', spacing: 2 });
-    s.apply(ped, { h: 21, op: 'max', color: [255, 244, 210], E: [255, 220, 150], eAlpha: 0.85 }); s.glow(ped, [255, 190, 90], 3, 0.4);
-    const bx0 = mx0 + 10, bx1 = mx1 - 10, by0 = my0 + 6, by1 = my1 - 8;
-    s.rect(bx0, by0, bx1, by1, { h: 21, bevel: 1, op: 'max', color: [244, 240, 226], E: [130, 126, 110], eAlpha: 0.6 });
-    const t1 = textMask(s, 'EVACUATION CENTER', 256, by0 + 15, { font: font(14), align: 'center', spacing: 2, sx: 0.9 });
-    const t2 = textMask(s, 'STAY CALM  •  STAY INDOORS', 256, by0 + 30, { font: font(11), align: 'center', spacing: 1.5, sx: 0.9 });
+    s.apply(lm, { h: 20, bevel: 1.5, op: 'max', color: [255, 248, 222], E: [255, 236, 190], eAlpha: 0.75 });
+    s.each((u, v, x, y, i) => { if (lm[i] > 0.5 && mod(x, 4) === 1 && mod(y, 4) === 1) s.addE(i, [255, 255, 230], 0.55); });
+    s.glow(lm, [255, 200, 120], 7, 0.5);
+    // ---- the marquee over the sidewalk: pediment with CHICAGO, a backlit letter board, chaser bulbs, bulb soffit
+    const my0 = 1010, my1 = 1104, mx0 = 26, mx1 = 486;
+    s.poly([[mx0 + 110, my0], [256, 976], [mx1 - 110, my0]], { h: 22, bevel: 2, op: 'max', color: [196, 120, 40] });
+    s.rect(mx0, my0, mx1, my1, { h: 22, bevel: 2, op: 'max', color: [150, 96, 40], spec: 0.6 });
+    const ped = textMask(s, 'CHICAGO', 256, 1004, { font: font(18), align: 'center', spacing: 3 });
+    s.apply(ped, { h: 23, op: 'max', color: [255, 244, 210], E: [255, 220, 150], eAlpha: 0.85 }); s.glow(ped, [255, 190, 90], 3, 0.4);
+    const bx0 = mx0 + 12, bx1 = mx1 - 12, by0 = my0 + 10, by1 = my1 - 12;
+    s.rect(bx0, by0, bx1, by1, { h: 23, bevel: 1, op: 'max', color: [244, 240, 226], E: [130, 126, 110], eAlpha: 0.6 });
+    const t1 = textMask(s, 'EVACUATION CENTER', 256, by0 + 30, { font: font(24), align: 'center', spacing: 3, sx: 0.9 });
+    const t2 = textMask(s, 'STAY CALM  •  STAY INDOORS', 256, by0 + 60, { font: font(17), align: 'center', spacing: 2, sx: 0.9 });
     s.apply(t1, { color: [20, 20, 22] }); s.apply(t2, { color: [150, 24, 20] });
-    const chase = bulbs((g) => { for (let x = mx0 + 4; x < mx1; x += 6) for (const y of [my0 + 2.5, my1 - 3.5]) { g.beginPath(); g.arc(x, y, 1.6, 0, 7); g.fill(); } });
-    s.apply(chase, { h: 22, op: 'max', color: [255, 240, 190], E: [255, 210, 130], eAlpha: 0.9 }); s.glow(chase, [255, 180, 80], 3, 0.3);
-    // soffit: rows of bare bulbs washing the sidewalk with light
-    s.rect(mx0 + 6, my1, mx1 - 6, my1 + 10, { h: 18, bevel: 1, op: 'max', color: [70, 52, 34] });
-    const sof = bulbs((g) => { for (let x = mx0 + 10; x < mx1 - 8; x += 8) { g.beginPath(); g.arc(x, my1 + 5, 2.2, 0, 7); g.fill(); } });
-    s.apply(sof, { h: 19, op: 'max', color: [255, 250, 220], E: [255, 236, 180], eAlpha: 1 }); s.glow(sof, [255, 210, 140], 6, 0.6);
-    s.grime([60, 50, 40], (u, v, x) => (x < 200 || x > 312 ? 0.12 : 0), { seed: 2212, fx: 8, fy: 8, contrast: 2 });
+    const chase = bulbs((g) => { for (let x = mx0 + 5; x < mx1; x += 8) for (const y of [my0 + 4, my1 - 5]) { g.beginPath(); g.arc(x, y, 2.2, 0, 7); g.fill(); } });
+    s.apply(chase, { h: 24, op: 'max', color: [255, 240, 190], E: [255, 210, 130], eAlpha: 0.9 }); s.glow(chase, [255, 180, 80], 3, 0.3);
+    s.rect(mx0 + 6, my1, mx1 - 6, my1 + 14, { h: 20, bevel: 1, op: 'max', color: [70, 52, 34] });
+    const sof = bulbs((g) => { for (let x = mx0 + 12; x < mx1 - 8; x += 10) { g.beginPath(); g.arc(x, my1 + 7, 3, 0, 7); g.fill(); } });
+    s.apply(sof, { h: 21, op: 'max', color: [255, 250, 220], E: [255, 236, 180], eAlpha: 1 }); s.glow(sof, [255, 210, 140], 8, 0.6);
+    // ---- street level: brass-framed glass doors into the lit lobby, poster cases either side, a granite base
+    const ey0 = 1124;
+    s.rect(-2, my1 + 14, w + 2, h + 2, { fn: (i, cov, t, d, px, py) => { const k = 1 + 0.35 * Math.exp(-(py - my1 - 14) / 60); s.C[i * 3] = Math.min(255, s.C[i * 3] * k); s.C[i * 3 + 1] = Math.min(255, s.C[i * 3 + 1] * k * 0.95); s.C[i * 3 + 2] *= k * 0.85; } });   // soffit light on the wall
+    for (let k = 0; k < 6; k++) {
+      const x0 = 104 + k * 52, x1 = x0 + 48;
+      s.rect(x0, ey0, x1, h - 16, { h: 6, bevel: 2, op: 'set', color: CH.brass, spec: 0.9 });
+      s.rect(x0 + 5, ey0 + 6, x1 - 5, h - 34, {
+        h: 3, bevel: 1, op: 'set', fn: (i, cov, t, d, px, py) => { const ly = (py - ey0) / (h - ey0); const c = mixc([255, 214, 150], [170, 110, 60], ly); s.setC(i, c, cov); s.addE(i, c, cov * 0.45); s.S[i] = 1; },
+      });
+      s.rect(x0 + (k % 2 ? 6 : x1 - x0 - 12), ey0 + 70, x0 + (k % 2 ? 12 : x1 - x0 - 6), ey0 + 100, { h: 8, bevel: 1.5, prof: 'round', op: 'max', color: CH.brassLt, spec: 1 });
+    }
+    for (const [x0, x1] of [[26, 88], [424, 486]]) {
+      s.rect(x0, ey0 + 8, x1, ey0 + 112, { h: 6, bevel: 2, op: 'set', color: CH.brass, spec: 0.9 });
+      s.art((g) => { g.fillStyle = '#1a1a2a'; g.fillRect(x0 + 5, ey0 + 13, x1 - x0 - 10, 94); g.fillStyle = '#c03020'; g.font = font(11); g.textAlign = 'center'; g.fillText('CLOSED', (x0 + x1) / 2, ey0 + 45); g.fillStyle = '#f0e0b0'; g.font = font(6); g.fillText('BY ORDER OF', (x0 + x1) / 2, ey0 + 62); g.fillText('CIVIL', (x0 + x1) / 2, ey0 + 74); g.fillText('DEFENSE', (x0 + x1) / 2, ey0 + 84); }, { emissive: 0.3 });
+    }
+    s.rect(-2, h - 16, w + 2, h + 2, { h: 4, bevel: 1.5, op: 'set', color: [70, 64, 62], spec: 0.5 });
+    // soot and grime, heavier low down and under the cornice
+    s.grime([60, 50, 40], (u, v, x) => (x < 190 || x > 322 ? 0.1 + sstep(0.9, 1, v) * 0.2 : 0), { seed: 2212, fx: 8, fy: 20, contrast: 2 });
+    s.streaks([110, 100, 86], { amount: 0.35, fx: 32, seed: 2214, len: 0.12, start: () => 60 / 1280 });
   }, { specK: 0.9, shadow: 8, amb: 0.5 });
 
   // ---------------------------------------------------------------- SW1OFFC / SW2OFFC: fire alarm pull station and strobe (128 x 256)

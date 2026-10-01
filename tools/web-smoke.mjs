@@ -4,7 +4,7 @@
 // errors, keyboard and (synthetic) gamepad input move and turn the player,
 // and savegames persist across a reload. Screenshots go to shots/web/.
 //
-//   node tools/web-smoke.mjs [--site _site] [--keep]
+//   node tools/web-smoke.mjs [--site _site] [--res 960x540]
 // Without --site it assembles one into .gz/web-site from site/ + dist/ (run
 // node tools/build.mjs first). Needs Playwright with Chromium 137+ (JSPI).
 import http from 'node:http';
@@ -64,6 +64,8 @@ await context.addInitScript(() => {
     configurable: true, value() { return window.__padOn ? [window.__pad] : [null]; } });
 });
 
+// 960x540 keeps SwiftShader (software WebGL) usable; --res 1280x720 for the default.
+const RES = args.includes('--res') ? args[args.indexOf('--res') + 1] : '960x540';
 const results = [];
 const check = (name, ok, detail = '') => { results.push({ name, ok, detail }); console.log(`${ok ? 'PASS' : 'FAIL'} ${name}${detail ? ' — ' + detail : ''}`); };
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
@@ -86,6 +88,17 @@ function diff(a, b) {
   }
   return sum / n / 3;
 }
+// Hold an input for at least `ms` and `frames` rendered frames (SwiftShader
+// on a busy machine can drop to ~1 fps; the engine must see the input held).
+const hold = async (down, up, ms = 1500, frames = 6) => {
+  const f0 = (await S()).frames, t = Date.now();
+  await down();
+  await page.waitForFunction((f) => __cca.frames >= f, f0 + frames, { timeout: 60000 }).catch(() => {});
+  if (Date.now() - t < ms) await sleep(ms - (Date.now() - t));
+  await up();
+  const f1 = (await S()).frames;
+  await page.waitForFunction((f) => __cca.frames >= f, f1 + 3, { timeout: 30000 }).catch(() => {});
+};
 const key = async (code, ms = 120) => { await page.keyboard.down(code); await sleep(ms); await page.keyboard.up(code); };
 const setPad = (patch) => page.evaluate((p) => {
   if (p.axes) window.__pad.axes = p.axes;
@@ -95,7 +108,7 @@ const setPad = (patch) => page.evaluate((p) => {
 
 async function bootToTitle(tag) {
   page = await context.newPage();
-  await page.goto(BASE + '/play/?dev=1');
+  await page.goto(BASE + '/play/?dev=1&res=' + RES);
   await page.waitForFunction(() => window.__cca && ['ready', 'failed', 'unsupported'].includes(__cca.phase), null, { timeout: 180000 });
   let s = await S();
   check(`${tag}: page loads and downloads the game`, s.phase === 'ready', s.phase);
@@ -117,7 +130,10 @@ async function newGame() {
   await shot('web-3b-skill');
   await key('Enter');                              // default skill
   await page.waitForFunction(() => __cca.captured, null, { timeout: 30000 }).catch(() => {});
-  await sleep(4000);
+  // Let the screen wipe finish (frame-based: SwiftShader may run at a few fps).
+  const f0 = (await S()).frames;
+  await page.waitForFunction((f) => __cca.frames >= f, f0 + 30, { timeout: 60000 }).catch(() => {});
+  await sleep(1000);
 }
 
 const t0 = Date.now();
@@ -138,12 +154,11 @@ try {
     // FPS while idle in MAP01 (SwiftShader: software WebGL, a floor for real GPUs).
     await sleep(3000);
     s = await S();
-    check('frame rate measured', s.fps > 0, `${s.fps.toFixed(1)} fps, ${s.frameMs.toFixed(1)} ms/frame (headless SwiftShader)`);
+    check('frame rate measured', s.fps > 0, `${s.fps.toFixed(1)} fps, ${s.frameMs.toFixed(1)} ms/frame at ${RES} (headless SwiftShader)`);
 
     // Keyboard: idle drift vs holding S (MAP01 starts facing a door).
     const b = await shot('web-5a-idle');
-    await page.keyboard.down('KeyS'); await sleep(1500); await page.keyboard.up('KeyS');
-    await sleep(300);
+    await hold(() => page.keyboard.down('KeyS'), () => page.keyboard.up('KeyS'));
     const c = await shot('web-5b-after-S');
     const idle = diff(a, b), moved = diff(b, c);
     check('keyboard: S moves the player', moved > Math.max(6, idle * 2), `idle Δ ${idle.toFixed(1)}, S Δ ${moved.toFixed(1)}`);
@@ -154,21 +169,20 @@ try {
     s = await S();
     check('gamepad detected', !!s.pad, s.pad || 'none');
     const p0 = await shot('web-6a-pad-before');
-    await setPad({ axes: [0, 0, 1, 0] }); await sleep(1500); await setPad({ axes: [0, 0, 0, 0] }); await sleep(300);
+    await hold(() => setPad({ axes: [0, 0, 1, 0] }), () => setPad({ axes: [0, 0, 0, 0] }));
     const p1 = await shot('web-6b-pad-rightstick');
     const padTurn = diff(p0, p1);
     check('gamepad: right stick turns the view', padTurn > Math.max(6, idle * 2), `Δ ${padTurn.toFixed(1)}`);
-    await setPad({ axes: [-1, 0, 0, 0] }); await sleep(1500); await setPad({ axes: [0, 0, 0, 0] }); await sleep(300);
+    await hold(() => setPad({ axes: [-1, 0, 0, 0] }), () => setPad({ axes: [0, 0, 0, 0] }));
     const p2 = await shot('web-6c-pad-leftstick');
     const padMove = diff(p1, p2);
     check('gamepad: left stick strafes the player', padMove > Math.max(6, idle * 2), `Δ ${padMove.toFixed(1)}`);
     const audio0 = (await S()).audio;
-    await setPad({ buttons: { 7: 1 } }); await sleep(150);
+    await hold(() => setPad({ buttons: { 7: 1 } }), () => setPad({ buttons: { 7: 0 } }), 600, 4);
     await shot('web-6d-pad-fire');
-    await sleep(500); await setPad({ buttons: { 7: 0 } }); await sleep(300);
     const audio1 = (await S()).audio;
     check('gamepad: RT fires (weapon sound played)', audio1 > audio0, `audio buffers ${audio0} -> ${audio1}`);
-    await setPad({ buttons: { 13: 1 } }); await sleep(150); await setPad({ buttons: { 13: 0 } }); await sleep(1200);
+    await hold(() => setPad({ buttons: { 13: 1 } }), () => setPad({ buttons: { 13: 0 } }), 200, 3); await sleep(1200);
     await shot('web-6e-pad-iris');
     await page.evaluate(() => { window.__padOn = false; });
     await sleep(300);
@@ -190,15 +204,31 @@ try {
       check('savegame restored after reload', s.saves.restored > 0, `${s.saves.restored} file(s)`);
       await key('Backquote'); await sleep(400);
       await page.keyboard.type('load websmoke', { delay: 30 });
-      await key('Enter'); await sleep(400);
-      await key('Backquote');
+      await key('Enter');
+      await page.waitForFunction(() => __cca.log.some((l) => /^MAP01 - /.test(l)), null, { timeout: 30000 }).catch(() => {});
+      await sleep(1000);
+      await key('Backquote');   // GZDoom 4.11 leaves the console open after a load
       await page.waitForFunction(() => __cca.captured, null, { timeout: 30000 }).catch(() => {});
       await sleep(3000);
       s = await S();
-      check('restored savegame loads', s.captured && !s.errors.length, `captured=${s.captured}`);
+      const loaded = await page.evaluate(() => { const i = __cca.log.findIndex((l) => /load websmoke/.test(l)); return i >= 0 && __cca.log.slice(i).some((l) => /^MAP01 - /.test(l)); });
+      check('restored savegame loads', loaded && s.captured && !s.errors.length, `MAP01 reloaded=${loaded} captured=${s.captured}`);
       await shot('web-8-loaded-save');
     }
   }
+  // A browser without JSPI (Safari / iPad today) must get the message, not a download.
+  const ctx2 = await browser.newContext({ viewport: { width: 1024, height: 768 } });
+  await ctx2.addInitScript(() => { delete WebAssembly.Suspending; });
+  const p2 = await ctx2.newPage();
+  const fetched = [];
+  p2.on('request', (r) => fetched.push(r.url()));
+  await p2.goto(BASE + '/play/');
+  await p2.waitForFunction(() => window.__cca && __cca.phase !== 'init', null, { timeout: 10000 });
+  const ph = await p2.evaluate(() => __cca.phase);
+  await p2.screenshot({ path: join(OUT, 'web-9-unsupported.png') });
+  check('no JSPI: unsupported message, nothing downloaded', ph === 'unsupported' && !fetched.some((u) => /\.(wad|pk3|wasm)/.test(u)),
+    `${ph}, ${fetched.length} requests`);
+  await ctx2.close();
 } catch (e) {
   check('smoke run', false, e.message);
 } finally {

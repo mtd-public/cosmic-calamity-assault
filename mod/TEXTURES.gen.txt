@@ -191,10 +191,16 @@ WallTexture "ALNVEIN", 256, 256 { XScale 2.0 YScale 2.0 WorldPanning Patch "texs
 WallTexture "BLSTDOOR", 256, 256 { XScale 2.0 YScale 2.0 WorldPanning Patch "texsrc/walls/BLSTDOOR.png", 0, 0 }
 WallTexture "BRICKDRK", 256, 256 { XScale 2.0 YScale 2.0 WorldPanning Patch "texsrc/walls/BRICKDRK.png", 0, 0 }
 WallTexture "BRICKRED", 256, 256 { XScale 2.0 YScale 2.0 WorldPanning Patch "texsrc/walls/BRICKRED.png", 0, 0 }
+WallTexture "BUNKDOOR", 256, 256 { XScale 2.0 YScale 2.0 WorldPanning Patch "texsrc/walls/BUNKDOOR.png", 0, 0 }
+WallTexture "BUNKWALL", 512, 256 { XScale 2.0 YScale 2.0 WorldPanning Patch "texsrc/walls/BUNKWALL.png", 0, 0 }
+WallTexture "CHITHEA", 512, 256 { XScale 2.0 YScale 2.0 WorldPanning Patch "texsrc/walls/CHITHEA.png", 0, 0 }
 WallTexture "CONCWALL", 256, 256 { XScale 2.0 YScale 2.0 WorldPanning Patch "texsrc/walls/CONCWALL.png", 0, 0 }
 WallTexture "CRATEWAL", 256, 256 { XScale 2.0 YScale 2.0 WorldPanning Patch "texsrc/walls/CRATEWAL.png", 0, 0 }
+WallTexture "CUBEWALL", 256, 256 { XScale 2.0 YScale 2.0 WorldPanning Patch "texsrc/walls/CUBEWALL.png", 0, 0 }
 WallTexture "DIRTWALL", 256, 256 { XScale 2.0 YScale 2.0 WorldPanning Patch "texsrc/walls/DIRTWALL.png", 0, 0 }
+WallTexture "DULCSIGN", 512, 256 { XScale 2.0 YScale 2.0 WorldPanning Patch "texsrc/walls/DULCSIGN.png", 0, 0 }
 WallTexture "ELEVDOOR", 256, 256 { XScale 2.0 YScale 2.0 WorldPanning Patch "texsrc/walls/ELEVDOOR.png", 0, 0 }
+WallTexture "ELEVLOBY", 256, 256 { XScale 2.0 YScale 2.0 WorldPanning Patch "texsrc/walls/ELEVLOBY.png", 0, 0 }
 WallTexture "EXITSIGN", 128, 64 { XScale 2.0 YScale 2.0 WorldPanning Patch "texsrc/walls/EXITSIGN.png", 0, 0 }
 WallTexture "FENCEMID", 256, 256 { XScale 2.0 YScale 2.0 WorldPanning Patch "texsrc/walls/FENCEMID.png", 0, 0 }
 WallTexture "FENCEPOL", 256, 256 { XScale 2.0 YScale 2.0 WorldPanning Patch "texsrc/walls/FENCEPOL.png", 0, 0 }
@@ -202,6 +208,7 @@ WallTexture "GLASS1", 256, 256 { XScale 2.0 YScale 2.0 WorldPanning Patch "texsr
 WallTexture "GLASSBRK", 256, 256 { XScale 2.0 YScale 2.0 WorldPanning Patch "texsrc/walls/GLASSBRK.png", 0, 0 }
 WallTexture "GRAFFIT1", 256, 256 { XScale 2.0 YScale 2.0 WorldPanning Patch "texsrc/walls/GRAFFIT1.png", 0, 0 }
 WallTexture "GRAFFIT2", 256, 256 { XScale 2.0 YScale 2.0 WorldPanning Patch "texsrc/walls/GRAFFIT2.png", 0, 0 }
+WallTexture "GRANITE", 256, 256 { XScale 2.0 YScale 2.0 WorldPanning Patch "texsrc/walls/GRANITE.png", 0, 0 }
 WallTexture "HAZSTRIP", 256, 256 { XScale 2.0 YScale 2.0 WorldPanning Patch "texsrc/walls/HAZSTRIP.png", 0, 0 }
 WallTexture "HULLBRN", 256, 256 { XScale 2.0 YScale 2.0 WorldPanning Patch "texsrc/walls/HULLBRN.png", 0, 0 }
 WallTexture "HULLEXT", 256, 256 { XScale 2.0 YScale 2.0 WorldPanning Patch "texsrc/walls/HULLEXT.png", 0, 0 }
@@ -212,7 +219,11 @@ WallTexture "LABDOOR", 256, 256 { XScale 2.0 YScale 2.0 WorldPanning Patch "texs
 WallTexture "LABSIGN1", 512, 256 { XScale 2.0 YScale 2.0 WorldPanning Patch "texsrc/walls/LABSIGN1.png", 0, 0 }
 WallTexture "LABWALL1", 256, 256 { XScale 2.0 YScale 2.0 WorldPanning Patch "texsrc/walls/LABWALL1.png", 0, 0 }
 WallTexture "LABWALL2", 256, 256 { XScale 2.0 YScale 2.0 WorldPanning Patch "texsrc/walls/LABWALL2.png", 0, 0 }
+WallTexture "LTRACK", 256, 256 { XScale 2.0 YScale 2.0 WorldPanning Patch "texsrc/walls/LTRACK.png", 0, 0 }
+WallTexture "LTRAIN", 512, 256 { XScale 2.0 YScale 2.0 WorldPanning Patch "texsrc/walls/LTRAIN.png", 0, 0 }
+WallTexture "MACHWALL", 512, 256 { XScale 2.0 YScale 2.0 WorldPanning Patch "texsrc/walls/MACHWALL.png", 0, 0 }
 WallTexture "MARBLE", 256, 256 { XScale 2.0 YScale 2.0 WorldPanning Patch "texsrc/walls/MARBLE.png", 0, 0 }
+WallTexture "MESAWALL", 256, 256 { XScale 2.0 YScale 2.0 WorldPanning Patch "texsrc/walls/MESAWALL.png", 0, 0 }
 WallTexture "METLPANL", 256, 256 { XScale 2.0 YScale 2.0 WorldPanning Patch "texsrc/walls/METLPANL.png", 0, 0 }
 WallTexture "METLWALL", 256, 256 { XScale 2.0 YScale 2.0 WorldPanning Patch "texsrc/walls/METLWALL.png", 0, 0 }
 WallTexture "NEONARCD", 256, 128 { XScale 2.0 YScale 2.0 WorldPanning Patch "texsrc/walls/NEONARCD.png", 0, 0 }
@@ -221,12 +232,18 @@ WallTexture "NEONLIQ", 256, 128 { XScale 2.0 YScale 2.0 WorldPanning Patch "texs
 WallTexture "NEONMOTL", 256, 128 { XScale 2.0 YScale 2.0 WorldPanning Patch "texsrc/walls/NEONMOTL.png", 0, 0 }
 WallTexture "NEONPAWN", 256, 128 { XScale 2.0 YScale 2.0 WorldPanning Patch "texsrc/walls/NEONPAWN.png", 0, 0 }
 WallTexture "NEONSHOW", 512, 256 { XScale 2.0 YScale 2.0 WorldPanning Patch "texsrc/walls/NEONSHOW.png", 0, 0 }
+WallTexture "OFFCBRK", 256, 256 { XScale 2.0 YScale 2.0 WorldPanning Patch "texsrc/walls/OFFCBRK.png", 0, 0 }
+WallTexture "OFFCWALL", 256, 256 { XScale 2.0 YScale 2.0 WorldPanning Patch "texsrc/walls/OFFCWALL.png", 0, 0 }
+WallTexture "OFFCWIN", 256, 256 { XScale 2.0 YScale 2.0 WorldPanning Patch "texsrc/walls/OFFCWIN.png", 0, 0 }
 WallTexture "OFFICEWN", 256, 256 { XScale 2.0 YScale 2.0 WorldPanning Patch "texsrc/walls/OFFICEWN.png", 0, 0 }
 WallTexture "PIPEWALL", 256, 256 { XScale 2.0 YScale 2.0 WorldPanning Patch "texsrc/walls/PIPEWALL.png", 0, 0 }
 WallTexture "POSTER1", 256, 256 { XScale 2.0 YScale 2.0 WorldPanning Patch "texsrc/walls/POSTER1.png", 0, 0 }
 WallTexture "POSTERS", 256, 256 { XScale 2.0 YScale 2.0 WorldPanning Patch "texsrc/walls/POSTERS.png", 0, 0 }
 WallTexture "ROCKWAL1", 256, 256 { XScale 2.0 YScale 2.0 WorldPanning Patch "texsrc/walls/ROCKWAL1.png", 0, 0 }
 WallTexture "ROLLDOOR", 256, 256 { XScale 2.0 YScale 2.0 WorldPanning Patch "texsrc/walls/ROLLDOOR.png", 0, 0 }
+WallTexture "RUSTMETL", 256, 256 { XScale 2.0 YScale 2.0 WorldPanning Patch "texsrc/walls/RUSTMETL.png", 0, 0 }
+WallTexture "SCORCH", 256, 256 { XScale 2.0 YScale 2.0 WorldPanning Patch "texsrc/walls/SCORCH.png", 0, 0 }
+WallTexture "SHAFTWAL", 256, 256 { XScale 2.0 YScale 2.0 WorldPanning Patch "texsrc/walls/SHAFTWAL.png", 0, 0 }
 WallTexture "SHIPCONS", 256, 256 { XScale 2.0 YScale 2.0 WorldPanning Patch "texsrc/walls/SHIPCONS.png", 0, 0 }
 WallTexture "SHIPDOOR", 256, 256 { XScale 2.0 YScale 2.0 WorldPanning Patch "texsrc/walls/SHIPDOOR.png", 0, 0 }
 WallTexture "SHIPGLOW", 256, 256 { XScale 2.0 YScale 2.0 WorldPanning Patch "texsrc/walls/SHIPGLOW.png", 0, 0 }
@@ -236,8 +253,10 @@ WallTexture "SHIPPOD", 256, 256 { XScale 2.0 YScale 2.0 WorldPanning Patch "texs
 WallTexture "SHIPRIB1", 256, 256 { XScale 2.0 YScale 2.0 WorldPanning Patch "texsrc/walls/SHIPRIB1.png", 0, 0 }
 WallTexture "SHIPRIB2", 256, 256 { XScale 2.0 YScale 2.0 WorldPanning Patch "texsrc/walls/SHIPRIB2.png", 0, 0 }
 WallTexture "SKYA51", 2048, 512 { XScale 2.0 YScale 2.0 WorldPanning Patch "texsrc/walls/SKYA51.png", 0, 0 }
+WallTexture "SKYCHI", 2048, 512 { XScale 2.0 YScale 2.0 WorldPanning Patch "texsrc/walls/SKYCHI.png", 0, 0 }
 WallTexture "SKYCITY", 2048, 512 { XScale 2.0 YScale 2.0 WorldPanning Patch "texsrc/walls/SKYCITY.png", 0, 0 }
 WallTexture "SKYFRST", 2048, 512 { XScale 2.0 YScale 2.0 WorldPanning Patch "texsrc/walls/SKYFRST.png", 0, 0 }
+WallTexture "SKYMESA", 2048, 512 { XScale 2.0 YScale 2.0 WorldPanning Patch "texsrc/walls/SKYMESA.png", 0, 0 }
 WallTexture "SKYSPACE", 2048, 512 { XScale 2.0 YScale 2.0 WorldPanning Patch "texsrc/walls/SKYSPACE.png", 0, 0 }
 WallTexture "STOREFR1", 512, 256 { XScale 2.0 YScale 2.0 WorldPanning Patch "texsrc/walls/STOREFR1.png", 0, 0 }
 WallTexture "STOREFR2", 512, 256 { XScale 2.0 YScale 2.0 WorldPanning Patch "texsrc/walls/STOREFR2.png", 0, 0 }
@@ -245,12 +264,18 @@ WallTexture "SUBWAYSN", 512, 256 { XScale 2.0 YScale 2.0 WorldPanning Patch "tex
 WallTexture "SUBWAYTL", 256, 256 { XScale 2.0 YScale 2.0 WorldPanning Patch "texsrc/walls/SUBWAYTL.png", 0, 0 }
 WallTexture "SUPPORT", 64, 256 { XScale 2.0 YScale 2.0 WorldPanning Patch "texsrc/walls/SUPPORT.png", 0, 0 }
 WallTexture "SW1CITY", 128, 256 { XScale 2.0 YScale 2.0 WorldPanning Patch "texsrc/walls/SW1CITY.png", 0, 0 }
+WallTexture "SW1DULC", 128, 256 { XScale 2.0 YScale 2.0 WorldPanning Patch "texsrc/walls/SW1DULC.png", 0, 0 }
 WallTexture "SW1LAB", 128, 256 { XScale 2.0 YScale 2.0 WorldPanning Patch "texsrc/walls/SW1LAB.png", 0, 0 }
+WallTexture "SW1OFFC", 128, 256 { XScale 2.0 YScale 2.0 WorldPanning Patch "texsrc/walls/SW1OFFC.png", 0, 0 }
 WallTexture "SW1SHIP", 128, 256 { XScale 2.0 YScale 2.0 WorldPanning Patch "texsrc/walls/SW1SHIP.png", 0, 0 }
 WallTexture "SW2CITY", 128, 256 { XScale 2.0 YScale 2.0 WorldPanning Patch "texsrc/walls/SW2CITY.png", 0, 0 }
+WallTexture "SW2DULC", 128, 256 { XScale 2.0 YScale 2.0 WorldPanning Patch "texsrc/walls/SW2DULC.png", 0, 0 }
 WallTexture "SW2LAB", 128, 256 { XScale 2.0 YScale 2.0 WorldPanning Patch "texsrc/walls/SW2LAB.png", 0, 0 }
+WallTexture "SW2OFFC", 128, 256 { XScale 2.0 YScale 2.0 WorldPanning Patch "texsrc/walls/SW2OFFC.png", 0, 0 }
 WallTexture "SW2SHIP", 128, 256 { XScale 2.0 YScale 2.0 WorldPanning Patch "texsrc/walls/SW2SHIP.png", 0, 0 }
 WallTexture "TENTCANV", 256, 256 { XScale 2.0 YScale 2.0 WorldPanning Patch "texsrc/walls/TENTCANV.png", 0, 0 }
+WallTexture "TERRACTA", 256, 256 { XScale 2.0 YScale 2.0 WorldPanning Patch "texsrc/walls/TERRACTA.png", 0, 0 }
+WallTexture "TOWERWIN", 256, 256 { XScale 2.0 YScale 2.0 WorldPanning Patch "texsrc/walls/TOWERWIN.png", 0, 0 }
 WallTexture "VENTWALL", 256, 256 { XScale 2.0 YScale 2.0 WorldPanning Patch "texsrc/walls/VENTWALL.png", 0, 0 }
 WallTexture "WHSEDOOR", 256, 256 { XScale 2.0 YScale 2.0 WorldPanning Patch "texsrc/walls/WHSEDOOR.png", 0, 0 }
 WallTexture "WHSEWALL", 256, 256 { XScale 2.0 YScale 2.0 WorldPanning Patch "texsrc/walls/WHSEWALL.png", 0, 0 }
@@ -259,6 +284,7 @@ WallTexture "WOODPANL", 256, 256 { XScale 2.0 YScale 2.0 WorldPanning Patch "tex
 Flat "ALNFLR1", 128, 128 { XScale 2.0 YScale 2.0 Patch "texsrc/flats/ALNFLR1.png", 0, 0 }
 Flat "ASPHALT", 128, 128 { XScale 2.0 YScale 2.0 Patch "texsrc/flats/ASPHALT.png", 0, 0 }
 Flat "ASPHLINE", 128, 128 { XScale 2.0 YScale 2.0 Patch "texsrc/flats/ASPHLINE.png", 0, 0 }
+Flat "BUNKFLR", 128, 128 { XScale 2.0 YScale 2.0 Patch "texsrc/flats/BUNKFLR.png", 0, 0 }
 Flat "CARPETR", 128, 128 { XScale 2.0 YScale 2.0 Patch "texsrc/flats/CARPETR.png", 0, 0 }
 Flat "CONCFLR", 128, 128 { XScale 2.0 YScale 2.0 Patch "texsrc/flats/CONCFLR.png", 0, 0 }
 Flat "CRATETOP", 128, 128 { XScale 2.0 YScale 2.0 Patch "texsrc/flats/CRATETOP.png", 0, 0 }
@@ -275,10 +301,17 @@ Flat "LABCEIL", 128, 128 { XScale 2.0 YScale 2.0 Patch "texsrc/flats/LABCEIL.png
 Flat "LABLITE", 128, 128 { XScale 2.0 YScale 2.0 Patch "texsrc/flats/LABLITE.png", 0, 0 }
 Flat "LABTIL2", 128, 128 { XScale 2.0 YScale 2.0 Patch "texsrc/flats/LABTIL2.png", 0, 0 }
 Flat "LABTILE", 128, 128 { XScale 2.0 YScale 2.0 Patch "texsrc/flats/LABTILE.png", 0, 0 }
+Flat "LTRKFLR", 128, 128 { XScale 2.0 YScale 2.0 Patch "texsrc/flats/LTRKFLR.png", 0, 0 }
 Flat "MARBFLR", 128, 128 { XScale 2.0 YScale 2.0 Patch "texsrc/flats/MARBFLR.png", 0, 0 }
+Flat "MESAFLR", 128, 128 { XScale 2.0 YScale 2.0 Patch "texsrc/flats/MESAFLR.png", 0, 0 }
 Flat "METLFLR", 128, 128 { XScale 2.0 YScale 2.0 Patch "texsrc/flats/METLFLR.png", 0, 0 }
 Flat "MUDFLR", 128, 128 { XScale 2.0 YScale 2.0 Patch "texsrc/flats/MUDFLR.png", 0, 0 }
+Flat "OFFCCARP", 128, 128 { XScale 2.0 YScale 2.0 Patch "texsrc/flats/OFFCCARP.png", 0, 0 }
+Flat "OFFCCEIL", 128, 128 { XScale 2.0 YScale 2.0 Patch "texsrc/flats/OFFCCEIL.png", 0, 0 }
+Flat "OFFCLITE", 128, 128 { XScale 2.0 YScale 2.0 Patch "texsrc/flats/OFFCLITE.png", 0, 0 }
+Flat "PLAZAFLR", 128, 128 { XScale 2.0 YScale 2.0 Patch "texsrc/flats/PLAZAFLR.png", 0, 0 }
 Flat "ROCKFLR", 128, 128 { XScale 2.0 YScale 2.0 Patch "texsrc/flats/ROCKFLR.png", 0, 0 }
+Flat "ROOFGRVL", 128, 128 { XScale 2.0 YScale 2.0 Patch "texsrc/flats/ROOFGRVL.png", 0, 0 }
 Flat "ROOFTAR", 128, 128 { XScale 2.0 YScale 2.0 Patch "texsrc/flats/ROOFTAR.png", 0, 0 }
 Flat "SHIPCEIL", 128, 128 { XScale 2.0 YScale 2.0 Patch "texsrc/flats/SHIPCEIL.png", 0, 0 }
 Flat "SHIPFLR1", 128, 128 { XScale 2.0 YScale 2.0 Patch "texsrc/flats/SHIPFLR1.png", 0, 0 }

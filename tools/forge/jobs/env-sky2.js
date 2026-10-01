@@ -166,9 +166,10 @@ export default async function (F, params = {}) {
     const aircraft = [];   // red aircraft-warning lights, glowed afterwards
     // Sears Tower: nine bundled black tubes stepping back at the 50th, 66th and 90th floors; twin antennas
     const sears = (g, cx, H) => {
-      const t = Math.round(H * 0.064), x0 = cx - t * 1.5, yb = HY + 2, y = (f) => yb - H * f;
-      // [column, depth row (0 = back), top fraction]: two tubes to the 108th floor, three to the 90th, two to the 66th, two to the 50th
-      const tubes = [[0, 0, 0.83], [1, 0, 1.0], [2, 0, 1.0], [0, 1, 0.61], [1, 1, 0.83], [2, 1, 0.83], [2, 2, 0.45], [0, 2, 0.45], [1, 2, 0.61]];
+      const t = Math.round(H * 0.048), x0 = cx - t * 2.5, yb = HY + 2, y = (f) => yb - H * f;
+      // seen corner-on: [column, depth row (0 = back), top fraction]. Two tubes reach the 108th floor,
+      // the rest step back at the 90th, 66th and 50th floors on alternating sides.
+      const tubes = [[2, 0, 1.0], [3, 0, 1.0], [1, 0, 0.83], [4, 1, 0.61], [1, 1, 0.83], [2, 1, 0.83], [3, 1, 0.61], [0, 2, 0.45], [4, 2, 0.45]];
       for (const [c, d, f] of tubes) {
         const xa = x0 + c * t, ya = y(f);
         const gr = g.createLinearGradient(xa, 0, xa + t, 0), sh = 14 + d * 7;
@@ -180,9 +181,9 @@ export default async function (F, params = {}) {
         lit(g, xa, ya + 3, t, yb - ya - 4, Math.round(cx + c * 7 + d * 31), 0.08, 2, 3);
         g.fillStyle = 'rgba(230,130,70,0.75)'; g.fillRect(xa, ya, t, 1.2);                          // setback ledge in the firelight
       }
-      fireWash(g, x0, x0 + t * 3 + 1, y(0.5), yb);
+      fireWash(g, x0, x0 + t * 5 + 1, y(0.5), yb);
       // the twin antennas (the west one a little taller), white masts with red lights
-      for (const [xa, ah] of [[x0 + t * 1.5, 0.21], [x0 + t * 2.5, 0.18]]) {
+      for (const [xa, ah] of [[x0 + t * 2.5, 0.21], [x0 + t * 3.5, 0.18]]) {
         g.fillStyle = '#d8d2cc'; g.fillRect(xa - 1.1, y(1) - H * ah, 2.2, H * ah);
         g.fillStyle = '#9a948e'; g.fillRect(xa - 3, y(1) - 4, 6, 4); g.fillRect(xa - 1.8, y(1) - H * ah * 0.5, 3.6, 2);
         aircraft.push([xa, y(1) - H * ah], [xa, y(1) - H * ah * 0.5]);

@@ -3,7 +3,8 @@
 ; Plaza (the Picasso) -> stairs up to the State/Lake platform -> fight along the L (Lake, Wabash) ->
 ; the skybridge from the Wabash L into the MERCHANT TOWER's 2nd floor (or walk in through the lobby
 ; on Randolph) -> the stair core: lobby 0, floors at 192 / 384 / 576 (the 3rd floor is burning),
-; roof 768; the express elevator runs lobby <-> 4th floor. Reaching the 4th floor completes obj 1 ->
+; roof 768; the express elevator runs lobby <-> 4th floor. A 20 s comms terminal on the 4th floor
+; (IRIS traces the relay) completes obj 1 ->
 ; the roof: the harvest relay grown into the antenna, 60 s HackTerminal holdout (obj 2), which drops
 ; the barrier to the window-washer platform -> ride it down the outside of the tower to the alley ->
 ; the State/Lake station house on Lake Street -> the ExitGate (objectives 1+2) opens the door to the
@@ -428,8 +429,11 @@ Stalker 118,70 angle=N z=top2 skill=345
 Medkit 132,43 z=top2
 AlienEnergyCell 103,43 z=top2
 PickupPlasmaSMG 104,46 z=top2
-IrisTrigger 114.5,54 args=IRIS_612,192,2 z=top3 obj=1
+IrisTrigger 114.5,55 args=IRIS_612,192,1 z=top3
 ObjectiveMarker 114.5,52 args=1 z=top3
+HackTerminal 114.5,52 angle=S args=20,2,0,0,1 z=top3
+WaveSpot 108,51 args=2,3 z=top3
+WaveSpot 128,51 args=2,2 z=top3
 PropDesk 127,68 z=top3
 PropChair 127,70 z=top3
 PropPlant 123,66 z=top3

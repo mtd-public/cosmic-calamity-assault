@@ -105,10 +105,13 @@ export function basisQ(X, Y, Z) { return new THREE.Quaternion().setFromRotationM
 // axis: the direction the thumb side points along the bar; back: roughly where
 // the back of the hand faces. tunnel: the fist's bar centre in hand space
 // (calibrated for a ~4 cm bar with the 'torch' grip).
-export function fistAnchor(parent, { at = [0, 0, 0], axis = [0, 0, -1], back = [0, -1, 0], side = 1, tunnel = [0, -0.0295, -0.0915] } = {}) {
-  const X = V3(...axis).normalize().multiplyScalar(-side);
+export function fistAnchor(parent, { at = [0, 0, 0], axis = [0, 0, -1], back = [0, -1, 0], side = 1, tunnel = [0, -0.0295, -0.0915], swing = 0 } = {}) {
+  let X = V3(...axis).normalize().multiplyScalar(-side);
   const Y = V3(...back); Y.addScaledVector(X, -Y.dot(X)).normalize();
-  const Z = new THREE.Vector3().crossVectors(X, Y);
+  let Z = new THREE.Vector3().crossVectors(X, Y);
+  // swing: turn the hand about the back-of-hand axis so the bar runs diagonally
+  // across the palm and the forearm angles back (a support "cup" grip)
+  if (swing) { const c = Math.cos(swing), s = Math.sin(swing) * side; const X2 = X.clone().multiplyScalar(c).addScaledVector(Z, -s), Z2 = Z.clone().multiplyScalar(c).addScaledVector(X, s); X = X2; Z = Z2; }
   const R = new THREE.Matrix4().makeBasis(X, Y, Z);
   const c = V3(...tunnel).applyMatrix4(R);
   const a = new THREE.Group(); a.position.set(at[0] - c.x, at[1] - c.y, at[2] - c.z);

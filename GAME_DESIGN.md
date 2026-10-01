@@ -20,16 +20,18 @@ Built from: GZDoom 4.14 (ZScript, UDMF), the `mstr-gme-dsgn-tmpt` house rules (d
 - **Cast:**
   - **Eli Marsh** (player): a believer, sardonic, stubborn. Charcoal suit, loosened tie, a long dark trench coat, a 9 mm service pistol and a heavy steel flashlight.
   - **IRIS** (the AI helper): a prototype intelligence grown at S-4 from recovered alien hardware, now living in Marsh's wrist unit. She *is* the HUD. She draws waypoints to the objective, explains the plot as it happens, and drops hints when a secret is near. Her little avatar sits in the HUD corner and reacts: it talks, glances toward threats and glitches when Marsh is hurt. It is Jumping Flash's portrait idea, not cute: a green CRT wireframe face behind scanlines, dry and slightly unsettling.
-  - **Dr. Nora Kade** (radio, MAP02 on): Marsh's partner, an FBI forensic pathologist and a skeptic. She argues with IRIS and with the evidence.
+  - **Dr. Nora Kade** (radio, MAP03 on): Marsh's partner, an FBI forensic pathologist and a skeptic. She argues with IRIS and with the evidence.
   - **The Custodian** (antagonist): a quiet man in a grey suit with a lighter he never uses. He sits on the Committee that brokered the deal. He appears in radio intercepts and intermission texts.
   - **The Greys:** the government codename is **EBE** (extraterrestrial biological entity). Their telepathic hum can "drown" a human mind, which is how the base guards turned.
 - **Missions** (one episode, *Case File 51*):
   1. **Groom Lake** (MAP01): Marsh is being held in an interrogation room under Area 51 when the containment wing breaks open.
      - To leave, he must retrieve two things: the **dossier** (the Committee's file on the deal) and the **HDD cache** (the alien experiment data, and IRIS's home).
      - Scientists and lab personnel flee and cower. Downed security guards lie in the corridors, some dead, some dying and still talking.
-  2. **Night of the Harvest** (MAP02): Washington, D.C., during the invasion. He reaches Bureau HQ through the burning streets, the plaza and the subway. His case file holds the coordinates of the ship the Air Force shot down.
-  3. **Crash Site** (MAP03): the Army cordon around the downed saucer has been overrun. He takes the navigational shard from inside the wreck, which is the key to the ship that launched it.
-  4. **Mothership** (MAP04): abduction bays, organic corridors and the **Hive Mind**. Kill it and the hum stops.
+  2. **Dulce Base** (MAP02, Dark Forces' *Secret Base*): the dossier names a base dug under Archuleta Mesa outside Dulce, New Mexico. Marsh crosses the night desert, gets into the compound and descends level by level through shafts, catwalks and labs to the Level 7 vault. He steals **the plans** (the Committee's MAJESTIC-12 schedule: forty cities, one night), climbs out by a different route as the base wakes, and leaves in a **black helicopter** from the roof. The Men in Black run the base's security.
+  3. **Night of the Harvest** (MAP03): Washington, D.C., during the invasion. He reaches Bureau HQ through the burning streets, the plaza and the subway, and uploads his case file and the plans to every newsroom.
+  4. **The Loop** (MAP04): Chicago, the harvest hub in the plans. State Street under the Chicago Theatre sign, the elevated L, Daley Plaza and its Picasso, the Sears Tower and Hancock on the skyline. The heart of the level is the burning **Merchant Tower**: floor after floor of cubicles with blown-out windows, fires and **office workers to save** from the aliens. On the roof, the relay grown into the antenna has to be jammed.
+  5. **Crash Site** (MAP05): the Army cordon around the downed saucer in the Cascades has been overrun. He takes the navigational shard from inside the wreck, which is the key to the ship that launched it.
+  6. **Mothership** (MAP06): abduction bays, organic corridors and the **Hive Mind**. Kill it and the hum stops.
 
 ## 2. Pillars
 1. **Doom's speed, modded-weapon feel.** Fast movement, big rooms, circle-strafing. Every weapon has real reload, pump and slide animations, the way high-effort Doom mods do them.
@@ -89,7 +91,7 @@ Damage uses Doom's `N*random(a,b)` form so balance can be compared directly with
 | 4 | SMG (32-round magazine) | Plasma SMG (heat instead of a magazine) | Chaingun | Spray |
 | 5 | Assault rifle (30 rounds, full auto) | — | Chaingun+ | All-rounder |
 | 6 | Battle rifle (20 rounds, **3-round burst**, marksman scope) | — | — | Precise mid/long range |
-| 7 | — | The Singularity (alien superweapon, MAP04) | BFG9000 | The finale |
+| 7 | — | The Singularity (alien superweapon, found in MAP05) | BFG9000 | The finale |
 
 **Ammo:**
 - **Human guns** use real calibres: 9 mm (pistol, SMG), 12 gauge (shotgun), 5.56 (assault rifle), 7.62 (battle rifle).
@@ -121,7 +123,8 @@ Damage uses Doom's `N*random(a,b)` form so balance can be compared with the orig
 | **Stalker** (clawed hunter) | Demon | 150 | 12 | claw 4×random(1,10) | low snarl, a fast lope | shotgun at the doorway; M79 in the open |
 | **Probe** (floating drone) | Cacodemon | 200 | 8, flies | pulse ball 5×random(1,8) | a humming sweep light | SMG or pulse carbine |
 | **Overseer** (Grey elder) | Arch-vile | 700 | 15 | psychic lance (Doom's vile attack); raises dead aliens | the cranium glows; a rising choir | break line of sight; kill it first |
-| **Hive Mind** (boss, MAP04) | Icon of Sin + Spider Mastermind | 4000 | stationary | beam salvos, spawns Greys and Probes | a pulsing core, a roar before spawns | four conduits expose the core; Singularity |
+| **Man in Black** (MAP02 on; human, collaborating) | Zombieman+ | 45 | 10 | silenced-pistol pairs 2 × 3×random(1,4) | black suit, sunglasses, a radio-static bark | pistol or SMG; red blood, drops 9 mm |
+| **Hive Mind** (boss, MAP06) | Icon of Sin + Spider Mastermind | 4000 | stationary | beam salvos, spawns Greys and Probes | a pulsing core, a roar before spawns | four conduits expose the core; Singularity |
 
 ### 5.3 Terminal hacks (defend the point)
 - **Start:** use a hackable terminal (X / E). IRIS starts a download or upload, and a **gauge** appears on the HUD (percent plus time left).
@@ -131,8 +134,9 @@ Damage uses Doom's `N*random(a,b)` form so balance can be compared with the orig
 - **Finish:** the terminal runs its line special (opens the exit, lowers a shield) and gives the objective item.
 - **Uses:**
   - MAP01: download the HDD cache, 75 s (IRIS wakes up properly afterwards).
-  - MAP02: upload the case file from the Bureau basement, 60 s.
-  - MAP04: upload the virus to the mothership's core, 90 s. This is the *Independence Day* moment: IRIS: "*It's a Mac joke, Marsh. You wouldn't get it.*" The Hive Mind's shield drops when the upload finishes.
+  - MAP03: upload the case file from the Bureau basement, 60 s.
+  - MAP04: jam the harvest relay on the Merchant Tower's roof, 60 s.
+  - MAP06: upload the virus to the mothership's core, 90 s. This is the *Independence Day* moment: IRIS: "*It's a Mac joke, Marsh. You wouldn't get it.*" The Hive Mind's shield drops when the upload finishes.
 
 **Non-hostile NPCs** (MAP01 mostly; aliens can kill them):
 | NPC | Behaviour |
@@ -142,6 +146,7 @@ Damage uses Doom's `N*random(a,b)` form so balance can be compared with the orig
 | Downed guard (wounded) | sits against the wall, calling for help. **Revive** him by holding use (X / E) for 3 s, with a gauge on the HUD; being hit cancels it. He stands up as a **Guard ally** (Half-Life's security guard): a +FRIENDLY fighter with a pistol or rifle who follows Marsh and shoots aliens. Some carry an item they hand over when revived (the blue card). A guard left alone for too long in a fight dies |
 | Guard ally (revived) | 60 HP, 9 mm hitscan 3×random(1,5), follows within ~5 m, takes cover behind the player's line of fire, and calls out ("*Behind you!*") through IRIS subtitles |
 | Dead guard / dead scientist | set dressing, with a blood pool |
+| Office worker (MAP04; man and woman, 1997 white-collar) | flees and cowers like a scientist, but the aliens **hunt** them: an idle alien that can see a worker goes after them (their damage to civilians is cut to a third, which gives you a window). Reach a worker with no hostile in sight and they are **saved**: a thank-you (sometimes a stim or a magazine), then they run for the nearest `SafeZone` and leave. The HUD counts *Civilians saved x / y (n lost)*; IRIS notices the first loss and a clean sweep |
 
 Difficulty follows Doom's skills (ITYTD to Nightmare), via MAPINFO `skill` defaults.
 
@@ -203,9 +208,11 @@ Map sources are in `maps-src/*.txt`. A cell is 32×32 map units. The player is 3
 | # | Map | Space | Set pieces | Keys |
 |---|---|---|---|---|
 | MAP01 | Groom Lake (Area 51, S-4) | interrogation room → detention block → security office (blue card) → **out into the desert yard at night** (perimeter fences, floodlights, burning jeeps, a Raiders-of-the-Lost-Ark government warehouse with crate-stack aisles and catwalks, all under alien siege) → back down to the labs → lab corridor with smashed observation windows → experiment rooms (specimen tanks, dissection theatre, containment cell) → records office (**dossier**) → alien-tech lab where the hull has grown into the walls (**HDD cache**, red card) → hangar with the back-engineered saucer → surface lift (exit opens only with the dossier and HDD) | lights die at the start, and the flashlight is the first lesson; scientists run past screaming; a dying guard hands over the blue card; the containment wing opens behind you; a Stalker in the hangar | blue card, red card; objectives: dossier + HDD cache |
-| MAP02 | Night of the Harvest (Washington, D.C.) | neon strip (bar, pawn shop, adult cinema marquee, motel) → back alleys → the plaza under the beams (a full-level version of the Firefight arena) → subway station and tunnel → Bureau HQ lobby → the basement office → rooftop | the plaza holdout; the first Overseer in the subway; the case file in the basement | blue card (subway), yellow card (HQ lobby) |
-| MAP03 | Crash Site | overrun Army cordon (tents, floodlights, trucks) → forest ridge → impact trench → inside the saucer | the wreck's interior is the first alien architecture; the Singularity is in its cockpit | red card (command tent), blue glyph (wreck) |
-| MAP04 | Mothership | docking bay with racks of attack craft (ID4) → abduction bays with pods → sleek cyan-lit corridors and consoles (Perfect Dark) → gravity lift → conduit ring → Hive Mind chamber | four conduits drop the Hive Mind's shield; the ship shakes after the kill | yellow glyph, red glyph |
+| MAP02 | Dulce Base (New Mexico, Dark Forces' Secret Base) | night desert under the mesa → fenced compound (towers, radar dish, antennas, barriers) → topside building → the descent: shafts, catwalks over chasms, lifts, machinery → Level 3 security and labs → Level 6 hybrid experiments → Level 7 vault (**the plans**) → alarm: back up by another route → the roof → the black helicopter | the base wakes when the plans move; Men in Black; the helicopter waits with its rotors turning | keys per the map; objectives: plans, helicopter |
+| MAP03 | Night of the Harvest (Washington, D.C.) | neon strip (bar, pawn shop, adult cinema marquee, motel) → back alleys → the plaza under the beams (a full-level version of the Firefight arena) → subway station and tunnel → Bureau HQ lobby → the basement office → rooftop | the plaza holdout; the first Overseer in the subway; the case file in the basement | blue card (subway), yellow card (HQ lobby) |
+| MAP04 | The Loop (Chicago, 1997) | State Street under the Chicago Theatre sign → up onto the elevated L tracks and platform → Daley Plaza and the Picasso → the Merchant Tower: lobby, stairwells and lifts, floor after floor of offices (cubicles, copiers, water coolers, burning desks, blown-out windows over the burning skyline) → the roof relay → out to the L | office workers to save; the relay holdout on the roof; the skyline burning beyond every broken window | keys per the map; objectives: reach the relay, jam it, get out |
+| MAP05 | Crash Site | overrun Army cordon (tents, floodlights, trucks) → forest ridge → impact trench → inside the saucer | the wreck's interior is the first alien architecture; the Singularity is in its cockpit | red card (command tent), blue glyph (wreck) |
+| MAP06 | Mothership | docking bay with racks of attack craft (ID4) → abduction bays with pods → sleek cyan-lit corridors and consoles (Perfect Dark) → gravity lift → conduit ring → Hive Mind chamber | four conduits drop the Hive Mind's shield; the ship shakes after the kill | yellow glyph, red glyph |
 
 **Geometry goals** (what the map compiler must support, §8):
 - multi-storey spaces via GZDoom **3D floors**: bridges over drops, catwalks, balconies and room-over-room

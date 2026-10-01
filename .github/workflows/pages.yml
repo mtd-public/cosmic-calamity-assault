@@ -37,6 +37,12 @@ jobs:
           cp -r site/. _site/
           cp dist/cosmic-calamity-assault.pk3 _site/
           touch _site/.nojekyll
+      # Browser build at /play/: GZDoom 4.11.3 WebAssembly (vendored in
+      # web/engine/, checksummed) + Freedoom 2 + the pk3 above; see web/README.md.
+      - name: Freedoom 2 for the browser build
+        run: sudo apt-get install -y -q freedoom
+      - name: Assemble the browser build (/play/)
+        run: node tools/web-assemble.mjs _site --iwad /usr/share/games/doom/freedoom2.wad
       # The previous three.js Halo-like game stays playable at /halo-like/.
       - uses: actions/checkout@v4
         with:

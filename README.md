@@ -3,6 +3,7 @@
 A **GZDoom mod**: 1997, an FBI agent who was right all along, his AI **IRIS**, and a hostile alien invasion. It has pre-rendered custom characters, Call of Duty-style gun handling, and four maps: Area 51 under siege, a seedy late-90s Washington, a crash site, and the mothership.
 
 - **Play:** download the `.pk3` from the [GitHub Pages site](https://mtd-public.github.io/cosmic-calamity-assault/). It runs in **GZDoom 4.14** or **UZDoom**, with **Freedoom: Phase 2** (free) or **DOOM II**.
+- **Play in the browser:** [/play/](https://mtd-public.github.io/cosmic-calamity-assault/play/) on the Pages site (Chrome or Edge 137+, desktop). It runs GZDoom 4.11.3 compiled to WebAssembly, with Freedoom 2. Keyboard, mouse and gamepad all work, and saves stay in the browser. See [web/README.md](web/README.md).
 - **Design:** [GAME_DESIGN.md](GAME_DESIGN.md). **Asset contract:** [docs/ASSETS.md](docs/ASSETS.md).
 - **The previous direction:** a three.js Halo 1/2-style FPS. It is preserved on the branch [`final-halo-like`](https://github.com/mtd-public/cosmic-calamity-assault/tree/final-halo-like) and still playable in the browser at `/halo-like/` on the Pages site.
 
@@ -59,4 +60,12 @@ site/           the GitHub Pages landing page
 ```
 
 ## Deploy
-`.github/workflows/pages.yml` compiles and validates the maps and builds the pk3 on every push. It publishes the site, the `.pk3` and the old Halo-like prototype to GitHub Pages **only from `main`**.
+`.github/workflows/pages.yml` compiles and validates the maps and builds the pk3 on every push. It publishes the site, the `.pk3`, the browser build (`/play/`, assembled by `tools/web-assemble.mjs`) and the old Halo-like prototype to GitHub Pages **only from `main`**.
+
+## License of the browser build
+The browser build's engine is **GZDoom 4.11.3** compiled to WebAssembly by [tomb-engine](https://github.com/mungus43/tomb-engine), under the **GNU GPL v3**:
+- the binaries are vendored in `web/engine/`, with tomb-engine's `LICENSE`, which is also served at `/play/engine/LICENSE`;
+- the source is [GZDoom g4.11.3](https://github.com/ZDoom/gzdoom/tree/g4.11.3) plus tomb-engine's port (build scripts and `PATCH_INVENTORY.md`);
+- the page harness in `site/play/` is adapted from tomb-engine and is GPLv3 too.
+
+Freedoom 2 is BSD-licensed.

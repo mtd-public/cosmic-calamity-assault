@@ -306,6 +306,7 @@
   }
 
   function onCapture(on) {
+    log('[page] engine ' + (on ? 'captured' : 'released') + ' the mouse');
     S.captured = on;
     S.padMode = on ? 'game' : 'menu';
     if (on) lock();
@@ -352,8 +353,15 @@
       metaKey: !!e.metaKey, location: e.location || 0, bubbles: true, cancelable: true,
     };
   }
+  let engineFocused = true;
+  function setEngineFocus(on) {
+    if (engineFocused === on) return;
+    engineFocused = on;
+    post({ type: 'input', target: 'window', evType: on ? 'focus' : 'blur', init: {} });
+  }
   function onKey(e) {
     if (!engaged() || BROWSER_KEYS.has(e.code)) return;
+    setEngineFocus(true);
     if (e.code === 'Escape' && e.type === 'keydown') {
       // Swallow a real Esc that follows our synthetic one (lock loss).
       if (performance.now() - lastSyntheticEsc < 400) { e.preventDefault(); return; }
@@ -400,6 +408,7 @@
     window.addEventListener('keyup', onKey, true);
     canvas.addEventListener('mousedown', (e) => {
       ensureAudio();
+      setEngineFocus(true);
       if (S.captured && !isLocked()) lock();
       fwdMouse('mousedown')(e);
     });
@@ -411,11 +420,15 @@
     $('resume').addEventListener('click', () => { ensureAudio(); lock(); canvas.focus(); });
     document.addEventListener('visibilitychange', () => {
       post({ type: 'visibility', state: document.visibilityState });
-      if (document.visibilityState === 'hidden') post({ type: 'flush' });
+      if (document.visibilityState === 'hidden') { post({ type: 'flush' }); setEngineFocus(false); }
+      else setEngineFocus(true);
     });
     window.addEventListener('pagehide', () => post({ type: 'flush' }));
-    window.addEventListener('blur', () => post({ type: 'input', target: 'window', evType: 'blur', init: {} }));
-    window.addEventListener('focus', () => post({ type: 'input', target: 'window', evType: 'focus', init: {} }));
+    // SDL ignores the mouse for look while its window is unfocused, and page
+    // blurs are frequent (fullscreen changes, clicking page controls): the
+    // engine is told it lost focus only when the page is hidden.
+    window.addEventListener('blur', () => { if (document.visibilityState === 'hidden') setEngineFocus(false); });
+    window.addEventListener('focus', () => setEngineFocus(true));
   }
 
   // ------------------------------------------------------------------ gamepad
@@ -449,6 +462,12 @@
         init: padMouse({ movementX: ev.movementX, movementY: ev.movementY }) });
     }
   }
+  // Generic input entry point (gamepad today; a touch-control overlay can
+  // reuse it): window.CCAInput.send({type:'keydown'|'keyup', key, code, keyCode}),
+  // ({type:'mousedown'|'mouseup', button}), ({type:'mousemove', movementX, movementY}),
+  // ({type:'wheel', deltaY}). CCAInput.mode() is 'game' (mouse captured) or 'menu'.
+  window.CCAInput = { send: sendPadEvent, mode: () => S.padMode };
+
   function tapKey(k, synthetic) {
     if (synthetic) lastSyntheticEsc = performance.now();
     for (const type of ['keydown', 'keyup']) sendPadEvent(Object.assign({ type, repeat: false }, k));

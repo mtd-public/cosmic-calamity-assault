@@ -105,9 +105,11 @@ jobs:
           name: engine-shots
           path: shots/
 
+  # Deploys as soon as the pk3 and site are built; engine-tests runs alongside
+  # as a check (the first GZDoom compile takes ~20 min before it is cached).
   deploy:
     if: github.ref == 'refs/heads/main'
-    needs: [build, engine-tests]
+    needs: [build]
     runs-on: ubuntu-latest
     environment:
       name: github-pages
